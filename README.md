@@ -1,5 +1,7 @@
 ![banner](https://user-images.githubusercontent.com/121164/56737645-274c8a80-676b-11e9-86ec-0c99e41582fc.png)
 
+[![pub package](https://img.shields.io/pub/v/voyager.svg)](https://pub.dartlang.org/packages/voyager)
+
 > To boldly resolve where no Dart has resolved before.
 
 Router & dependency injection library for Flutter.
@@ -28,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.1.0"
+ voyager: "^0.1.1"
 ```
 
 You can also reference the git repo directly if you want:

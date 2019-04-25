@@ -2,13 +2,10 @@ import 'package:sprintf/sprintf.dart';
 import 'router_context.dart';
 import 'dart:convert';
 
-
-
 const String _VARIABLE_PREFIX = "%{";
 const String _VARIABLE_SUFFIX = "}";
 
 class VoyagerUtils {
-
   static bool isNullOrBlank(String it) {
     return it == null || it.trim().length == 0;
   }
@@ -29,7 +26,8 @@ class VoyagerUtils {
       int index = 0;
       bool replaced = false;
       while ((index = convFormat.indexOf(formatKey, index)) != -1) {
-        convFormat = convFormat.replaceRange(index, index + formatKey.length, formatPos);
+        convFormat =
+            convFormat.replaceRange(index, index + formatKey.length, formatPos);
         index += formatPos.length;
         replaced = true;
       }
@@ -51,16 +49,14 @@ class VoyagerUtils {
   static void interpolateDynamic(dynamic param, RouterContext context) {
     if (param is List) {
       interpolateList(param, context);
-    }
-    else if (param is Map) {
+    } else if (param is Map) {
       Map<String, dynamic> map = param;
       final keys = map.keys;
       for (String key in keys) {
         final value = map[key];
         if (isListOrMap(value)) {
           interpolateDynamic(value, context);
-        }
-        else if (value is String) {
+        } else if (value is String) {
           String newValue = interpolate(value, context.params);
           map[key] = newValue;
         }
@@ -74,9 +70,7 @@ class VoyagerUtils {
 
       if (isListOrMap(o)) {
         interpolateDynamic(o, context);
-      }
-
-      else if (o is String) {
+      } else if (o is String) {
         o = interpolate(o, context.params);
         array[i] = o;
       }

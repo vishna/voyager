@@ -1,6 +1,6 @@
 name: voyager
-description: Router & dependency injection library for Flutter.
-version: 0.1.0
+description: Router and basic dependency injection library for Flutter. Define navigation paths in YAML and power them up with custom plugins.
+version: 0.1.1
 author: Lukasz Wisniewski <luke.cherrish@gmail.com>
 homepage: https://github.com/vishna/voyager
 

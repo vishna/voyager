@@ -18,10 +18,7 @@ List<RouterPath> _loadYaml(String yaml) {
   final paths = new List<RouterPath>();
 
   routerMap.keys.forEach((it) {
-    paths.add(RouterPath.fromYaml(
-        path: it,
-        config: routerMap[it]
-    ));
+    paths.add(RouterPath.fromYaml(path: it, config: routerMap[it]));
   });
 
   return paths;
@@ -37,7 +34,8 @@ Future<List<RouterPath>> loadPathsFromString(String yaml) async {
   return compute(_loadYaml, yaml);
 }
 
-Future<RouterNG> loadRouter(Future<List<RouterPath>> paths, List<RouterPlugin> plugins) {
+Future<RouterNG> loadRouter(
+    Future<List<RouterPath>> paths, List<RouterPlugin> plugins) {
   final router = RouterNG();
 
   plugins.forEach((plugin) {
@@ -48,7 +46,7 @@ Future<RouterNG> loadRouter(Future<List<RouterPath>> paths, List<RouterPlugin> p
     paths.forEach((path) {
       router.registerPath(path);
     });
-  }).then((Null) {
+  }).then((_) {
     return router;
   });
 }
@@ -64,9 +62,12 @@ class RouterNG extends Router<RouterPath> {
   }
 
   RouterNG registerGlobalParam(String key, dynamic value) {
-
-    if (!value is String && !value is int && !value is double && !value is bool) {
-      throw ArgumentError("${value?.runtimeType} is not suitable for global param");
+    if (!value is String &&
+        !value is int &&
+        !value is double &&
+        !value is bool) {
+      throw ArgumentError(
+          "${value?.runtimeType} is not suitable for global param");
     }
 
     _globalParams[key] = value;
@@ -109,11 +110,8 @@ class RouterNG extends Router<RouterPath> {
     // include global params
     allTheParams.addAll(this._globalParams);
 
-    final context = RouterContext(
-      path: path.path,
-      params: allTheParams,
-      router: this
-    );
+    final context =
+        RouterContext(path: path.path, params: allTheParams, router: this);
 
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
@@ -141,10 +139,10 @@ class RouterNG extends Router<RouterPath> {
 
       // we wrap stuff with voyagerBuilder so that we can use DI based on router
       WidgetBuilder voyagerBuilder = (context) => VoyagerProvider(
-        voyager: voyager,
-        router: this,
-        child: builder(context),
-      );
+            voyager: voyager,
+            router: this,
+            child: builder(context),
+          );
 
       return MaterialPageRoute(builder: voyagerBuilder);
     };

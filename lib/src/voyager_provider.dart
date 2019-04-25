@@ -34,7 +34,7 @@ class VoyagerProvider extends InheritedWidget {
     if (provider == null) {
       throw FlutterError(
           'VoyagerProvider.of() called with a context that does not contain a Voyager.\n'
-              '  $context');
+          '  $context');
     }
     return provider?.voyager;
   }
@@ -49,7 +49,7 @@ class VoyagerProvider extends InheritedWidget {
     if (provider == null) {
       throw FlutterError(
           'VoyagerProvider.of() called with a context that does not contain a Voyager.\n'
-              '  $context');
+          '  $context');
     }
     return provider?.router;
   }

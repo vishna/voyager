@@ -10,7 +10,6 @@ class RouterPath {
   factory RouterPath.fromYaml({String path, YamlMap config}) {
     return RouterPath._(
         path: path,
-        config: json.decode(json.encode(config)) as Map<String, dynamic>
-    );
+        config: json.decode(json.encode(config)) as Map<String, dynamic>);
   }
 }

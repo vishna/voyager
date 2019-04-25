@@ -9,7 +9,6 @@ import '../voyager.dart';
 const _KEY_TYPE = "type";
 
 class TypePlugin extends RouterPlugin {
-
   TypePlugin() : super(_KEY_TYPE);
 
   @override

@@ -5,7 +5,6 @@ import '../voyager.dart';
 import '../voyager_provider.dart';
 
 class ScreenPlugin extends RouterPlugin {
-
   static const String KEY_SCREEN_BUILDER = "screenBuilder";
 
   final Map<String, WidgetBuilder> builders;

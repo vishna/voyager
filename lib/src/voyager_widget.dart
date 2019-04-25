@@ -15,13 +15,15 @@ class VoyagerWidget extends StatefulWidget {
   VoyagerWidget({this.path, this.keepAlive = false, this.router});
 
   @override
-  State<StatefulWidget> createState() => VoyagerWidgetState(keepAlive: keepAlive);
+  State<StatefulWidget> createState() =>
+      VoyagerWidgetState(keepAlive: keepAlive);
 
-  static VoyagerWidget fromPath(BuildContext context, String path) => VoyagerWidget(path: path, router: VoyagerProvider.routerOf(context));
+  static VoyagerWidget fromPath(BuildContext context, String path) =>
+      VoyagerWidget(path: path, router: VoyagerProvider.routerOf(context));
 }
 
-class VoyagerWidgetState extends State<VoyagerWidget> with AutomaticKeepAliveClientMixin<VoyagerWidget>  {
-
+class VoyagerWidgetState extends State<VoyagerWidget>
+    with AutomaticKeepAliveClientMixin<VoyagerWidget> {
   String _path;
   final keepAlive;
   RouterNG _router;
@@ -50,7 +52,8 @@ class VoyagerWidgetState extends State<VoyagerWidget> with AutomaticKeepAliveCli
 
     final builder = ScreenProvider.ofVoyager(_voyager);
 
-    assert(builder != null, "WidgetBuilder of _voyager should not be null, did you forget to add ScreenPlugin?");
+    assert(builder != null,
+        "WidgetBuilder of _voyager should not be null, did you forget to add ScreenPlugin?");
 
     final child = builder(context);
 
