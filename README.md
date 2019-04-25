@@ -133,7 +133,7 @@ class TitlePlugin extends RouterPlugin {
 ```dart
 Voyager voyager = router.find("/home")
 print(voyager["title"]); // originates from the title plugin, prints: "This is home"
-print(voyager["type"]); // originates from the title plugin, prints: "home"
+print(voyager["type"]); // originates from the type plugin, prints: "home"
 assert(voyager["screenBuilder"] is WidgetBuilder); // originates from the screen plugin
 ```
 
