@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
+import 'package:provider/provider.dart';
 
 class MockHomeWidget extends StatelessWidget {
   @override
@@ -17,7 +18,7 @@ class MockHomeWidget extends StatelessWidget {
 class MockOtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = VoyagerProvider.of(context)["title"];
+    final title = Provider.of<Voyager>(context)["title"];
 
     return Scaffold(
         appBar: AppBar(

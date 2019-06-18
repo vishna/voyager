@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../router_plugin.dart';
 import '../router_context.dart';
 import '../utils.dart';
-import '../voyager_provider.dart';
 import '../voyager.dart';
 
 const _KEY_TYPE = "type";
@@ -21,6 +21,6 @@ class TypePlugin extends RouterPlugin {
 
 class TypeProvider {
   static String of(BuildContext context) {
-    return VoyagerProvider.of(context)[_KEY_TYPE];
+    return Provider.of<Voyager>(context)[_KEY_TYPE];
   }
 }

@@ -1,13 +1,13 @@
 import 'package:angel_route/angel_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:yaml/yaml.dart';
 
 import 'utils.dart';
 import 'voyager.dart';
-import 'voyager_provider.dart';
 import 'router_path.dart';
 import 'router_plugin.dart';
 import 'router_context.dart';
@@ -138,9 +138,11 @@ class RouterNG extends Router<RouterPath> {
       var builder = ScreenProvider.ofVoyager(voyager);
 
       // we wrap stuff with voyagerBuilder so that we can use DI based on router
-      WidgetBuilder voyagerBuilder = (context) => VoyagerProvider(
-            voyager: voyager,
-            router: this,
+      WidgetBuilder voyagerBuilder = (context) => MultiProvider(
+            providers: [
+              Provider<Voyager>.value(value: voyager),
+              Provider<RouterNG>.value(value: this),
+            ],
             child: builder(context),
           );
 

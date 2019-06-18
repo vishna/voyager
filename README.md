@@ -20,7 +20,7 @@ If your app is a list of screens with respective paths then this library is for 
     - code generator for paths (COMING SOON)
 - Highly customizable plugin architecture.
 - VoyagerWidget to embed your `path` at any point
-- VoyagerProvider to inject any data coming with the `path`
+- Provider to inject any data coming with the `path`
 
 ## Getting started
 
@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.1.1"
+ voyager: "^0.2.0"
 ```
 
 You can also reference the git repo directly if you want:
@@ -149,12 +149,12 @@ VoyagerWidget(path: "/home", router: router);
 
 **NOTE:** You can even omit passing router instance if this `VoyagerWidget` is nested within other `VoyagerWidget`.
 
-### Inject your information via VoyagerProvider
+### Inject your information via Provider
 
-If you use `VoyagerWidget` to create screens for your paths, you can obtain `Voyager` anywhere from `BuildContext` using `VoyagerProvider`:
+If you use `VoyagerWidget` to create screens for your paths, you can obtain `Voyager` anywhere from `BuildContext` using [Provider](https://pub.dev/packages/provider):
 
 ```dart
-final voyager = VoyagerProvider.of(context);
+final voyager = Provider.of<Voyager>(context);
 ```
 
 Now going back to our mystery `OtherWidget` class from the example navigation spec, that widget could be implemented something like this:
@@ -163,7 +163,7 @@ Now going back to our mystery `OtherWidget` class from the example navigation sp
 class OtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = VoyagerProvider.of(context); // injecting voyager from build context
+    final voyager = Provider.of<Voyager>(context); // injecting voyager from build context
     final title = voyager["title"]; // assuming title plugin worked and title is here 🙈
 
     return Scaffold(
