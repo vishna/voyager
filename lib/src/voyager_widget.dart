@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'router.dart';
 import 'voyager.dart';
-import 'voyager_provider.dart';
 import 'plugins/screen_plugin.dart';
 
 /// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
@@ -19,7 +19,7 @@ class VoyagerWidget extends StatefulWidget {
       VoyagerWidgetState(keepAlive: keepAlive);
 
   static VoyagerWidget fromPath(BuildContext context, String path) =>
-      VoyagerWidget(path: path, router: VoyagerProvider.routerOf(context));
+      VoyagerWidget(path: path, router: Provider.of<RouterNG>(context));
 }
 
 class VoyagerWidgetState extends State<VoyagerWidget>
@@ -43,8 +43,8 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     if (keepAlive) {
       super.build(context); // this must be called
     }
-    final router = _router ?? VoyagerProvider.routerOf(context);
-    final parentVoyager = _router == null ? VoyagerProvider.of(context) : null;
+    final router = _router ?? Provider.of<RouterNG>(context);
+    final parentVoyager = _router == null ? Provider.of<Voyager>(context) : null;
 
     _voyager = _voyager ?? router.find(_path, parent: parentVoyager);
 
@@ -59,9 +59,11 @@ class VoyagerWidgetState extends State<VoyagerWidget>
 
     assert(child != null, "WidgetBuilder failed to create widget");
 
-    return VoyagerProvider(
-      voyager: _voyager,
-      router: router,
+    return MultiProvider(
+      providers: [
+        Provider<Voyager>.value(value: _voyager),
+        Provider<RouterNG>.value(value: router)
+      ],
       child: child,
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
+import 'package:provider/provider.dart';
 
 /// Navigation spec
 final paths = loadPathsFromString('''
@@ -61,7 +62,7 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voyager =
-        VoyagerProvider.of(context); // injecting voyager from build context
+        Provider.of<Voyager>(context); // injecting voyager from build context
     final title =
         voyager["title"]; // assuming title plugin worked and title is here 🙈
 
@@ -86,7 +87,7 @@ class OtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voyager =
-        VoyagerProvider.of(context); // injecting voyager from build context
+        Provider.of<Voyager>(context); // injecting voyager from build context
     final title =
         voyager["title"]; // assuming title plugin worked and title is here 🙈
 

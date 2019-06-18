@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import '../router_context.dart';
 import '../router_plugin.dart';
 import '../voyager.dart';
-import '../voyager_provider.dart';
 
 class ScreenPlugin extends RouterPlugin {
   static const String KEY_SCREEN_BUILDER = "screenBuilder";
@@ -30,6 +30,6 @@ class ScreenProvider {
   }
 
   static WidgetBuilder of(BuildContext context) {
-    return ofVoyager(VoyagerProvider.of(context));
+    return ofVoyager(Provider.of<Voyager>(context));
   }
 }
