@@ -44,5 +44,5 @@ class Voyager {
 }
 
 class Nothing {
-   Nothing._private();
+  Nothing._private();
 }

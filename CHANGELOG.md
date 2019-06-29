@@ -1,3 +1,7 @@
+# 0.2.2
+
+- formatting
+
 # 0.2.1
 
 - fixes around how VoyagerWidget reacts to hot reload

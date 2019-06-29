@@ -144,7 +144,8 @@ class RouterNG extends Router<RouterPath> {
         // the current instance. this breaks hot reload until page
         // is off the stack as MaterialPageRoute will hold old router
         // reference
-        return VoyagerWidget(path: path, router: isWrappedWithRouter ? null : this);
+        return VoyagerWidget(
+            path: path, router: isWrappedWithRouter ? null : this);
       });
     };
   }

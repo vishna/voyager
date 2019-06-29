@@ -4,7 +4,7 @@ import 'voyager.dart';
 import 'router.dart';
 
 @Deprecated('use provider directly instead')
-class VoyagerProvider  {
+class VoyagerProvider {
   static Voyager of(BuildContext context) {
     return Provider.of<Voyager>(context);
   }
