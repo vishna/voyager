@@ -1,3 +1,9 @@
+# 0.2.1
+
+- fixes around how VoyagerWidget reacts to hot reload
+- improve sample app
+- add a sample app gif to README
+
 # 0.2.0
 
 **API DEPRECATION**

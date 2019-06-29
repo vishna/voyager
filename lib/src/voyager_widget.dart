@@ -26,15 +26,12 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     with AutomaticKeepAliveClientMixin<VoyagerWidget> {
   String _path;
   final keepAlive;
-  RouterNG _router;
-  Voyager _voyager;
 
   VoyagerWidgetState({this.keepAlive});
 
   @override
   void initState() {
     super.initState();
-    _router = widget.router;
     _path = widget.path;
   }
 
@@ -43,10 +40,15 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     if (keepAlive) {
       super.build(context); // this must be called
     }
-    final router = _router ?? Provider.of<RouterNG>(context);
-    final parentVoyager = _router == null ? Provider.of<Voyager>(context) : null;
+    final router = widget.router ?? Provider.of<RouterNG>(context);
+    var parentVoyager;
+    try {
+      parentVoyager = Provider.of<Voyager>(context);
+    } catch (t) {
+      parentVoyager = null;
+    }
 
-    _voyager = _voyager ?? router.find(_path, parent: parentVoyager);
+    Voyager _voyager = router.find(_path, parent: parentVoyager);
 
     assert(_voyager != null, "voyager instance should not be null");
 
@@ -55,25 +57,20 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add ScreenPlugin?");
 
-    final child = builder(context);
-
-    assert(child != null, "WidgetBuilder failed to create widget");
-
     return MultiProvider(
       providers: [
         Provider<Voyager>.value(value: _voyager),
         Provider<RouterNG>.value(value: router)
       ],
-      child: child,
+      child: Builder(builder: builder),
     );
   }
 
   @override
   void didUpdateWidget(VoyagerWidget oldWidget) {
-    if (oldWidget.path != widget.path) {
+    if (oldWidget.path != widget.path || oldWidget.router != widget.router) {
       setState(() {
         _path = widget.path;
-        _voyager = null;
       });
     }
     super.didUpdateWidget(oldWidget);

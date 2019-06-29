@@ -4,7 +4,7 @@
 
 > To boldly resolve where no Dart has resolved before.
 
-Router & dependency injection library for Flutter.
+Router, requirements & dependency injection library for Flutter.
 
 ## Features
 
@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.2.0"
+ voyager: "^0.2.1"
 ```
 
 You can also reference the git repo directly if you want:
@@ -233,6 +233,12 @@ If you want to make some global entities available via router instance, you can 
 ```dart
 router.registerGlobalEntity("database", someDatabase);
 ```
+
+### Sample App
+
+![voyager_edited](https://user-images.githubusercontent.com/121164/60385202-eb91b200-9a86-11e9-8fb0-6923f43522ca.gif)
+
+Check out full example [here](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
 
 ### Strong Typed Paths
 

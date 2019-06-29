@@ -9,18 +9,24 @@ import 'package:flutter/foundation.dart';
 /// to anyone having access to that instance of `Voyager`
 class Voyager {
   final Voyager parent;
+  final dynamic _config;
   final _output = Map<String, dynamic>();
   final storage = Map<String, dynamic>();
   bool _locked = false;
 
-  Voyager({this.parent});
+  Voyager({this.parent, dynamic config}) : _config = config;
 
   void merge(Voyager other) {
     _output.addAll(other._output);
   }
 
   operator [](String key) {
-    return _output[key];
+    dynamic value = _output[key];
+    if (value != null || value == nothing) {
+      return value;
+    }
+
+    return _config[key];
   }
 
   operator []=(String key, dynamic value) {
@@ -33,4 +39,10 @@ class Voyager {
   lock() {
     _locked = true;
   }
+
+  static final Nothing nothing = Nothing._private();
+}
+
+class Nothing {
+   Nothing._private();
 }

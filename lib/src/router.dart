@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:voyager/src/voyager_widget.dart';
 import 'package:yaml/yaml.dart';
 
 import 'utils.dart';
@@ -11,7 +12,6 @@ import 'voyager.dart';
 import 'router_path.dart';
 import 'router_plugin.dart';
 import 'router_context.dart';
-import 'plugins/screen_plugin.dart';
 
 List<RouterPath> _loadYaml(String yaml) {
   final routerMap = loadYaml(yaml) as YamlMap;
@@ -116,7 +116,7 @@ class RouterNG extends Router<RouterPath> {
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
 
-    final output = Voyager(parent: parent);
+    final output = Voyager(parent: parent, config: config);
 
     config.keys.forEach((key) {
       final plugin = _plugins[key];
@@ -133,20 +133,19 @@ class RouterNG extends Router<RouterPath> {
   RouteFactory generator() {
     return (RouteSettings settings) {
       String path = settings.name;
-      print("voyager sent to $path");
-      var voyager = find(path);
-      var builder = ScreenProvider.ofVoyager(voyager);
+      return MaterialPageRoute(builder: (context) {
+        bool isWrappedWithRouter = false;
 
-      // we wrap stuff with voyagerBuilder so that we can use DI based on router
-      WidgetBuilder voyagerBuilder = (context) => MultiProvider(
-            providers: [
-              Provider<Voyager>.value(value: voyager),
-              Provider<RouterNG>.value(value: this),
-            ],
-            child: builder(context),
-          );
+        try {
+          isWrappedWithRouter = Provider.of<RouterNG>(context) != null;
+        } catch (t) {}
 
-      return MaterialPageRoute(builder: voyagerBuilder);
+        // If MaterialApp is not wrapped with RouterProvider we use
+        // the current instance. this breaks hot reload until page
+        // is off the stack as MaterialPageRoute will hold old router
+        // reference
+        return VoyagerWidget(path: path, router: isWrappedWithRouter ? null : this);
+      });
     };
   }
 }
