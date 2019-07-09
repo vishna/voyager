@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:angel_route/angel_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,17 @@ List<RouterPath> _loadYaml(String yaml) {
   return paths;
 }
 
+List<RouterPath> _loadJson(String jsonString) {
+  final routerMap = json.decode(jsonString) as Map<String, dynamic>;
+  final paths = new List<RouterPath>();
+
+  routerMap.keys.forEach((it) {
+    paths.add(RouterPath.fromMap(path: it, config: routerMap[it]));
+  });
+
+  return paths;
+}
+
 // e.g. "assets/navigation.yml"
 Future<List<RouterPath>> loadPathsFromAssets(String path) async {
   final yaml = await rootBundle.loadString(path);
@@ -32,6 +45,10 @@ Future<List<RouterPath>> loadPathsFromAssets(String path) async {
 
 Future<List<RouterPath>> loadPathsFromString(String yaml) async {
   return compute(_loadYaml, yaml);
+}
+
+Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
+  return compute(_loadJson, json);
 }
 
 Future<RouterNG> loadRouter(

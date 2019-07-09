@@ -1,3 +1,7 @@
+# 0.2.3
+
+- json support
+
 # 0.2.2
 
 - formatting
