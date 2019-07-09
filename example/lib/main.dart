@@ -87,11 +87,10 @@ Widget makeMeFab(BuildContext context) {
 
 ThemeData themeData() {
   return ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: Color(0xff5bb974),
-    canvasColor: Colors.black,
-    accentColor: Color(0xfffcc934)
-  );
+      brightness: Brightness.dark,
+      primaryColor: Color(0xff5bb974),
+      canvasColor: Colors.black,
+      accentColor: Color(0xfffcc934));
 }
 
 class PageWidget extends StatelessWidget {

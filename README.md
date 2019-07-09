@@ -10,7 +10,7 @@ Router, requirements & dependency injection library for Flutter.
 
 If your app is a list of screens with respective paths then this library is for you.
 
-- YAML based Navigation Spec
+- YAML/JSON based Navigation Spec
     - support for query parameters
     - support for global parameters
     - path subsections
@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.2.1"
+ voyager: "^0.2.3"
 ```
 
 You can also reference the git repo directly if you want:
@@ -89,6 +89,8 @@ or if the file is in the assets folder, you can:
 final paths = loadPathsFromAssets("assets/navigation.yml");
 ```
 
+__NOTE__: JSON support is available as of version `0.2.3`, please check [voyager_test.dart](https://github.com/vishna/voyager/blob/master/test/voyager_test.dart) for reference.
+
 The other important ingredient of voyager router are plugins. You need to tell router what kind of plugins you plan to use and those depend on what you have written in the navigation file. In our example we use 3 `type`, `screen` and `title`. This library comes with predefined plugins for `type` & `screen` and we'll create our own plugin for `title`.
 
 ```dart
@@ -125,6 +127,8 @@ class TitlePlugin extends RouterPlugin {
   }
 }
 ```
+
+__NOTE__: Above plugin is redundant, Voyager will repackage the primitive types from configuration and you don't need to do anything 😎__Use plugins to resolve primitive types to custom types__, e.g. take a look at [IconPlugin](https://github.com/vishna/voyager/blob/master/example/lib/main.dart#L42) from the example app.
 
 ### Router's Default Output: Voyager
 
