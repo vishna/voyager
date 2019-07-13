@@ -1,7 +1,7 @@
 import 'router.dart';
 
 class RouterContext {
-  final Map<String, dynamic> params;
+  final Map<String, String> params;
   final String path;
   final RouterNG router;
 

@@ -1,6 +1,6 @@
 name: voyager
 description: Router and basic dependency injection library for Flutter. Define navigation paths in YAML and power them up with custom plugins.
-version: 0.2.3
+version: 0.3.0
 author: Lukasz Wisniewski <luke.cherrish@gmail.com>
 homepage: https://github.com/vishna/voyager
 
@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  angel_route: ^3.0.5
   yaml: ^2.1.15
   sprintf: ^4.0.0
   provider: ^3.0.0+1

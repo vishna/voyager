@@ -92,4 +92,25 @@ class VoyagerUtils {
   static copyIt(dynamic config) {
     return json.decode(json.encode(config)) as Map<String, dynamic>;
   }
+
+  static String cleanUrl(String url) {
+    if (url.startsWith("/")) {
+      return url.substring(1, url.length);
+    }
+    return url;
+  }
+
+  static bool isWildcard(String format) {
+    String routerUrl = cleanUrl(format);
+    List<String> routerParts = routerUrl.split("/");
+
+    for (String routerPart in routerParts) {
+      if (routerPart.length > 2 &&
+          routerPart[0] == ':' &&
+          routerPart[routerPart.length - 1] == ':') {
+        return true;
+      }
+    }
+    return false;
+  }
 }
