@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.2.3"
+ voyager: "^0.3.0"
 ```
 
 You can also reference the git repo directly if you want:
@@ -128,7 +128,7 @@ class TitlePlugin extends RouterPlugin {
 }
 ```
 
-__NOTE__: Above plugin is redundant, Voyager will repackage the primitive types from configuration and you don't need to do anything 😎__Use plugins to resolve primitive types to custom types__, e.g. take a look at [IconPlugin](https://github.com/vishna/voyager/blob/master/example/lib/main.dart#L42) from the example app.
+__NOTE__: Above plugin is redundant, Voyager will repackage the primitive types from configuration and you don't need to do anything 😎 __Use plugins to resolve primitive types to custom types__ , e.g. take a look at [IconPlugin](https://github.com/vishna/voyager/blob/master/example/lib/main.dart#L42) from the example app.
 
 ### Router's Default Output: Voyager
 
@@ -255,7 +255,7 @@ Typing navigation paths by hand is error prone, for this very reason ~~there is~
 
 ### Acknowledgments
 
-- [fluro](https://github.com/theyakka/fluro) As their repo says: *"The brightest, hippest, coolest router for Flutter."* An alternative solution you might want to use if you find this library too obscure/immature ...you name it.
-- [angel-route](https://github.com/angel-dart/route) *"A powerful, isomorphic routing library for Dart."* Voyager internally depends on this library.
+- [fluro](https://github.com/theyakka/fluro) As their repo says: *"The brightest, hippest, coolest router for Flutter."* Probably the most know flutter router out there.
+- [angel-route](https://github.com/angel-dart/route) *"A powerful, isomorphic routing library for Dart."* Voyager internally was depending on this library till version `0.2.3`. It was a server oriented library and too big dependency for this project - voyager is now using [abstract_router.dart](https://github.com/vishna/voyager/blob/master/lib/src/abstract_router.dart) which is < 300 LOC.
 - [eyeem/router](https://github.com/eyeem/router) Protoplast of the voyager library, written in Java, for Android.
 - [NASA Voyager 2 Interstellar Poster](https://voyager.jpl.nasa.gov/downloads/posters/pdf/Voyager2_Interstellar_gold.pdf) Beautiful artwork I found on NASA page also a base content for the banner - changed colors to flutter ones, cropped the poster, added flutter antenna.

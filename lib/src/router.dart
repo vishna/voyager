@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:angel_route/angel_route.dart';
+//import 'package:angel_route/angel_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +14,7 @@ import 'voyager.dart';
 import 'router_path.dart';
 import 'router_plugin.dart';
 import 'router_context.dart';
+import 'abstract_router.dart';
 
 List<RouterPath> _loadYaml(String yaml) {
   final routerMap = loadYaml(yaml) as YamlMap;
@@ -68,26 +69,12 @@ Future<RouterNG> loadRouter(
   });
 }
 
-class RouterNG extends Router<RouterPath> {
+class RouterNG extends AbstractRouter<Voyager, RouteParam> {
   final _plugins = Map<String, RouterPlugin>();
-  final _globalParams = Map<String, dynamic>();
   final _globalEntities = Map<String, dynamic>();
 
   RouterNG registerPlugin(RouterPlugin plugin) {
     _plugins[plugin.node] = plugin;
-    return this;
-  }
-
-  RouterNG registerGlobalParam(String key, dynamic value) {
-    if (!value is String &&
-        !value is int &&
-        !value is double &&
-        !value is bool) {
-      throw ArgumentError(
-          "${value?.runtimeType} is not suitable for global param");
-    }
-
-    _globalParams[key] = value;
     return this;
   }
 
@@ -101,50 +88,15 @@ class RouterNG extends Router<RouterPath> {
   }
 
   void registerPath(RouterPath path) {
-    addRoute("GET", path.path, path);
+    registerBuilder(path.path, RouteBuilder(path: path, routerNG: this));
+  }
+
+  Map<String, RouterPlugin> getPlugins() {
+    return _plugins;
   }
 
   Voyager find(String routerPath, {Voyager parent}) {
-    Uri uri = Uri.parse("https://www.flutter.dev$routerPath");
-    final allTheParams = Map<String, dynamic>();
-
-    final result = resolveAbsolute(uri.path).first;
-
-    allTheParams.addAll(uri.queryParameters);
-
-    if (result == null) {
-      return null;
-    }
-
-    final path = result.allHandlers.first;
-
-    if (path == null) {
-      return null;
-    }
-
-    allTheParams.addAll(result.allParams);
-
-    // include global params
-    allTheParams.addAll(this._globalParams);
-
-    final context =
-        RouterContext(path: path.path, params: allTheParams, router: this);
-
-    final config = VoyagerUtils.copyIt(path.config);
-    VoyagerUtils.interpolateDynamic(config, context);
-
-    final output = Voyager(parent: parent, config: config);
-
-    config.keys.forEach((key) {
-      final plugin = _plugins[key];
-      if (plugin != null) {
-        plugin.outputFor(context, config[key], output);
-      }
-    });
-
-    output.lock();
-
-    return output;
+    return outputForExtras(routerPath, RouteParam(parent: parent));
   }
 
   RouteFactory generator() {
@@ -165,5 +117,45 @@ class RouterNG extends Router<RouterPath> {
             path: path, router: isWrappedWithRouter ? null : this);
       });
     };
+  }
+}
+
+class RouteParam {
+  final Voyager parent;
+  final dynamic data;
+
+  RouteParam({this.parent, this.data});
+}
+
+class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
+  final RouterPath path;
+  final RouterNG routerNG;
+
+  RouteBuilder({this.path, this.routerNG});
+
+  @override
+  Voyager outputFor(AbstractRouteContext abstractContext) {
+    final allTheParams = Map<String, String>.from(abstractContext.getParams());
+
+    final context =
+        RouterContext(path: path.path, params: allTheParams, router: routerNG);
+
+    final config = VoyagerUtils.copyIt(path.config);
+    VoyagerUtils.interpolateDynamic(config, context);
+
+    Voyager parent = abstractContext.getExtras().parent;
+
+    final output = Voyager(parent: parent, config: config);
+
+    config.keys.forEach((key) {
+      final plugin = routerNG._plugins[key];
+      if (plugin != null) {
+        plugin.outputFor(context, config[key], output);
+      }
+    });
+
+    output.lock();
+
+    return output;
   }
 }

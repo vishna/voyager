@@ -1,3 +1,7 @@
+# 0.3.0
+
+- drop angel_route dependency in favor of [abstract_router.dart](https://github.com/vishna/voyager/blob/master/lib/src/abstract_router.dart)
+
 # 0.2.3
 
 - json support
