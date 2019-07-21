@@ -1,3 +1,4 @@
+import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,8 @@ Widget appOrSplash() {
               value: router,
               child: MaterialApp(
                 title: 'Voyager Demo',
-                home: VoyagerWidget(path: "/home", router: router),
+                home:
+                    VoyagerWidget(path: VoyagerPaths.pathHome, router: router),
                 theme: themeData(),
                 onGenerateRoute: router.generator(),
               ));

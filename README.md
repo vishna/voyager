@@ -244,9 +244,51 @@ router.registerGlobalEntity("database", someDatabase);
 
 Check out full example [here](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
 
-### Strong Typed Paths
+### Code generation
 
-Typing navigation paths by hand is error prone, for this very reason ~~there is~~ *there will* be companion library that generates you a dart class from your navigation file so you should only need to type path once.
+Voyager supports generating dart code based on the configuration yaml file. Simply run the following command and wait for the script to set it up for you.
+
+```
+flutter packages pub run voyager:codegen
+```
+
+This should create a `voyager-codegen.yaml` file in a root of your project, like so:
+
+```yaml
+- name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests etc.
+  source: assets/navigation.yaml
+  target: lib/gen/voyager_gen.dart
+```
+
+Whenever you edit the `voyager-codegen.yaml` or `source` file the code generation logic will pick it up (as long as `pub run` is running) and generate new dart souces to the target location.
+
+__NOTE 1__: For code generator implementation details please check the source code at [vishna/voyager-codegen](https://github.com/vishna/voyager-codegen).
+
+__NOTE 2__: Should you want run code generation only once (and not watch files continously) you can supply additional `--run-once` flag to pub run command:
+
+```
+flutter packages pub run voyager:codegen
+```
+
+This can be useful if running in a CI/CD context.
+
+__NOTE 3__: You might want to add `.jarCache/` to your `.gitignore` to avoid checking in binary jars to your repo.
+
+__NOTE 4__: If you're a Windows user make sure you have `wget` installed.
+
+#### Strong Typed Paths
+
+Typing navigation paths by hand is error prone, for this very reason **it is recommended** to use code generator for the paths, so rather than typing:
+
+```dart
+Navigator.of(context).pushNamed("/other/thingy");
+```
+
+you can rely on your IDE's autocompletion and do this:
+
+```dart
+Navigator.of(context).pushNamed(VoyagerPaths.pathOther("thingy"));
+```
 
 ### More Resources
 
