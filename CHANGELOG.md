@@ -1,3 +1,7 @@
+# 0.4.0
+
+- [code generation](https://github.com/vishna/voyager#code-generation) for paths, simply run `flutter packages pub run voyager:codegen` at the top of your flutter project and behold!
+
 # 0.3.0
 
 - drop angel_route dependency in favor of [abstract_router.dart](https://github.com/vishna/voyager/blob/master/lib/src/abstract_router.dart)

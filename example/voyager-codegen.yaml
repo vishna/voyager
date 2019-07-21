@@ -1,0 +1,5 @@
+## This file should be checked in version control
+## Describes sources and targets for the voyager-codegen tool
+- name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests etc.
+  source: lib/main.dart
+  target: lib/gen/voyager_gen.dart
