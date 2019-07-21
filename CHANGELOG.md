@@ -1,3 +1,7 @@
+# 0.4.1
+
+- package health
+
 # 0.4.0
 
 - [code generation](https://github.com/vishna/voyager#code-generation) for paths, simply run `flutter packages pub run voyager:codegen` at the top of your flutter project and behold!

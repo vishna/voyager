@@ -33,6 +33,6 @@ void main(List<String> arguments) async {
   });
 }
 
-void downloadJar(String url, String target) async {
+downloadJar(String url, String target) async {
   await Process.run('wget', [url, '-O', target]);
 }
