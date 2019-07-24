@@ -17,7 +17,7 @@ If your app is a list of screens with respective paths then this library is for 
     - parameters interpolation in subsections
     - logicless
     - deliverable over the air (think Firebase remote config)
-    - code generator for paths (COMING SOON)
+    - code generator for paths
 - Highly customizable plugin architecture.
 - VoyagerWidget to embed your `path` at any point
 - Provider to inject any data coming with the `path`
@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.3.0"
+ voyager: "^0.4.2"
 ```
 
 You can also reference the git repo directly if you want:
@@ -267,7 +267,7 @@ __NOTE 1__: For code generator implementation details please check the source co
 __NOTE 2__: Should you want run code generation only once (and not watch files continously) you can supply additional `--run-once` flag to pub run command:
 
 ```
-flutter packages pub run voyager:codegen
+flutter packages pub run voyager:codegen --run-once
 ```
 
 This can be useful if running in a CI/CD context.

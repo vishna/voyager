@@ -1,3 +1,7 @@
+# 0.4.2
+
+- use `dartfmt` to make sure generated code is formatted corectly
+
 # 0.4.1
 
 - package health
