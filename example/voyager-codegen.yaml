@@ -3,3 +3,4 @@
 - name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests etc.
   source: lib/main.dart
   target: lib/gen/voyager_gen.dart
+  testTarget: test/gen/voyager_test_scenarios.dart

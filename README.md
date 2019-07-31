@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: "^0.4.2"
+ voyager: "^0.5.0"
 ```
 
 You can also reference the git repo directly if you want:
@@ -262,6 +262,8 @@ This should create a `voyager-codegen.yaml` file in a root of your project, like
 
 Whenever you edit the `voyager-codegen.yaml` or `source` file the code generation logic will pick it up (as long as `pub run` is running) and generate new dart souces to the target location.
 
+__IMPORTANT__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
+
 __NOTE 1__: For code generator implementation details please check the source code at [vishna/voyager-codegen](https://github.com/vishna/voyager-codegen).
 
 __NOTE 2__: Should you want run code generation only once (and not watch files continously) you can supply additional `--run-once` flag to pub run command:
@@ -289,6 +291,59 @@ you can rely on your IDE's autocompletion and do this:
 ```dart
 Navigator.of(context).pushNamed(VoyagerPaths.pathOther("thingy"));
 ```
+
+#### Automated Widget Tests (Experimental Feautre)
+
+![Screenshot 2019-07-31 at 15 19 15](https://user-images.githubusercontent.com/121164/62217336-c1475300-b3aa-11e9-8ffb-a0ebb815fd6d.png)
+
+If you want to try this feature out, your `voyager-codegen.yaml` should look something like that:
+
+```yaml
+- name: Voyager
+  source: assets/navigation.yaml
+  target: lib/gen/voyager_gen.dart
+  testTarget: test/gen/voyager_test_scenarios.dart
+```
+
+`testTarget` points to where the generated test code should go.
+
+Say your regular test file is located in the `test` directory, this is how you could integrate with the generated code:
+
+```dart
+import 'gen/voyager_test_scenarios.dart';
+
+/// override abstract base class with all the scenarios to test
+class TestScenarios extends VoyagerTestScenarios {
+
+  /// default wrapper for all the widgets
+  MyVoyagerScenarios() : super((widget) => MaterialApp(home: widget));
+
+  @override
+  /// example scenario implementation for the `/home` path
+  List<VoyagerTestHomeScenario> homeScenarios() {
+    return [
+      VoyagerTestHomeScenario.write((tester) async {
+        expect(find.text("Home Page"), findsOneWidget);
+      })
+    ];
+  }
+
+  /// etc...
+}
+
+void main() {
+  /// finally invoke tests, you need to suply `router` as `Future<RouterNG>`
+  voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
+}
+```
+
+Full code available at [example/test/widget_test.dart](https://github.com/vishna/voyager/blob/master/example/test/widget_test.dart).
+
+`voyagerAutomatedTests` comes with a positional argument `forceTests` set to `true` by default. This will assert every widget has **at least one scenario** written for it, otherwise your tests will fail. Set it to `false` to disable this behaviour.
+
+The scenario code is by default being executed within WidgetTester's `runAsync` meaning you should be able to perform real asynchronous methods.
+
+The router is loaded every time the scenario is running - if this is something you don't need consider using e.g. [AsyncMemoizer](https://api.flutter.dev/flutter/package-async_async/AsyncMemoizer-class.html)
 
 ### More Resources
 
