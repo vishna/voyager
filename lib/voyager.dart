@@ -6,7 +6,6 @@ export './src/router_context.dart';
 export './src/router_plugin.dart';
 export './src/utils.dart';
 export './src/voyager_widget.dart';
-export './src/voyager_provider.dart';
 export './src/voyager.dart';
 
 export './src/plugins/type_plugin.dart';

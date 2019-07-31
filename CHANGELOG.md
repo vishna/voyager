@@ -1,7 +1,9 @@
 # 0.5.0 (not released)
 
+> You will be automated, resistance is futile.
+
 - voyager automated widget tests (EXPERIMENTAL)
-- removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps
+- removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps (VoyagerProvider will return in changed form...)
 - `RedirectPlugin`, allows mapping virtual paths to existing ones
 
 # 0.4.2

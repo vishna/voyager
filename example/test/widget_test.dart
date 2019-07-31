@@ -7,7 +7,7 @@ import 'gen/voyager_test_scenarios.dart';
 
 class TestScenarios extends VoyagerTestScenarios {
   /// we need to wrap tested widget with MaterialApp so that e.g.
-  /// MediaQuuery.of(context) works
+  /// MediaQuery.of(context) works
   TestScenarios() : super((widget) => MaterialApp(home: widget));
 
   @override
