@@ -1,3 +1,9 @@
+# 0.5.0 (not released)
+
+- voyager automated widget tests (EXPERIMENTAL)
+- removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps
+- `RedirectPlugin`, allows mapping virtual paths to existing ones
+
 # 0.4.2
 
 - use `dartfmt` to make sure generated code is formatted corectly
