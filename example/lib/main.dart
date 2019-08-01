@@ -8,18 +8,18 @@ String requirements() {
 ---
 '/home' :
   type: 'home'
-  screen: PageWidget
+  widget: PageWidget
   title: "This is Home"
   body: "Hello World"
   fabPath: /fab
 '/other/:title' :
   type: 'other'
-  screen: PageWidget
+  widget: PageWidget
   body: "Welcome to the other side"
   title: "This is %{title}"
 '/fab' :
   type: fab
-  screen: FabWidget
+  widget: FabWidget
   target: /other/thing
   icon: e88f # check icons.dart for reference
 ''';
@@ -32,7 +32,7 @@ Future<List<RouterPath>> paths() {
 /// plugins that are mentioned in requirements
 final plugins = [
   TypePlugin(),
-  ScreenPlugin({
+  WidgetPlugin({
     // provide widget builders for expressions used in YAML
     "PageWidget": (context) => PageWidget(),
     "FabWidget": makeMeFab

@@ -9,5 +9,5 @@ export './src/voyager_widget.dart';
 export './src/voyager.dart';
 
 export './src/plugins/type_plugin.dart';
-export './src/plugins/screen_plugin.dart';
+export './src/plugins/widget_plugin.dart';
 export './src/plugins/redirect_plugin.dart';

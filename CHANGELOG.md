@@ -1,14 +1,14 @@
 # 0.5.0 (not released)
 
-## BREAKING CHANGES
-
 > You will be automated, resistance is futile.
 
-- voyager automated widget tests (EXPERIMENTAL)
+## BREAKING CHANGES
+
+- automated widget tests (EXPERIMENTAL)
 - removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps (VoyagerProvider will return in a changed form...)
-- removal of `TypePlugin` - it's redundant
+- removal of `TypePlugin` - it's redundant, omit it in plugins list but still use `type` in your specs for code generation goodness
 - `RedirectPlugin`, allows mapping virtual paths to existing ones
-- `ScreenPlugin` is now called `WidgetPlugin`
+- `ScreenPlugin` is now called `WidgetPlugin`, you also need to change `screen` to `widget` in your yaml/json specs
 
 # 0.4.2
 

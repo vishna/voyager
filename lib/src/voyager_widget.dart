@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'router.dart';
 import 'voyager.dart';
-import 'plugins/screen_plugin.dart';
+import 'plugins/widget_plugin.dart';
 
 /// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
 /// supplied in the costructor (e.g. if this is a top widget) or available via `VoyagerProvider.routerOf(context)`
@@ -52,7 +52,7 @@ class VoyagerWidgetState extends State<VoyagerWidget>
 
     assert(_voyager != null, "voyager instance should not be null");
 
-    final builder = ScreenProvider.ofVoyager(_voyager);
+    final builder = _voyager[WidgetPlugin.KEY];
 
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add ScreenPlugin?");

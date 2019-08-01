@@ -17,7 +17,7 @@ If your app is a list of screens with respective paths then this library is for 
     - parameters interpolation in subsections
     - logicless
     - deliverable over the air (think Firebase remote config)
-    - code generator for paths
+    - code generator for paths/tests
 - Highly customizable plugin architecture.
 - VoyagerWidget to embed your `path` at any point
 - Provider to inject any data coming with the `path`
@@ -55,11 +55,11 @@ It’s best to start with describing what paths your app will have and what subs
 ---
 '/home' :
   type: 'home'
-  screen: HomeWidget
+  widget: HomeWidget
   title: "This is Home"
 '/other/:title' :
   type: 'other'
-  screen: OtherWidget
+  widget: OtherWidget
   title: "This is %{title}"
 ```
 
@@ -74,11 +74,11 @@ final paths = loadPathsFromString('''
 ---
 '/home' :
   type: 'home'
-  screen: HomeWidget
+  widget: HomeWidget
   title: "This is Home"
 '/other/:title' :
   type: 'other'
-  screen: OtherWidget
+  widget: OtherWidget
   title: "This is %{title}"
 ''');
 ```
@@ -91,17 +91,16 @@ final paths = loadPathsFromAssets("assets/navigation.yml");
 
 __NOTE__: JSON support is available as of version `0.2.3`, please check [voyager_test.dart](https://github.com/vishna/voyager/blob/master/test/voyager_test.dart) for reference.
 
-The other important ingredient of voyager router are plugins. You need to tell router what kind of plugins you plan to use and those depend on what you have written in the navigation file. In our example we use 3 `type`, `screen` and `title`. This library comes with predefined plugins for `type` & `screen` and we'll create our own plugin for `title`.
+The other important ingredient of voyager router are plugins. You need to tell router what kind of plugins you plan to use and those depend on what you have written in the navigation file. In our example we use 2 `widget` and `title`. This library comes with predefined plugins for `widget` and in the next paragraph you can read how to create your own plugin for `title`.
 
 ```dart
 final plugins = [
   [
-    TypePlugin(),
-    ScreenPlugin({ // provide widget builders for expressions used in YAML
+    WidgetPlugin({ // provide widget builders for expressions used in YAML
       "HomeWidget": (context) => HomeWidget(),
       "OtherWidget": (context) => OtherWidget(),
     }),
-    TitlePlugin()
+    TitlePlugin() // custom plugin
   ]
 ];
 ```
@@ -145,7 +144,7 @@ assert(voyager["screenBuilder"] is WidgetBuilder); // originates from the screen
 
 ### Embed any screen path with VoyagerWidget
 
-If your path uses `screen` plugin you can try using `VoyagerWidget` and embed any path you want like this:
+If your path uses `widget` plugin you can try using `VoyagerWidget` and embed any path you want like this:
 
 ```dart
 VoyagerWidget(path: "/home", router: router);
@@ -168,7 +167,7 @@ class OtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voyager = Provider.of<Voyager>(context); // injecting voyager from build context
-    final title = voyager["title"]; // assuming title plugin worked and title is here 🙈
+    final title = voyager["title"];
 
     return Scaffold(
       appBar: AppBar(
@@ -246,6 +245,8 @@ Check out full example [here](https://github.com/vishna/voyager/blob/master/exam
 
 ### Code generation
 
+__IMPORTANT__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
+
 Voyager supports generating dart code based on the configuration yaml file. Simply run the following command and wait for the script to set it up for you.
 
 ```
@@ -261,8 +262,6 @@ This should create a `voyager-codegen.yaml` file in a root of your project, like
 ```
 
 Whenever you edit the `voyager-codegen.yaml` or `source` file the code generation logic will pick it up (as long as `pub run` is running) and generate new dart souces to the target location.
-
-__IMPORTANT__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
 
 __NOTE 1__: For code generator implementation details please check the source code at [vishna/voyager-codegen](https://github.com/vishna/voyager-codegen).
 

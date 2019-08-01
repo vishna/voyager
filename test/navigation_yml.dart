@@ -2,11 +2,11 @@ const String navigation_yml = '''
 ---
 '/home' :
   type: 'home'
-  screen: HomeWidget
+  widget: HomeWidget
   title: "This is Home"
   fab: /other/thing
 '/other/:title' :
   type: 'other'
-  screen: OtherWidget
+  widget: OtherWidget
   title: "This is %{title}"
 ''';

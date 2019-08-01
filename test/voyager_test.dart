@@ -36,7 +36,7 @@ void main() {
   test('loadRouter from a yaml defined in a string', () async {
     final paths = loadPathsFromString(navigation_yml);
     final plugins = [
-      ScreenPlugin({
+      WidgetPlugin({
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
@@ -47,14 +47,14 @@ void main() {
 
     final homeVoyager = router.find("/home");
 
-    expect(ScreenProvider.ofVoyager(homeVoyager)(null),
+    expect(homeVoyager[WidgetPlugin.KEY](null),
         isInstanceOf<MockHomeWidget>());
   });
 
   test('loadRouter from a json defined in a string', () async {
     final paths = loadPathsFromJsonString(navigation_json);
     final plugins = [
-      ScreenPlugin({
+      WidgetPlugin({
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
@@ -65,7 +65,7 @@ void main() {
 
     final homeVoyager = router.find("/home");
 
-    expect(ScreenProvider.ofVoyager(homeVoyager)(null),
+    expect(homeVoyager[WidgetPlugin.KEY](null),
         isInstanceOf<MockHomeWidget>());
   });
 
@@ -74,7 +74,7 @@ void main() {
     await tester.runAsync(() async {
       final paths = loadPathsFromString(navigation_yml);
       final plugins = [
-        ScreenPlugin({
+        WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
           "OtherWidget": (context) => MockOtherWidget(),
         }),
@@ -99,7 +99,7 @@ void main() {
     await tester.runAsync(() async {
       final paths = loadPathsFromString(navigation_yml);
       final plugins = [
-        ScreenPlugin({
+        WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
           "OtherWidget": (context) => MockOtherWidget(),
         })
@@ -122,12 +122,12 @@ void main() {
 ---
 '/home' :
   type: 'home'
-  screen: HomeWidget
+  widget: HomeWidget
   title: "This is Home"
   fab: /other/thing
 '/other/:title' :
   type: 'other'
-  screen: OtherWidget
+  widget: OtherWidget
   title: "This is %{title}"
   complexObject:
     property1: true
@@ -137,7 +137,7 @@ void main() {
   redirect: '/other/one?foo=hello'
 ''');
     final plugins = [
-      ScreenPlugin({
+      WidgetPlugin({
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
@@ -148,7 +148,7 @@ void main() {
 
     final differentVoyager = router.find("/different/one?bar=world");
 
-    expect(ScreenProvider.ofVoyager(differentVoyager)(null),
+    expect(differentVoyager[WidgetPlugin.KEY](null),
         isInstanceOf<MockOtherWidget>());
 
     expect(differentVoyager["type"], "other");
