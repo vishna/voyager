@@ -29,12 +29,3 @@ class MockOtherWidget extends StatelessWidget {
         ));
   }
 }
-
-class MockTitlePlugin extends RouterPlugin {
-  MockTitlePlugin() : super("title");
-
-  @override
-  void outputFor(RouterContext context, dynamic config, Voyager output) {
-    output["title"] = config.toString();
-  }
-}

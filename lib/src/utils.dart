@@ -100,6 +100,12 @@ class VoyagerUtils {
     return url;
   }
 
+  static Uri fromPath(String path) {
+    final String cleanedPath = VoyagerUtils.cleanUrl(path);
+
+    return Uri.parse("http://tempuri.org/" + cleanedPath);
+  }
+
   static bool isWildcard(String format) {
     String routerUrl = cleanUrl(format);
     List<String> routerParts = routerUrl.split("/");

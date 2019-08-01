@@ -102,9 +102,7 @@ void main() {
         ScreenPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
           "OtherWidget": (context) => MockOtherWidget(),
-        }),
-        TypePlugin(),
-        MockTitlePlugin()
+        })
       ];
 
       final router = await loadRouter(paths, plugins);
@@ -116,6 +114,49 @@ void main() {
 
       expect(find.text("Other Page"), findsOneWidget);
       expect(find.text("This is foobar123"), findsOneWidget);
+    });
+  });
+
+  test('test redirect plugin', () async {
+    final paths = loadPathsFromString('''
+---
+'/home' :
+  type: 'home'
+  screen: HomeWidget
+  title: "This is Home"
+  fab: /other/thing
+'/other/:title' :
+  type: 'other'
+  screen: OtherWidget
+  title: "This is %{title}"
+  complexObject:
+    property1: true
+    property2: 42
+    property3: "%{foo} %{bar}"
+'/different/one' :
+  redirect: '/other/one?foo=hello'
+''');
+    final plugins = [
+      ScreenPlugin({
+        "HomeWidget": (context) => MockHomeWidget(),
+        "OtherWidget": (context) => MockOtherWidget(),
+      }),
+      RedirectPlugin()
+    ];
+
+    final router = await loadRouter(paths, plugins);
+
+    final differentVoyager = router.find("/different/one?bar=world");
+
+    expect(ScreenProvider.ofVoyager(differentVoyager)(null),
+        isInstanceOf<MockOtherWidget>());
+
+    expect(differentVoyager["type"], "other");
+    expect(differentVoyager["title"], "This is one");
+    expect(differentVoyager["complexObject"], {
+      "property1": true,
+      "property2": 42,
+      "property3": "hello world"
     });
   });
 }

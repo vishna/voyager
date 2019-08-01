@@ -1,10 +1,14 @@
 # 0.5.0 (not released)
 
+## BREAKING CHANGES
+
 > You will be automated, resistance is futile.
 
 - voyager automated widget tests (EXPERIMENTAL)
-- removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps (VoyagerProvider will return in changed form...)
+- removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps (VoyagerProvider will return in a changed form...)
+- removal of `TypePlugin` - it's redundant
 - `RedirectPlugin`, allows mapping virtual paths to existing ones
+- `ScreenPlugin` is now called `WidgetPlugin`
 
 # 0.4.2
 
