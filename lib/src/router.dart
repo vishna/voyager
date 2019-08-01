@@ -137,8 +137,8 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
   Voyager outputFor(AbstractRouteContext abstractContext) {
     final allTheParams = Map<String, String>.from(abstractContext.getParams());
 
-    final context =
-        RouterContext(path: abstractContext.url(), params: allTheParams, router: routerNG);
+    final context = RouterContext(
+        path: abstractContext.url(), params: allTheParams, router: routerNG);
 
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);

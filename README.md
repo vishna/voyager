@@ -136,8 +136,8 @@ __NOTE__: Above plugin is redundant, Voyager will repackage the primitive types 
 ```dart
 Voyager voyager = router.find("/home")
 print(voyager["title"]); // originates from the title plugin, prints: "This is home"
-print(voyager["type"]); // originates from the type plugin, prints: "home"
-assert(voyager["screenBuilder"] is WidgetBuilder); // originates from the screen plugin
+print(voyager["type"]); // automatically inherited from the YAML map
+assert(voyager["widget"] is WidgetBuilder); // originates from the widget plugin
 ```
 
 **NOTE:** Any attempt to modify voyager keys will fail unless done from plugin's `outputFor` method. If you want to add some values to Voyager later on, use `Voyager.storage` public map.

@@ -14,7 +14,8 @@ class Voyager {
   final storage = Map<String, dynamic>();
   bool _locked = false;
 
-  Voyager({this.parent, Map<String, dynamic> config}) : _config = Map.from(config);
+  Voyager({this.parent, Map<String, dynamic> config})
+      : _config = Map.from(config);
 
   void merge(Voyager other) {
     if (_locked) {

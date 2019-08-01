@@ -47,8 +47,7 @@ void main() {
 
     final homeVoyager = router.find("/home");
 
-    expect(homeVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
   });
 
   test('loadRouter from a json defined in a string', () async {
@@ -65,8 +64,7 @@ void main() {
 
     final homeVoyager = router.find("/home");
 
-    expect(homeVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
   });
 
   testWidgets('create HomeWidget via VoyagerWidget',
@@ -153,10 +151,7 @@ void main() {
 
     expect(differentVoyager["type"], "other");
     expect(differentVoyager["title"], "This is one");
-    expect(differentVoyager["complexObject"], {
-      "property1": true,
-      "property2": 42,
-      "property3": "hello world"
-    });
+    expect(differentVoyager["complexObject"],
+        {"property1": true, "property2": 42, "property3": "hello world"});
   });
 }
