@@ -1,4 +1,8 @@
-# 0.5.0 (not released)
+# 0.5.1
+
+- decrease occurences of voyager instance creation
+
+# 0.5.0
 
 > You will be automated, resistance is futile.
 
