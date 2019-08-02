@@ -25,7 +25,9 @@ class VoyagerWidget extends StatefulWidget {
 class VoyagerWidgetState extends State<VoyagerWidget>
     with AutomaticKeepAliveClientMixin<VoyagerWidget> {
   String _path;
+  Voyager _voyager;
   final keepAlive;
+  RouterNG _lastRouter;
 
   VoyagerWidgetState({this.keepAlive});
 
@@ -40,7 +42,16 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     if (keepAlive) {
       super.build(context); // this must be called
     }
-    final router = widget.router ?? Provider.of<RouterNG>(context);
+
+    var router;
+    try {
+      router = Provider.of<RouterNG>(context);
+    } catch (t) {
+      router = widget.router;
+    }
+
+    assert(router != null, "router instance should not be null");
+
     var parentVoyager;
     try {
       parentVoyager = Provider.of<Voyager>(context);
@@ -48,7 +59,10 @@ class VoyagerWidgetState extends State<VoyagerWidget>
       parentVoyager = null;
     }
 
-    Voyager _voyager = router.find(_path, parent: parentVoyager);
+    if (_voyager == null || _lastRouter != router) {
+      _lastRouter = router;
+      _voyager = _lastRouter.find(_path, parent: parentVoyager);
+    }
 
     assert(_voyager != null, "voyager instance should not be null");
 
@@ -71,6 +85,8 @@ class VoyagerWidgetState extends State<VoyagerWidget>
     if (oldWidget.path != widget.path || oldWidget.router != widget.router) {
       setState(() {
         _path = widget.path;
+        _voyager = null;
+        _lastRouter = null;
       });
     }
     super.didUpdateWidget(oldWidget);

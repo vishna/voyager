@@ -12,9 +12,10 @@ class Voyager {
   final Map<String, dynamic> _config;
   final _output = Map<String, dynamic>();
   final storage = Map<String, dynamic>();
+  final path;
   bool _locked = false;
 
-  Voyager({this.parent, Map<String, dynamic> config})
+  Voyager({this.path, this.parent, Map<String, dynamic> config})
       : _config = Map.from(config);
 
   void merge(Voyager other) {

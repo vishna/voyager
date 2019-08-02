@@ -145,7 +145,8 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
 
     Voyager parent = abstractContext.getExtras().parent;
 
-    final output = Voyager(parent: parent, config: config);
+    final output =
+        Voyager(path: abstractContext.url(), parent: parent, config: config);
 
     config.keys.forEach((key) {
       final plugin = routerNG._plugins[key];
