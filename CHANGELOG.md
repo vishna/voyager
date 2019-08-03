@@ -1,3 +1,7 @@
+# 0.5.2
+
+- update to patched code generator version
+
 # 0.5.1
 
 - decrease occurences of voyager instance creation
