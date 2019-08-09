@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: ^0.5.2
+ voyager: ^0.6.0
  provider: ^3.0.0+1 # if you don't have it yet
 ```
 
@@ -151,7 +151,7 @@ If your path uses `widget` plugin you can try using `VoyagerWidget` and embed an
 VoyagerWidget(path: "/home", router: router);
 ```
 
-**NOTE:** You can even omit passing router instance if this `VoyagerWidget` is nested within other `VoyagerWidget`.
+**RECOMMENDED:** Provide router at the top of your widget tree and omit passing router parameter.
 
 ### Inject your information via Provider
 
@@ -189,11 +189,16 @@ Defining inital path & handling navigation
 ```dart
 final initalPath = "/my/fancy/super/path"
 
-MaterialApp(
-  home: VoyagerWidget(path: initalPath, router: router),
-  onGenerateRoute: router.generator()
+Provider<RouterNG>.value(
+  value: router,
+  child: MaterialApp(
+    home: VoyagerWidget(path: initalPath),
+    onGenerateRoute: router.generator()
+  )
 )
 ```
+
+Make sure you wrap your app with router provider.
 
 **NOTE:** You can use `MaterialApp.initalRoute` but please [read this first](https://docs.flutter.io/flutter/material/MaterialApp/initialRoute.html) if you find `MaterialApp.initalRoute` is not working for you. TL;DR: It's working as intended ¯\\\_(ツ)_/¯
 

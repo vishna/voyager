@@ -1,3 +1,29 @@
+# 0.6.0
+
+## SOME BREAKING CHANGES
+
+- `VoyagerWidget` becomes stateless by default. If you want to have stateful behavior, please use `VoyagerStatefulWidget`
+- Dropped `Voyager.fromPath` method, it was redundant and confusing. Use constructor directly instead.
+- It is now recommended to wrap your app with `Provider<RouterNG>`. By doing this you can ommit passing the router parameter to every `VoyagerWidget` and thus making widget tree more compact since `VoyagerWidget` don't have to provide router instance themselves.
+
+```
+Provider<RouterNG>.value(
+  value: router,
+  child: MaterialApp(
+    home: VoyagerWidget(path: initalPath),
+    onGenerateRoute: router.generator()
+  )
+)
+```
+
+- `VoyagerWidget` has now extra cache parameter, meaning it will use RouterNG's caching internally to resolve `Voyager` instance faster. Depending on your use case you might want to use this or not. Such `Voyager` instance has no parent.
+
+_The decision to change `VoyagerWidget` to stateless widget and removal of `fromPath` method was an inspiration after reading the following articles_:
+- [Splitting Widgets To Methods is A Performance Antipattern](https://medium.com/flutter-community/splitting-widgets-to-methods-is-a-performance-antipattern-16aa3fb4026c) - Iiro Krankka
+- [Flutter: Reducing widgets boilerplate](https://medium.com/@remirousselet/flutter-reducing-widgets-boilerplate-3e635f10685e) - Remi Rousselet
+
+_It's a MUST READ for any Flutter developer._
+
 # 0.5.2
 
 - update to patched code generator version

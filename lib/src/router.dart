@@ -72,6 +72,7 @@ Future<RouterNG> loadRouter(
 class RouterNG extends AbstractRouter<Voyager, RouteParam> {
   final _plugins = Map<String, RouterPlugin>();
   final _globalEntities = Map<String, dynamic>();
+  final _cache = Map<String, Voyager>();
 
   RouterNG registerPlugin(RouterPlugin plugin) {
     _plugins[plugin.node] = plugin;
@@ -97,6 +98,15 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 
   Voyager find(String routerPath, {Voyager parent}) {
     return outputForExtras(routerPath, RouteParam(parent: parent));
+  }
+
+  Voyager findCached(String routerPath) {
+    var voyager = _cache[routerPath];
+    if (voyager == null) {
+      voyager = find(routerPath);
+      _cache[routerPath] = voyager;
+    }
+    return voyager;
   }
 
   RouteFactory generator() {
