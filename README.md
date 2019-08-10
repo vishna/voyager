@@ -30,7 +30,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: ^0.6.0
+ voyager: ^0.6.1
  provider: ^3.0.0+1 # if you don't have it yet
 ```
 
@@ -268,6 +268,14 @@ This should create a `voyager-codegen.yaml` file in a root of your project, like
 ```
 
 Whenever you edit the `voyager-codegen.yaml` or `source` file the code generation logic will pick it up (as long as `pub run` is running) and generate new dart souces to the target location.
+
+__CODE FORMATTING__: If you want to have Flutter's default code formatting, make sure you have dart-sdk in you PATH, it's included with flutter sdk, so you can e.g.:
+
+```
+export PATH="$PATH:/path/to/flutter/bin/cache/dart-sdk/bin"
+```
+
+Proper formatting relies on `dartfmt` command being available.
 
 __NOTE 1__: For code generator implementation details please check the source code at [vishna/voyager-codegen](https://github.com/vishna/voyager-codegen).
 

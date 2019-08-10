@@ -1,3 +1,7 @@
+# 0.6.1
+
+- display information in case `dartfmt` is missing from your path and you're using code generation tool.
+
 # 0.6.0
 
 ## SOME BREAKING CHANGES
