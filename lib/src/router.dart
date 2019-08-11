@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-//import 'package:angel_route/angel_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:voyager/src/voyager_widget.dart';
+import 'package:voyager/voyager.dart';
 import 'package:yaml/yaml.dart';
 
 import 'utils.dart';
@@ -109,23 +110,42 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
     return voyager;
   }
 
-  RouteFactory generator() {
+  static const int materialRoute = 0;
+  static const int cupertinoRoute = 1;
+
+  RouteFactory generator({int routeType = materialRoute}) {
     return (RouteSettings settings) {
       String path = settings.name;
-      return MaterialPageRoute(builder: (context) {
+      final builder = (context) {
         bool isWrappedWithRouter = false;
 
+        // If App is not wrapped with RouterProvider we use
+        // the current instance. this breaks hot reload until page
+        // is off the stack as PageRoute will hold old router
+        // reference
         try {
           isWrappedWithRouter = Provider.of<RouterNG>(context) != null;
         } catch (t) {}
 
-        // If MaterialApp is not wrapped with RouterProvider we use
-        // the current instance. this breaks hot reload until page
-        // is off the stack as MaterialPageRoute will hold old router
-        // reference
+        var argument;
+        if (settings.arguments != null) {
+          argument = VoyagerArgument(settings.arguments);
+        }
+
         return VoyagerWidget(
-            path: path, router: isWrappedWithRouter ? null : this);
-      });
+            path: path,
+            router: isWrappedWithRouter ? null : this,
+            argument: argument);
+      };
+
+      switch (routeType) {
+        case materialRoute:
+          return MaterialPageRoute(builder: builder);
+        case cupertinoRoute:
+          return CupertinoPageRoute(builder: builder);
+        default:
+          throw ArgumentError("routeType = $routeType not supported");
+      }
     };
   }
 }

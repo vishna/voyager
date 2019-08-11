@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'voyager_argument.dart';
 import 'router.dart';
 import 'voyager.dart';
 import 'plugins/widget_plugin.dart';
@@ -10,8 +11,10 @@ class VoyagerWidget extends StatelessWidget {
   final String path;
   final RouterNG router;
   final bool useCache;
+  final VoyagerArgument argument;
 
-  VoyagerWidget({@required this.path, this.router, this.useCache = false});
+  VoyagerWidget(
+      {@required this.path, this.router, this.useCache = false, this.argument});
 
   @override
   Widget build(BuildContext context) {
@@ -33,22 +36,15 @@ class VoyagerWidget extends StatelessWidget {
     final builder = voyager[WidgetPlugin.KEY];
 
     assert(builder != null,
-        "WidgetBuilder of _voyager should not be null, did you forget to add ScreenPlugin?");
+        "WidgetBuilder of _voyager should not be null, did you forget to add WidgetPlugin?");
 
-    if (router == null) {
-      // this means we inherited router from the context, thus we don't need to provide it to children
-      return Provider<Voyager>.value(
-        value: voyager,
-        child: Builder(builder: builder),
-      );
-    } else {
-      return MultiProvider(
-        providers: [
-          Provider<Voyager>.value(value: voyager),
-          Provider<RouterNG>.value(value: _router)
-        ],
-        child: Builder(builder: builder),
-      );
-    }
+    return MultiProvider(
+      providers: [
+        Provider<Voyager>.value(value: voyager),
+        if (router != null) Provider<RouterNG>.value(value: router),
+        if (argument != null) Provider<VoyagerArgument>.value(value: argument)
+      ],
+      child: Builder(builder: builder),
+    );
   }
 }
