@@ -12,6 +12,7 @@ class Voyager {
   final Map<String, dynamic> _config;
   final _output = Map<String, dynamic>();
   final storage = Map<String, dynamic>();
+  final _onDispose = List<OnDispose>();
   final path;
   bool _locked = false;
 
@@ -42,6 +43,20 @@ class Voyager {
     _output[key] = value;
   }
 
+  void onDispose(OnDispose callback) {
+    if (_locked) {
+      throw FlutterError("Voyager is in lockdown.");
+    }
+    _onDispose.add(callback);
+  }
+
+  void dispose() {
+    if (!_locked) {
+      throw FlutterError("Can't dispose resources before Voyager is locked");
+    }
+    _onDispose.forEach((callback) => callback());
+  }
+
   lock() {
     _locked = true;
   }
@@ -52,3 +67,5 @@ class Voyager {
 class Nothing {
   Nothing._private();
 }
+
+typedef OnDispose = void Function();

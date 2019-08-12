@@ -1,50 +1,104 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'voyager_argument.dart';
 import 'router.dart';
 import 'voyager.dart';
 import 'plugins/widget_plugin.dart';
 
-/// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
-/// supplied in the costructor (e.g. if this is a top widget) or available via `Provider<RouterNG>.of(context)`
-class VoyagerWidget extends StatelessWidget {
+/// Just like [VoyagerStatelessWidget] but stateful. It has additional parameter called `keepAlive` which is usefull
+/// when embedding the widget in things like `TabBarView`. Most of the time you don't want this. Retains [Voyager]
+/// unless path or router changes
+class VoyagerWidget extends StatefulWidget {
   final String path;
+  final bool keepAlive;
   final RouterNG router;
-  final bool useCache;
   final VoyagerArgument argument;
 
   VoyagerWidget(
-      {@required this.path, this.router, this.useCache = false, this.argument});
+      {@required this.path, this.keepAlive = false, this.router, this.argument});
+
+  @override
+  State<StatefulWidget> createState() =>
+      _VoyagerWidgetState(keepAlive: keepAlive);
+}
+
+class _VoyagerWidgetState extends State<VoyagerWidget>
+    with AutomaticKeepAliveClientMixin<VoyagerWidget> {
+  String _path;
+  Voyager _voyager;
+  final keepAlive;
+  RouterNG _lastRouter;
+
+  _VoyagerWidgetState({this.keepAlive});
+
+  @override
+  void initState() {
+    super.initState();
+    _path = widget.path;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final _router = router ?? Provider.of<RouterNG>(context);
+    if (keepAlive) {
+      super.build(context); // this must be called
+    }
+
+    var hasRouterProvider = false;
+    var router;
+    try {
+      router = Provider.of<RouterNG>(context);
+      hasRouterProvider = true;
+    } catch (t) {
+      router = widget.router;
+    }
+
+    assert(router != null, "router instance should not be null");
 
     var parentVoyager;
     try {
-      parentVoyager = useCache ? null : Provider.of<Voyager>(context);
+      parentVoyager = Provider.of<Voyager>(context);
     } catch (t) {
       parentVoyager = null;
     }
 
-    final voyager = useCache
-        ? _router.findCached(path)
-        : _router.find(path, parent: parentVoyager);
+    if (_voyager == null || _lastRouter != router) {
+      _lastRouter = router;
+      _voyager = _lastRouter.find(_path, parent: parentVoyager);
+    }
 
-    assert(voyager != null, "voyager instance should not be null");
+    assert(_voyager != null, "voyager instance should not be null");
 
-    final builder = voyager[WidgetPlugin.KEY];
+    final builder = _voyager[WidgetPlugin.KEY];
 
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add WidgetPlugin?");
 
     return MultiProvider(
       providers: [
-        Provider<Voyager>.value(value: voyager),
-        if (router != null) Provider<RouterNG>.value(value: router),
-        if (argument != null) Provider<VoyagerArgument>.value(value: argument)
+        Provider<Voyager>.value(value: _voyager),
+        if (!hasRouterProvider) Provider<RouterNG>.value(value: router),
+        if (widget.argument != null) Provider<VoyagerArgument>.value(value: widget.argument)
       ],
       child: Builder(builder: builder),
     );
   }
+
+  @override
+  void didUpdateWidget(VoyagerWidget oldWidget) {
+    if (oldWidget.path != widget.path || oldWidget.router != widget.router) {
+      _path = widget.path;
+      _voyager = null;
+      _lastRouter = null;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _voyager.dispose();
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => keepAlive;
 }

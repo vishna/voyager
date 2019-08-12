@@ -1,3 +1,21 @@
+# 0.7.0
+
+- ...and we're back to stateful widget by default - while you should use StatelessWidget whenever possible, navigation is causing widget recreation which means recreation of Voyager instance - and that's something we don't want to do.
+- `generator` now supports CupertinoPageRoute that can be specified via additional parameter
+
+```dart
+generator(routeType: RouterNG.cupertinoRoute)
+```
+
+- `VoyagerArgument` is available via Provider whenever you navigate with an argument
+- ability to dispose resources created with WidgetPlugins via onDispose callback:
+
+```dart
+output.onDispose(() {
+  print("disposing resources");
+});
+```
+
 # 0.6.1
 
 - display information in case `dartfmt` is missing from your path and you're using code generation tool.

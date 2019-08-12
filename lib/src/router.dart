@@ -129,7 +129,11 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 
         var argument;
         if (settings.arguments != null) {
-          argument = VoyagerArgument(settings.arguments);
+          if (settings.arguments is VoyagerArgument) {
+            argument = settings.arguments;
+          } else {
+            argument = VoyagerArgument(settings.arguments);
+          }
         }
 
         return VoyagerWidget(
