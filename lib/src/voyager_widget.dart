@@ -18,7 +18,9 @@ class VoyagerWidget extends StatefulWidget {
       {@required this.path,
       this.keepAlive = false,
       this.router,
-      this.argument});
+      this.argument,
+      Key key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() =>

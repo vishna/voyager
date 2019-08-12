@@ -1,3 +1,7 @@
+# 0.7.1
+
+- add optional `Key` constructor parameter to `VoyagerWidget` and `VoyagerStatelessWidget`
+
 # 0.7.0
 
 - ...and we're back to stateful widget by default - while you should use StatelessWidget whenever possible, navigation is causing widget recreation which means recreation of Voyager instance - and that's something we don't want to do.

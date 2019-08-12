@@ -14,7 +14,12 @@ class VoyagerStatelessWidget extends StatelessWidget {
   final VoyagerArgument argument;
 
   const VoyagerStatelessWidget(
-      {@required this.path, this.router, this.useCache = false, this.argument});
+      {@required this.path,
+      this.router,
+      this.useCache = false,
+      this.argument,
+      Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
