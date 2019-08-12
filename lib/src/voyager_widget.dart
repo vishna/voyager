@@ -15,7 +15,10 @@ class VoyagerWidget extends StatefulWidget {
   final VoyagerArgument argument;
 
   VoyagerWidget(
-      {@required this.path, this.keepAlive = false, this.router, this.argument});
+      {@required this.path,
+      this.keepAlive = false,
+      this.router,
+      this.argument});
 
   @override
   State<StatefulWidget> createState() =>
@@ -77,7 +80,8 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
       providers: [
         Provider<Voyager>.value(value: _voyager),
         if (!hasRouterProvider) Provider<RouterNG>.value(value: router),
-        if (widget.argument != null) Provider<VoyagerArgument>.value(value: widget.argument)
+        if (widget.argument != null)
+          Provider<VoyagerArgument>.value(value: widget.argument)
       ],
       child: Builder(builder: builder),
     );
