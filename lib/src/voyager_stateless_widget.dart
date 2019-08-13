@@ -7,6 +7,10 @@ import 'plugins/widget_plugin.dart';
 
 /// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
 /// supplied in the costructor (e.g. if this is a top widget) or available via `Provider<RouterNG>.of(context)`
+///
+/// You can set [VoyagerStatelessWidget.useCache] to true but bear in mind this makes [Voyager] instance shared
+/// accross [VoyagerStatelessWidget]. Additionally such [Voyager] doesn't hold reference to parent. If you need
+/// parent reference, use [Provider.of<VoyagerParent>(context)].
 class VoyagerStatelessWidget extends StatelessWidget {
   final String path;
   final RouterNG router;
@@ -46,10 +50,19 @@ class VoyagerStatelessWidget extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<Voyager>.value(value: voyager),
+        if (useCache)
+          Provider<VoyagerParent>.value(
+              value: VoyagerParent(Provider.of<Voyager>(context))),
         if (router != null) Provider<RouterNG>.value(value: router),
         if (argument != null) Provider<VoyagerArgument>.value(value: argument)
       ],
       child: Builder(builder: builder),
     );
   }
+}
+
+/// this is only exposed when using cache in statless widget
+class VoyagerParent {
+  final Voyager value;
+  const VoyagerParent(this.value);
 }

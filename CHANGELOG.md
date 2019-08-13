@@ -1,3 +1,7 @@
+# 0.7.3
+
+- expose `VoyagerParent` in build context when using a stateless widget
+
 # 0.7.2
 
 - `VoyagerListView`, a widget that allows mapping a list of items onto respective list of paths and then displaying them
