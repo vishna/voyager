@@ -1,3 +1,7 @@
+# 0.7.2
+
+- `VoyagerListView`, a widget that allows mapping a list of items onto respective list of paths and then displaying them
+
 # 0.7.1
 
 - add optional `Key` constructor parameter to `VoyagerWidget` and `VoyagerStatelessWidget`
