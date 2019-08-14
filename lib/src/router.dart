@@ -98,7 +98,7 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
   }
 
   Voyager find(String routerPath, {Voyager parent}) {
-    return outputForExtras(routerPath, RouteParam(parent: parent));
+    return outputFor(routerPath, extras: RouteParam(parent: parent));
   }
 
   Voyager findCached(String routerPath) {
