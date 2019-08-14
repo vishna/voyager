@@ -13,24 +13,20 @@ class RedirectPlugin extends RouterPlugin {
     String targetUrl = config.toString();
 
     /// calculate combined parameters
-    try {
-      Uri originalUri = VoyagerUtils.fromPath(context.path);
-      Uri targetUri = VoyagerUtils.fromPath(targetUrl);
+    Uri originalUri = VoyagerUtils.fromPath(context.path);
+    Uri targetUri = VoyagerUtils.fromPath(targetUrl);
 
-      final combinedParameters = Map<String, String>();
-      combinedParameters.addAll(targetUri.queryParameters);
-      combinedParameters.addAll(originalUri.queryParameters);
-      targetUri = Uri(
-          scheme: targetUri.scheme,
-          host: targetUri.host,
-          path: targetUri.path,
-          queryParameters: combinedParameters);
-      final query = targetUri.query;
-      if (query.isNotEmpty) {
-        targetUrl = "${targetUri.path}?$query";
-      }
-    } catch (e) {
-      print(e);
+    final combinedParameters = Map<String, String>();
+    combinedParameters.addAll(targetUri.queryParameters);
+    combinedParameters.addAll(originalUri.queryParameters);
+    targetUri = Uri(
+        scheme: targetUri.scheme,
+        host: targetUri.host,
+        path: targetUri.path,
+        queryParameters: combinedParameters);
+    final query = targetUri.query;
+    if (query.isNotEmpty) {
+      targetUrl = "${targetUri.path}?$query";
     }
 
     Voyager targetVoyager = context.router.find(targetUrl);
