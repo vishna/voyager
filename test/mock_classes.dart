@@ -6,13 +6,25 @@ class MockHomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Home Title"),
-        ),
-        body: Center(
-          child: Text("Home Page"),
-        ));
+      appBar: AppBar(
+        title: Text("Home Title"),
+      ),
+      body: Center(
+        child: Text("Home Page"),
+      ),
+      floatingActionButton: _makeMeFab(context),
+    );
   }
+}
+
+Widget _makeMeFab(BuildContext context) {
+  return FloatingActionButton(
+    onPressed: () {
+      Navigator.of(context).pushNamed("/other/thing");
+    },
+    tooltip: 'Navigate',
+    child: Icon(Icons.add),
+  );
 }
 
 class MockOtherWidget extends StatelessWidget {
