@@ -29,18 +29,11 @@ abstract class AbstractRouter<O, P> {
     }
   }
 
-  /// Open a map'd URL set using {@link #map(String, Class)} or {@link #map(String, OutputBuilder)}
-  ///
-  /// @param url The URL; for example, "users/16" or "groups/5/topics/20"
-  O outputFor(String url) {
-    return this.outputForExtras(url, null);
-  }
-
   /// Open a map'd URL set using {@link #map(String, Class)} or {@link #map(String, BundleBuilder)}
   ///
   /// @param url     The URL; for example, "users/16" or "groups/5/topics/20"
   /// @param extras  The {@link P} which contains the extra params to be assigned to the generated {@link O}
-  O outputForExtras(String url, P extras) {
+  O outputFor(String url, {P extras}) {
     final params = paramsForUrl(url);
     final outputBuilder = params.outputBuilder;
     if (outputBuilder != null) {
