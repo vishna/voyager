@@ -11,6 +11,5 @@ export './src/voyager_stateless_widget.dart';
 export './src/voyager_list_view.dart';
 export './src/voyager.dart';
 
-export './src/plugins/type_plugin.dart';
 export './src/plugins/widget_plugin.dart';
 export './src/plugins/redirect_plugin.dart';

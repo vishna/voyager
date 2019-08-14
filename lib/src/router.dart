@@ -162,6 +162,7 @@ class RouteParam {
 }
 
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
+
   final RouterPath path;
   final RouterNG routerNG;
 
@@ -183,9 +184,15 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
         Voyager(path: abstractContext.url(), parent: parent, config: config);
 
     config.keys.forEach((key) {
-      final plugin = routerNG._plugins[key];
-      if (plugin != null) {
-        plugin.outputFor(context, config[key], output);
+      if (key == Voyager.KEY_TYPE) {
+        final type = config[key];
+        assert(type is String, "Provided type value must be String but is $type instead!");
+        output[Voyager.KEY_TYPE] = type;
+      } else {
+        final plugin = routerNG._plugins[key];
+        if (plugin != null) {
+          plugin.outputFor(context, config[key], output);
+        }
       }
     });
 

@@ -31,7 +31,6 @@ Future<List<RouterPath>> paths() {
 
 /// plugins that are mentioned in requirements
 final plugins = [
-  TypePlugin(),
   WidgetPlugin({
     // provide widget builders for expressions used in YAML
     "PageWidget": (context) => PageWidget(),

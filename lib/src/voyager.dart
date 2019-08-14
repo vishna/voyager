@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 /// Developer might choose to use `storage` to dynamically put any variables that should be available
 /// to anyone having access to that instance of `Voyager`
 class Voyager {
+  static const String KEY_TYPE = "type";
+
   final Voyager parent;
   final Map<String, dynamic> _config;
   final _output = Map<String, dynamic>();
@@ -60,6 +62,8 @@ class Voyager {
   lock() {
     _locked = true;
   }
+
+  String get type => this[KEY_TYPE];
 
   static final Nothing nothing = Nothing._private();
 }

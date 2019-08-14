@@ -39,8 +39,7 @@ void main() {
       WidgetPlugin({
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
-      }),
-      TypePlugin()
+      })
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -48,6 +47,7 @@ void main() {
     final homeVoyager = router.find("/home");
 
     expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
   });
 
   test('loadRouter from a json defined in a string', () async {
@@ -56,8 +56,7 @@ void main() {
       WidgetPlugin({
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
-      }),
-      TypePlugin()
+      })
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -65,6 +64,7 @@ void main() {
     final homeVoyager = router.find("/home");
 
     expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
   });
 
   testWidgets('create HomeWidget via VoyagerWidget',
@@ -75,8 +75,7 @@ void main() {
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
           "OtherWidget": (context) => MockOtherWidget(),
-        }),
-        TypePlugin()
+        })
       ];
 
       final router = await loadRouter(paths, plugins);
@@ -150,6 +149,7 @@ void main() {
         isInstanceOf<MockOtherWidget>());
 
     expect(differentVoyager["type"], "other");
+    expect(differentVoyager.type, "other");
     expect(differentVoyager["title"], "This is one");
     expect(differentVoyager["complexObject"],
         {"property1": true, "property2": 42, "property3": "hello world"});
