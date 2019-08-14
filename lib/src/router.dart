@@ -162,7 +162,6 @@ class RouteParam {
 }
 
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
-
   final RouterPath path;
   final RouterNG routerNG;
 
@@ -186,7 +185,8 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
     config.keys.forEach((key) {
       if (key == Voyager.KEY_TYPE) {
         final type = config[key];
-        assert(type is String, "Provided type value must be String but is $type instead!");
+        assert(type is String,
+            "Provided type value must be String but is $type instead!");
         output[Voyager.KEY_TYPE] = type;
       } else {
         final plugin = routerNG._plugins[key];

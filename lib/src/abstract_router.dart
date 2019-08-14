@@ -90,7 +90,7 @@ abstract class AbstractRouter<O, P> {
     }
 
     if (routerParams == null) {
-      throw new RouteNotFoundException("No route found for url " + url);
+      throw new RouteNotFoundException("No route found for url $url");
     }
 
     routerParams.openParams.addAll(parsedUri.queryParameters);
@@ -141,8 +141,8 @@ abstract class AbstractRouter<O, P> {
 
 /// Thrown if a given route is not found.
 class RouteNotFoundException implements Exception {
-  String cause;
-  RouteNotFoundException(this.cause);
+  final String cause;
+  const RouteNotFoundException(this.cause);
 }
 
 /// The class used when you want to map a function (given in `run`)
