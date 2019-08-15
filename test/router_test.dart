@@ -217,4 +217,68 @@ void main() {
       }
     });
   });
+
+  testWidgets('test material navigation with argument 1',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidgetArgument1(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<RouterNG>());
+
+      await tester.pumpWidget(Provider<RouterNG>.value(
+          value: router,
+          child: MaterialApp(
+              home: VoyagerWidget(path: "/home"),
+              onGenerateRoute:
+                  router.generator(routeType: RouterNG.materialRoute))));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+      expect(find.text("Other Page"), findsNothing);
+
+      await tester.tap(find.byType(Icon));
+      await tester.pumpAndSettle();
+      expect(find.text("Other Page"), findsOneWidget);
+    });
+  });
+
+  testWidgets('test material navigation with argument 2',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidgetArgument2(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<RouterNG>());
+
+      await tester.pumpWidget(Provider<RouterNG>.value(
+          value: router,
+          child: MaterialApp(
+              home: VoyagerWidget(path: "/home"),
+              onGenerateRoute:
+                  router.generator(routeType: RouterNG.materialRoute))));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+      expect(find.text("Other Page"), findsNothing);
+
+      await tester.tap(find.byType(Icon));
+      await tester.pumpAndSettle();
+      expect(find.text("Other Page"), findsOneWidget);
+    });
+  });
 }
