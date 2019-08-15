@@ -15,6 +15,7 @@ dependencies:
   provider: ^3.0.0+1
 
 dev_dependencies:
+  glob: ^1.1.7
   flutter_test:
     sdk: flutter
 

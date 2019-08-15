@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
+import 'mock_classes_cupertino.dart';
 import 'navigation_yml.dart';
 
 class MyMockedEntity {
@@ -160,5 +162,59 @@ void main() {
     });
   });
 
-  // TODO asset bundle test https://github.com/flutter/flutter/issues/12999
+  testWidgets('test cupertino navigation', (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockCupertinoHomeWidget(),
+          "OtherWidget": (context) => MockCupertinoOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<RouterNG>());
+
+      await tester.pumpWidget(Provider<RouterNG>.value(
+          value: router,
+          child: CupertinoApp(
+              home: VoyagerWidget(path: "/home"),
+              onGenerateRoute:
+                  router.generator(routeType: RouterNG.cupertinoRoute))));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+      expect(find.text("Other Page"), findsNothing);
+
+      expect(find.widgetWithText(CupertinoButton, 'Navigate'), findsOneWidget);
+      await tester.tap(find.text('Navigate'));
+      await tester.pumpAndSettle();
+      expect(find.text("Other Page"), findsOneWidget);
+    });
+  });
+
+  testWidgets('test 9000 navigation', (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidget(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<RouterNG>());
+
+      final generator = router.generator(routeType: 9000);
+      try {
+        generator(RouteSettings(name: "/other/thing"));
+      } catch (e) {
+        expect(e, isInstanceOf<ArgumentError>());
+        expect((e as ArgumentError).message, "routeType = 9000 not supported");
+      }
+    });
+  });
 }

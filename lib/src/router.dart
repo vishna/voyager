@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
@@ -40,8 +41,12 @@ List<RouterPath> _loadJson(String jsonString) {
 }
 
 // e.g. "assets/navigation.yml"
-Future<List<RouterPath>> loadPathsFromAssets(String path) async {
-  final yaml = await rootBundle.loadString(path);
+Future<List<RouterPath>> loadPathsFromAssets(String path,
+    {AssetBundle assetBundle}) async {
+  if (assetBundle == null) {
+    assetBundle = rootBundle;
+  }
+  final yaml = await assetBundle.loadString(path);
   return _loadYaml(yaml);
 }
 
