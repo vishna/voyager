@@ -1,3 +1,11 @@
+# 0.8.0
+
+## SOME BREAKING CHANGES
+
+- dropped `TypePlugin` since it was redundant, but since `type` has a special place in Voyager, it is exposed as getter and also is validated at runtime, so it must be a String if anything
+- you can now pass custom AssetBundle to `loadPathsFromAssets` method
+- massive work on improving test coverage of the library - gone from 57% to above 80%
+
 # 0.7.3
 
 - expose `VoyagerParent` in build context when using a stateless widget
