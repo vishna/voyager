@@ -41,3 +41,46 @@ class MockOtherWidget extends StatelessWidget {
         ));
   }
 }
+
+class MockHomeWidgetArgument1 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Home Title"),
+      ),
+      body: Center(
+        child: Text("Home Page"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed("/other/thing", arguments: "hello");
+        },
+        tooltip: 'Navigate',
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class MockHomeWidgetArgument2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Home Title"),
+      ),
+      body: Center(
+        child: Text("Home Page"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context)
+              .pushNamed("/other/thing", arguments: VoyagerArgument("hello"));
+        },
+        tooltip: 'Navigate',
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
