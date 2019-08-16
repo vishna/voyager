@@ -31,11 +31,12 @@ Future<List<RouterPath>> paths() {
 
 /// plugins that are mentioned in requirements
 final plugins = [
-  WidgetPlugin({
-    // provide widget builders for expressions used in YAML
-    "PageWidget": (context) => PageWidget(),
-    "FabWidget": makeMeFab
-  }),
+  WidgetPluginBuilder()
+
+      /// provide widget builders for expressions used in YAML
+      .add<PageWidget>((context) => PageWidget())
+      .addMethod(makeMeFab, "FabWidget")
+      .build(),
   IconPlugin()
 ];
 

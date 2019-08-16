@@ -3,7 +3,7 @@
 [![pub package](https://img.shields.io/pub/v/voyager.svg)](https://pub.dartlang.org/packages/voyager) [![Codemagic build status](https://api.codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/status_badge.svg)](https://codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/latest_build) [![codecov](https://codecov.io/gh/vishna/voyager/branch/master/graph/badge.svg)](https://codecov.io/gh/vishna/voyager)
 
 
-> To boldly resolve where no Dart has resolved before.
+> Navigate and prosper 🖖
 
 Router, requirements & dependency injection library for Flutter.
 
@@ -31,7 +31,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: ^0.7.3
+ voyager: ^0.8.0
  provider: ^3.0.0+1 # if you don't have it yet
 ```
 
@@ -98,11 +98,11 @@ The other important ingredient of voyager router are plugins. You need to tell r
 ```dart
 final plugins = [
   [
-    WidgetPlugin({ // provide widget builders for expressions used in YAML
-      "HomeWidget": (context) => HomeWidget(),
-      "OtherWidget": (context) => OtherWidget(),
-    }),
-    TitlePlugin() // custom plugin
+    WidgetPluginBuilder() /// provide widget builders for expressions used in YAML
+      .add<HomeWidget>((context) => HomeWidget())
+      .add<OtherWidget>((context) => OtherWidget())
+      .build(),
+    TitlePlugin() /// custom plugin
   ]
 ];
 ```
@@ -137,9 +137,10 @@ __NOTE__: Above plugin is redundant, Voyager will repackage the primitive types 
 
 ```dart
 Voyager voyager = router.find("/home")
-print(voyager["title"]); // originates from the title plugin, prints: "This is home"
-print(voyager["type"]); // automatically inherited from the YAML map
-assert(voyager["widget"] is WidgetBuilder); // originates from the widget plugin
+print(voyager["title"]); /// originates from the title plugin, prints: "This is home"
+print(voyager["type"]); /// automatically inherited from the YAML map
+print(voyager.type); /// strong typed type
+assert(voyager["widget"] is WidgetBuilder); /// originates from the widget plugin
 ```
 
 **NOTE:** Any attempt to modify voyager keys will fail unless done from plugin's `outputFor` method. If you want to add some values to Voyager later on, use `Voyager.storage` public map.
@@ -361,7 +362,7 @@ The router is loaded every time the scenario is running - if this is something y
 
 ### More Resources
 
-- [library tests](https://github.com/vishna/voyager/blob/master/test/voyager_test.dart)
+- [library tests](https://github.com/vishna/voyager/blob/master/test)
 - [sample app](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
 
 ### Acknowledgments
