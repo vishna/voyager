@@ -7,14 +7,6 @@ import 'navigation_json.dart';
 import 'mock_classes.dart';
 
 void main() {
-  test(
-      'VoyagerUtils.interpolate() interpolates string containg %{} with a given value',
-      () {
-    final interpolatedValue =
-        VoyagerUtils.interpolate("Hello %{name}!", {"name": "World"});
-    expect(interpolatedValue, "Hello World!");
-  });
-
   test('loadPathsFromString loads paths from a yaml defined in a string',
       () async {
     final paths = await loadPathsFromString(navigation_yml);

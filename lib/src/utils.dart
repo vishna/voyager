@@ -41,7 +41,6 @@ class VoyagerUtils {
     try {
       return sprintf(convFormat, valueList);
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -86,6 +85,9 @@ class VoyagerUtils {
   }
 
   static MapEntry<String, dynamic> tuple(dynamic object) {
+    if (!isTuple(object)) {
+      throw ArgumentError("$object is not a tuple");
+    }
     return (object as Map).entries.first;
   }
 
