@@ -12,12 +12,12 @@ class MockHomeWidget extends StatelessWidget {
       body: Center(
         child: Text("Home Page"),
       ),
-      floatingActionButton: _makeMeFab(context),
+      floatingActionButton: mockFab(context),
     );
   }
 }
 
-Widget _makeMeFab(BuildContext context) {
+Widget mockFab(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
       Navigator.of(context).pushNamed("/other/thing");

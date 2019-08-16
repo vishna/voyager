@@ -5,6 +5,21 @@
 - dropped `TypePlugin` since it was redundant, but since `type` has a special place in Voyager, it is exposed as getter and also is validated at runtime, so it must be a String if anything
 - you can now pass custom AssetBundle to `loadPathsFromAssets` method
 - massive work on improving test coverage of the library - gone from 57% to above 80%
+- `WidgetPluginBuilder`, better API for adding widget mappings, allows you to skip manual Widget class name typing in the dart code.
+
+```dart
+final plugins = [
+  [
+    WidgetPluginBuilder() /// provide widget builders for expressions used in YAML
+      .add<HomeWidget>((context) => HomeWidget())
+      .add<OtherWidget>((context) => OtherWidget())
+      .build(),
+    TitlePlugin() /// custom plugin
+  ]
+];
+```
+
+You can still use the old syntax, but the above one brings more type safety to your code.
 
 # 0.7.3
 
