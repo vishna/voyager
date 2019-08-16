@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:yaml/yaml.dart';
 
 class RouterPath {
-  String path;
-  Map<String, dynamic> config;
+  final String path;
+  final Map<String, dynamic> config;
 
-  RouterPath._({this.path, this.config});
+  const RouterPath._({this.path, this.config});
 
   factory RouterPath.fromYaml({String path, YamlMap config}) {
     return RouterPath._(
