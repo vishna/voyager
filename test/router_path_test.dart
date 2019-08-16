@@ -24,7 +24,7 @@ widget: HomeWidget
 title: Home Title
 """;
 
-   final configMap = loadYaml(configYaml) as YamlMap;
+    final configMap = loadYaml(configYaml) as YamlMap;
 
     final routerPath = RouterPath.fromYaml(path: "/home", config: configMap);
 
