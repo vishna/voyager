@@ -57,6 +57,8 @@ class Voyager {
       throw FlutterError("Can't dispose resources before Voyager is locked");
     }
     _onDispose.forEach((callback) => callback());
+    _output.clear();
+    _config.clear();
   }
 
   lock() {
