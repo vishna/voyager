@@ -96,10 +96,14 @@ class VoyagerUtils {
   }
 
   static String cleanUrl(String url) {
-    if (url.startsWith("/")) {
-      return url.substring(1, url.length);
+    String outputUrl = url;
+    if (outputUrl.startsWith("/")) {
+      outputUrl = outputUrl.substring(1, outputUrl.length);
     }
-    return url;
+    if (outputUrl.endsWith("/")) {
+      outputUrl = outputUrl.substring(0, outputUrl.length - 1);
+    }
+    return outputUrl;
   }
 
   static Uri fromPath(String path) {
