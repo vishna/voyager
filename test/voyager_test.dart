@@ -59,6 +59,68 @@ void main() {
     expect(homeVoyager.type, "home");
   });
 
+  test('create router programatically', () async {
+    final router = RouterNG();
+    router.registerConfig('/home', (context, voyager) {
+      voyager.type = "home";
+      voyager[WidgetPlugin.KEY] =
+          (BuildContext buildContext) => MockHomeWidget();
+      voyager["title"] = "This is Home";
+    });
+    router.registerConfig('/other/:title', (context, voyager) {
+      final title = context.params["title"];
+      voyager.type = "other";
+      voyager[WidgetPlugin.KEY] =
+          (BuildContext buildContext) => MockOtherWidget();
+      voyager["title"] = "This is a $title";
+    });
+
+    final homeVoyager = router.find("/home");
+
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
+    expect(homeVoyager["title"], "This is Home");
+
+    final otherVoyager = router.find("/other/thing");
+
+    expect(
+        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager.type, "other");
+    expect(otherVoyager["title"], "This is a thing");
+  });
+
+  test('create router programatically with custom voyager factory', () async {
+    final VoyagerFactory<CustomVoyager> customVoyagerFactory =
+        (abstractContext, context) => CustomVoyager(
+            abstractContext.url(), abstractContext.getExtras().parent);
+
+    final router = RouterNG();
+    router.registerConfig<CustomVoyager>('/home', (context, voyager) {
+      voyager.type = "home";
+      voyager.widget = (BuildContext buildContext) => MockHomeWidget();
+      voyager.title = "This is Home";
+    }, customVoyagerFactory);
+    router.registerConfig<CustomVoyager>('/other/:title', (context, voyager) {
+      final title = context.params["title"];
+      voyager.type = "other";
+      voyager.widget = (BuildContext buildContext) => MockOtherWidget();
+      voyager.title = "This is a $title";
+    }, customVoyagerFactory);
+
+    final homeVoyager = router.find("/home") as CustomVoyager;
+
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
+    expect(homeVoyager.title, "This is Home");
+
+    final otherVoyager = router.find("/other/thing") as CustomVoyager;
+
+    expect(
+        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager.type, "other");
+    expect(otherVoyager.title, "This is a thing");
+  });
+
   testWidgets('create HomeWidget via VoyagerWidget',
       (WidgetTester tester) async {
     await tester.runAsync(() async {

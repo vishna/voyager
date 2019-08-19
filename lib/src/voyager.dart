@@ -66,6 +66,9 @@ class Voyager {
   }
 
   String get type => this[KEY_TYPE];
+  set type(String value) {
+    this[KEY_TYPE] = value;
+  }
 
   static final Nothing nothing = Nothing._private();
 }

@@ -98,6 +98,18 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
     registerBuilder(path.path, RouteBuilder(path: path, routerNG: this));
   }
 
+  void registerConfig<T extends Voyager>(
+      String path, VoyagerConfig<T> voyagerConfig,
+      [VoyagerFactory<T> voyagerFactory]) {
+    registerBuilder(
+        path,
+        _ProgrammaticRouteBuilder(
+            path: path,
+            voyagerFactory: voyagerFactory,
+            voyagerConfig: voyagerConfig,
+            routerNG: this));
+  }
+
   Map<String, RouterPlugin> getPlugins() {
     return _plugins;
   }
@@ -206,3 +218,45 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
     return output;
   }
 }
+
+class _ProgrammaticRouteBuilder<T extends Voyager>
+    extends OutputBuilder<Voyager, RouteParam> {
+  final String path;
+  final VoyagerFactory<T> voyagerFactory;
+  final VoyagerConfig<T> voyagerConfig;
+  final RouterNG routerNG;
+
+  _ProgrammaticRouteBuilder(
+      {this.path, this.voyagerFactory, this.voyagerConfig, this.routerNG});
+
+  @override
+  Voyager outputFor(AbstractRouteContext abstractContext) {
+    final allTheParams = Map<String, String>.from(abstractContext.getParams());
+
+    final context = RouterContext(
+        path: abstractContext.url(), params: allTheParams, router: routerNG);
+
+    Voyager newInstance = voyagerFactory != null
+        ? voyagerFactory(abstractContext, context)
+        : _defaultFactory(abstractContext, context);
+
+    voyagerConfig(context, newInstance);
+
+    newInstance.lock();
+
+    return newInstance;
+  }
+}
+
+final VoyagerFactory _defaultFactory = (abstractContext, context) => Voyager(
+    path: abstractContext.url(),
+    parent: abstractContext.getExtras().parent,
+    config: {});
+
+/// allows programmatic path specification
+typedef VoyagerConfig<T extends Voyager> = void Function(
+    RouterContext context, T voyager);
+
+/// creates voyager instance, can be used to supply Voyager subclasses
+typedef VoyagerFactory<T extends Voyager> = T Function(
+    AbstractRouteContext abstractContext, RouterContext context);
