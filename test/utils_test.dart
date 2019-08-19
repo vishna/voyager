@@ -74,6 +74,17 @@ void main() {
       return true;
     })));
   });
+
+  test('VoyagerUtils.cleanUrl()', () {
+    expect(VoyagerUtils.cleanUrl("/home"), "home");
+    expect(VoyagerUtils.cleanUrl("home"), "home");
+    expect(VoyagerUtils.cleanUrl("/home/"), "home");
+    expect(VoyagerUtils.cleanUrl("home/"), "home");
+
+    expect(VoyagerUtils.cleanUrl("/"), "");
+    expect(VoyagerUtils.cleanUrl(""), "");
+    expect(VoyagerUtils.cleanUrl("//"), "");
+  });
 }
 
 /// whoops https://github.com/dart-lang/sdk/issues/32559
