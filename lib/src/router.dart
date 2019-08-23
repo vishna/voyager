@@ -11,18 +11,18 @@ import 'package:voyager/src/voyager_widget.dart';
 import 'package:voyager/voyager.dart';
 import 'package:yaml/yaml.dart';
 
-import 'utils.dart';
-import 'voyager.dart';
+import 'abstract_router.dart';
+import 'router_context.dart';
 import 'router_path.dart';
 import 'router_plugin.dart';
-import 'router_context.dart';
-import 'abstract_router.dart';
+import 'utils.dart';
+import 'voyager.dart';
 
 List<RouterPath> _loadYaml(String yaml) {
-  final routerMap = loadYaml(yaml) as YamlMap;
-  final paths = new List<RouterPath>();
+  final YamlMap routerMap = loadYaml(yaml);
+  final paths = <RouterPath>[];
 
-  routerMap.keys.forEach((it) {
+  routerMap.keys.forEach((dynamic it) {
     paths.add(RouterPath.fromYaml(path: it, config: routerMap[it]));
   });
 
@@ -30,8 +30,8 @@ List<RouterPath> _loadYaml(String yaml) {
 }
 
 List<RouterPath> _loadJson(String jsonString) {
-  final routerMap = json.decode(jsonString) as Map<String, dynamic>;
-  final paths = new List<RouterPath>();
+  final Map<String, dynamic> routerMap = json.decode(jsonString);
+  final paths = <RouterPath>[];
 
   routerMap.keys.forEach((it) {
     paths.add(RouterPath.fromMap(path: it, config: routerMap[it]));
@@ -43,9 +43,7 @@ List<RouterPath> _loadJson(String jsonString) {
 // e.g. "assets/navigation.yml"
 Future<List<RouterPath>> loadPathsFromAssets(String path,
     {AssetBundle assetBundle}) async {
-  if (assetBundle == null) {
-    assetBundle = rootBundle;
-  }
+  assetBundle ??= rootBundle;
   final yaml = await assetBundle.loadString(path);
   return _loadYaml(yaml);
 }
@@ -76,9 +74,9 @@ Future<RouterNG> loadRouter(
 }
 
 class RouterNG extends AbstractRouter<Voyager, RouteParam> {
-  final _plugins = Map<String, RouterPlugin>();
-  final _globalEntities = Map<String, dynamic>();
-  final _cache = Map<String, Voyager>();
+  final _plugins = <String, RouterPlugin>{};
+  final _globalEntities = <String, dynamic>{};
+  final _cache = <String, Voyager>{};
 
   RouterNG registerPlugin(RouterPlugin plugin) {
     _plugins[plugin.node] = plugin;
@@ -132,9 +130,9 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 
   RouteFactory generator({int routeType = materialRoute}) {
     return (RouteSettings settings) {
-      String path = settings.name;
-      final builder = (context) {
-        bool isWrappedWithRouter = false;
+      final path = settings.name;
+      final builder = (BuildContext context) {
+        var isWrappedWithRouter = false;
 
         // If App is not wrapped with RouterProvider we use
         // the current instance. this breaks hot reload until page
@@ -142,9 +140,9 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
         // reference
         try {
           isWrappedWithRouter = Provider.of<RouterNG>(context) != null;
-        } catch (t) {}
+        } catch (_) {}
 
-        var argument;
+        dynamic argument;
         if (settings.arguments != null) {
           if (settings.arguments is VoyagerArgument) {
             argument = settings.arguments;
@@ -161,9 +159,9 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 
       switch (routeType) {
         case materialRoute:
-          return MaterialPageRoute(builder: builder);
+          return MaterialPageRoute<dynamic>(builder: builder);
         case cupertinoRoute:
-          return CupertinoPageRoute(builder: builder);
+          return CupertinoPageRoute<dynamic>(builder: builder);
         default:
           throw ArgumentError("routeType = $routeType not supported");
       }
@@ -172,17 +170,15 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 }
 
 class RouteParam {
+  RouteParam({this.parent, this.data});
   final Voyager parent;
   final dynamic data;
-
-  RouteParam({this.parent, this.data});
 }
 
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
+  RouteBuilder({this.path, this.routerNG});
   final RouterPath path;
   final RouterNG routerNG;
-
-  RouteBuilder({this.path, this.routerNG});
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
@@ -194,14 +190,14 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
 
-    Voyager parent = abstractContext.getExtras().parent;
+    final Voyager parent = abstractContext.getExtras().parent;
 
     final output =
         Voyager(path: abstractContext.url(), parent: parent, config: config);
 
-    config.keys.forEach((key) {
+    config.keys.forEach((String key) {
       if (key == Voyager.KEY_TYPE) {
-        final type = config[key];
+        final dynamic type = config[key];
         assert(type is String,
             "Provided type value must be String but is $type instead!");
         output[Voyager.KEY_TYPE] = type;
@@ -221,13 +217,12 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
 
 class _ProgrammaticRouteBuilder<T extends Voyager>
     extends OutputBuilder<Voyager, RouteParam> {
+  _ProgrammaticRouteBuilder(
+      {this.path, this.voyagerFactory, this.voyagerConfig, this.routerNG});
   final String path;
   final VoyagerFactory<T> voyagerFactory;
   final VoyagerConfig<T> voyagerConfig;
   final RouterNG routerNG;
-
-  _ProgrammaticRouteBuilder(
-      {this.path, this.voyagerFactory, this.voyagerConfig, this.routerNG});
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
@@ -236,7 +231,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
     final context = RouterContext(
         path: abstractContext.url(), params: allTheParams, router: routerNG);
 
-    Voyager newInstance = voyagerFactory != null
+    final newInstance = voyagerFactory != null
         ? voyagerFactory(abstractContext, context)
         : _defaultFactory(abstractContext, context);
 
@@ -251,7 +246,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
 final VoyagerFactory _defaultFactory = (abstractContext, context) => Voyager(
     path: abstractContext.url(),
     parent: abstractContext.getExtras().parent,
-    config: {});
+    config: <String, dynamic>{});
 
 /// allows programmatic path specification
 typedef VoyagerConfig<T extends Voyager> = void Function(

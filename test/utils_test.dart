@@ -5,13 +5,13 @@ void main() {
   test(
       'VoyagerUtils.interpolate() interpolates string containg %{} with a given value',
       () {
-    final interpolatedValue =
-        VoyagerUtils.interpolate("Hello %{name}!", {"name": "World"});
+    final interpolatedValue = VoyagerUtils.interpolate(
+        "Hello %{name}!", <String, String>{"name": "World"});
     expect(interpolatedValue, "Hello World!");
   });
 
   test('interpolate dynamic list or map', () {
-    RouterContext context = RouterContext(params: {"foo": "Hello"});
+    final context = RouterContext(params: {"foo": "Hello"});
 
     final list = [
       "%{foo} World",
@@ -21,7 +21,7 @@ void main() {
 
     expect(
         list,
-        containsAllInOrder([
+        containsAllInOrder(<dynamic>[
           "Hello World",
           {"world_key": "Hello World"}
         ]));
@@ -46,30 +46,31 @@ void main() {
   });
 
   test('tuple extraction', () {
-    expect(() => VoyagerUtils.tuple("something"), throwsA(predicate((e) {
+    expect(() => VoyagerUtils.tuple("something"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       return true;
     })));
-    expect(() => VoyagerUtils.tuple("4"), throwsA(predicate((e) {
+    expect(() => VoyagerUtils.tuple("4"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       return true;
     })));
-    expect(() => VoyagerUtils.tuple(["something", 4]), throwsA(predicate((e) {
+    expect(() => VoyagerUtils.tuple(["something", 4]),
+        throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       return true;
     })));
-    _expectEntry(
-        VoyagerUtils.tuple({"something": 4}), MapEntry("something", 4));
+    _expectEntry(VoyagerUtils.tuple({"something": 4}),
+        const MapEntry<String, int>("something", 4));
     _expectEntry(
         VoyagerUtils.tuple({
           "something": [4, 5]
         }),
-        MapEntry("something", [4, 5]));
+        const MapEntry<String, dynamic>("something", [4, 5]));
     expect(
         () => VoyagerUtils.tuple({
               "something": [4, 5],
               "otherthing": 2
-            }), throwsA(predicate((e) {
+            }), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       return true;
     })));
@@ -88,7 +89,7 @@ void main() {
 }
 
 /// whoops https://github.com/dart-lang/sdk/issues/32559
-_expectEntry(MapEntry actual, MapEntry expected) {
+void _expectEntry(MapEntry actual, MapEntry expected) {
   expect(actual.key, expected.key);
   expect(actual.value, expected.value);
 }

@@ -43,11 +43,11 @@ void _testVoyagerWidget(
 
 @experimental
 abstract class VoyagerTestScenario {
+  VoyagerTestScenario(this.testDescription, this.widgetTesterCallback);
+
   final String testDescription;
   final WidgetTesterCallback widgetTesterCallback;
   WidgetWrapper widgetWrapper;
-
-  VoyagerTestScenario(this.testDescription, this.widgetTesterCallback);
 
   String path();
   void addWidgetWrapper(WidgetWrapper widgetWrapper) {
@@ -57,9 +57,11 @@ abstract class VoyagerTestScenario {
 
 @experimental
 class VoyagerTestHomeScenario extends VoyagerTestScenario {
-  VoyagerTestHomeScenario.write(widgetTesterCallback, {String description = ""})
+  VoyagerTestHomeScenario.write(WidgetTesterCallback widgetTesterCallback,
+      {String description = ""})
       : super(description, widgetTesterCallback);
 
+  @override
   String path() {
     return "/home";
   }
@@ -67,12 +69,14 @@ class VoyagerTestHomeScenario extends VoyagerTestScenario {
 
 @experimental
 class VoyagerTestOtherScenario extends VoyagerTestScenario {
-  final String title;
-
-  VoyagerTestOtherScenario.write(this.title, widgetTesterCallback,
+  VoyagerTestOtherScenario.write(
+      this.title, WidgetTesterCallback widgetTesterCallback,
       {String description = ""})
       : super(description, widgetTesterCallback);
 
+  final String title;
+
+  @override
   String path() {
     return "/other/$title";
   }
@@ -80,9 +84,11 @@ class VoyagerTestOtherScenario extends VoyagerTestScenario {
 
 @experimental
 class VoyagerTestFabScenario extends VoyagerTestScenario {
-  VoyagerTestFabScenario.write(widgetTesterCallback, {String description = ""})
+  VoyagerTestFabScenario.write(WidgetTesterCallback widgetTesterCallback,
+      {String description = ""})
       : super(description, widgetTesterCallback);
 
+  @override
   String path() {
     return "/fab";
   }
@@ -90,9 +96,8 @@ class VoyagerTestFabScenario extends VoyagerTestScenario {
 
 @experimental
 abstract class VoyagerTestScenarios {
+  const VoyagerTestScenarios(this.defaultWrapper);
   final WidgetWrapper defaultWrapper;
-
-  VoyagerTestScenarios(this.defaultWrapper);
 
   List<VoyagerTestHomeScenario> homeScenarios();
   List<VoyagerTestOtherScenario> otherScenarios();

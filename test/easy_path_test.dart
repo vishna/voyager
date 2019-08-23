@@ -30,7 +30,7 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    final List<Voyager> homes = [];
+    final homes = <Voyager>[];
     homes.add(router.find("/home"));
     homes.add(router.find("home"));
     homes.add(router.find("home/"));
@@ -42,7 +42,7 @@ void main() {
       expect(home[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
     });
 
-    final List<Voyager> roots = [];
+    final roots = <Voyager>[];
     roots.add(router.find("/"));
     roots.add(router.find(""));
     roots.add(router.find("//"));

@@ -5,6 +5,8 @@ import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
 
+// ignore_for_file: avoid_as
+
 void main() {
   test('test redirect plugin', () async {
     final paths = loadPathsFromString('''
@@ -48,10 +50,9 @@ void main() {
     expect(differentVoyager["complexObject"],
         {"property1": true, "property2": 42, "property3": "hello world"});
 
-    expect(() => router.find("/different/fail"), throwsA(predicate((e) {
-      expect(e, isInstanceOf<RouteNotFoundException>());
-      expect((e as RouteNotFoundException).cause,
-          "No route found for url /non/existing/path");
+    expect(() => router.find("/different/fail"),
+        throwsA(predicate((RouteNotFoundException e) {
+      expect(e.cause, "No route found for url /non/existing/path");
       return true;
     })));
   });
@@ -88,7 +89,7 @@ void main() {
     expect(
         otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
 
-    expect(() => router.find("/other2/thing"), throwsA(predicate((e) {
+    expect(() => router.find("/other2/thing"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect(
           (e as FlutterError).message, "No builder for OtherWidget2 defined.");
@@ -132,7 +133,7 @@ void main() {
     expect(
         otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
 
-    expect(() => router.find("/other2/thing"), throwsA(predicate((e) {
+    expect(() => router.find("/other2/thing"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect(
           (e as FlutterError).message, "No builder for OtherWidget2 defined.");
@@ -189,7 +190,7 @@ void main() {
         "HomeWidget"
       ]).add<MockOtherWidget>((context) => MockOtherWidget(),
           aliases: ["OtherWidget", "OtherWidget2"]).build();
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<AssertionError>());
       expect((e as AssertionError).message, "Builder must be provided");
       return true;
@@ -203,7 +204,7 @@ void main() {
             "HomeWidget"
           ]).add<MockOtherWidget>((context) => MockOtherWidget(),
           aliases: ["HomeWidget", "OtherWidget2"]).build();
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<AssertionError>());
       expect((e as AssertionError).message,
           "Alias HomeWidget for MockOtherWidget is already used.");
@@ -218,7 +219,7 @@ void main() {
           .add<MockOtherWidget>((context) => MockOtherWidget())
           .add(mockFab)
           .build();
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       expect((e as ArgumentError).message,
           "Use addMethod if you can't provide Widget class as T parameter");

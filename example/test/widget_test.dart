@@ -13,13 +13,13 @@ class TestScenarios extends VoyagerTestScenarios {
   @override
   List<VoyagerTestFabScenario> fabScenarios() {
     return [
-      VoyagerTestFabScenario.write((tester) async {
+      VoyagerTestFabScenario.write((WidgetTester tester) async {
         final icon = find.byType(Icon);
-        final RenderBox iconBox = tester.renderObject(icon);
+        final iconBox = tester.renderObject<RenderBox>(icon);
         expect(iconBox.size, const Size(24.0, 24.0));
         final widget = icon.evaluate().first.widget;
         expect(widget, isInstanceOf<Icon>());
-        final iconWidget = widget as Icon;
+        final Icon iconWidget = widget;
         expect(iconWidget.icon, Icons.info_outline);
       })
     ];
@@ -28,7 +28,7 @@ class TestScenarios extends VoyagerTestScenarios {
   @override
   List<VoyagerTestHomeScenario> homeScenarios() {
     return [
-      VoyagerTestHomeScenario.write((tester) async {
+      VoyagerTestHomeScenario.write((WidgetTester tester) async {
         expect(find.text("This is Home"), findsOneWidget);
         expect(find.text("Hello World"), findsOneWidget);
         fabScenarios()
@@ -41,11 +41,11 @@ class TestScenarios extends VoyagerTestScenarios {
   @override
   List<VoyagerTestOtherScenario> otherScenarios() {
     return [
-      VoyagerTestOtherScenario.write("thing", (tester) async {
+      VoyagerTestOtherScenario.write("thing", (WidgetTester tester) async {
         expect(find.text("Welcome to the other side"), findsOneWidget);
         expect(find.text("This is thing"), findsOneWidget);
       }),
-      VoyagerTestOtherScenario.write("thingy", (tester) async {
+      VoyagerTestOtherScenario.write("thingy", (WidgetTester tester) async {
         expect(find.text("Welcome to the other side"), findsOneWidget);
         expect(find.text("This is thingy"), findsOneWidget);
       })

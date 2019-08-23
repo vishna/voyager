@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'voyager_argument.dart';
+import 'plugins/widget_plugin.dart';
 import 'router.dart';
 import 'voyager.dart';
-import 'plugins/widget_plugin.dart';
+import 'voyager_argument.dart';
 
 /// Just like [VoyagerStatelessWidget] but stateful. It has additional parameter called `keepAlive` which is usefull
 /// when embedding the widget in things like `TabBarView`. Most of the time you don't want this. Retains [Voyager]
 /// unless path or router changes
 class VoyagerWidget extends StatefulWidget {
-  final String path;
-  final bool keepAlive;
-  final RouterNG router;
-  final VoyagerArgument argument;
-
-  VoyagerWidget(
+  const VoyagerWidget(
       {@required this.path,
       this.keepAlive = false,
       this.router,
       this.argument,
       Key key})
       : super(key: key);
+  final String path;
+  final bool keepAlive;
+  final RouterNG router;
+  final VoyagerArgument argument;
 
   @override
   State<StatefulWidget> createState() =>
@@ -29,12 +28,11 @@ class VoyagerWidget extends StatefulWidget {
 
 class _VoyagerWidgetState extends State<VoyagerWidget>
     with AutomaticKeepAliveClientMixin<VoyagerWidget> {
+  _VoyagerWidgetState({this.keepAlive});
   String _path;
   Voyager _voyager;
-  final keepAlive;
+  final bool keepAlive;
   RouterNG _lastRouter;
-
-  _VoyagerWidgetState({this.keepAlive});
 
   @override
   void initState() {
@@ -49,7 +47,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     }
 
     var hasRouterProvider = false;
-    var router;
+    RouterNG router;
     try {
       router = Provider.of<RouterNG>(context);
       hasRouterProvider = true;
@@ -59,7 +57,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
     assert(router != null, "router instance should not be null");
 
-    var parentVoyager;
+    Voyager parentVoyager;
     try {
       parentVoyager = Provider.of<Voyager>(context);
     } catch (t) {
@@ -73,7 +71,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
     assert(_voyager != null, "voyager instance should not be null");
 
-    final builder = _voyager[WidgetPlugin.KEY];
+    final WidgetBuilder builder = _voyager[WidgetPlugin.KEY];
 
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add WidgetPlugin?");

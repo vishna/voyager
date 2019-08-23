@@ -7,10 +7,10 @@ class MockHomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Title"),
+        title: const Text("Home Title"),
       ),
       body: Center(
-        child: Text("Home Page"),
+        child: const Text("Home Page"),
       ),
       floatingActionButton: mockFab(context),
     );
@@ -30,14 +30,14 @@ Widget mockFab(BuildContext context) {
 class MockOtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = Provider.of<Voyager>(context)["title"];
+    final String title = Provider.of<Voyager>(context)["title"];
 
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
         ),
         body: Center(
-          child: Text("Other Page"),
+          child: const Text("Other Page"),
         ));
   }
 }
@@ -47,10 +47,10 @@ class MockHomeWidgetArgument1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Title"),
+        title: const Text("Home Title"),
       ),
       body: Center(
-        child: Text("Home Page"),
+        child: const Text("Home Page"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -68,10 +68,10 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Title"),
+        title: const Text("Home Title"),
       ),
       body: Center(
-        child: Text("Home Page"),
+        child: const Text("Home Page"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -87,7 +87,7 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
 
 class CustomVoyager extends Voyager {
   CustomVoyager(String path, Voyager parent)
-      : super(path: path, parent: parent, config: {});
+      : super(path: path, parent: parent, config: <String, dynamic>{});
 
   set widget(WidgetBuilder builder) {
     this[WidgetPlugin.KEY] = builder;

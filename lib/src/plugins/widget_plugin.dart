@@ -5,14 +5,13 @@ import '../router_plugin.dart';
 import '../voyager.dart';
 
 class WidgetPlugin extends RouterPlugin {
+  WidgetPlugin(this.builders) : super(KEY);
   static const String KEY = "widget";
 
   final Map<String, WidgetBuilder> builders;
 
-  WidgetPlugin(this.builders) : super(KEY);
-
   @override
-  void outputFor(RouterContext context, config, Voyager output) {
+  void outputFor(RouterContext context, dynamic config, Voyager output) {
     if (config is String) {
       final builder = builders[config];
       if (builder != null) {
@@ -30,7 +29,7 @@ class WidgetPluginBuilder {
 
   WidgetPluginBuilder add<T extends Widget>(WidgetBuilder builder,
       {List<String> aliases}) {
-    String type = _typeOf<T>().toString();
+    final type = _typeOf<T>().toString();
     if (type == "Widget") {
       /// method used without specifying T
       throw ArgumentError(
