@@ -12,6 +12,9 @@ String requirements() {
   title: "This is Home"
   body: "Hello World"
   fabPath: /fab
+  actions:
+    - target: /list
+      icon: e896
 '/other/:title' :
   type: 'other'
   widget: PageWidget
@@ -22,6 +25,23 @@ String requirements() {
   widget: FabWidget
   target: /other/thing
   icon: e88f # check icons.dart for reference
+'/list' :
+  type: 'list'
+  widget: ListWidget
+  title: "Voyager Talks"
+  items:
+    - city: "Berlin"
+      event: Droidcon
+      date: July 1, 2019
+    - city: "London"
+      event: FlutterLDN
+      date: October 21, 2019
+    - city: "Łódź"
+      event: Mobilization
+      date: October 26, 2019
+'/_object/:class':
+  type: object_item
+  widget: "%{class}Widget"
 ''';
 }
 
@@ -30,15 +50,16 @@ Future<List<RouterPath>> paths() {
 }
 
 /// plugins that are mentioned in requirements
-final plugins = [
-  WidgetPluginBuilder()
-
+List<RouterPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
-      .add<PageWidget>((context) => PageWidget())
-      .addMethod(makeMeFab, "FabWidget")
-      .build(),
-  IconPlugin()
-];
+      WidgetPluginBuilder()
+          .add<PageWidget>((context) => PageWidget())
+          .add<ListWidget>((context) => ListWidget())
+          .add<TalkWidget>((context) => TalkWidget())
+          .addMethod(makeMeFab, "FabWidget")
+          .build(),
+      IconPlugin()
+    ];
 
 class IconPlugin extends RouterPlugin {
   IconPlugin() : super("icon");
@@ -47,6 +68,11 @@ class IconPlugin extends RouterPlugin {
   void outputFor(RouterContext context, dynamic config, Voyager output) {
     output["icon"] = Icon(IconData(int.parse(config.toString(), radix: 16),
         fontFamily: 'MaterialIcons'));
+  }
+
+  static Icon fromHexValue(String hexValue) {
+    return Icon(
+        IconData(int.parse(hexValue, radix: 16), fontFamily: 'MaterialIcons'));
   }
 }
 
@@ -57,7 +83,7 @@ void main() {
 
 Widget appOrSplash() {
   return FutureBuilder(
-      future: loadRouter(paths(), plugins),
+      future: loadRouter(paths(), plugins()),
       builder: (BuildContext context, AsyncSnapshot<RouterNG> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
@@ -104,6 +130,7 @@ class PageWidget extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
+          actions: actions(context),
         ),
         body: Center(
           child: Text(voyager["body"], style: TextStyle(fontSize: 24)),
@@ -116,11 +143,88 @@ class PageWidget extends StatelessWidget {
   }
 }
 
+class ListWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final voyager = Provider.of<Voyager>(context);
+    final String title = voyager["title"];
+
+    // ignore: avoid_as
+    final talks = (voyager["items"] as List<dynamic>)
+        .toList()
+        .map((dynamic item) => Talk(item["city"], item["event"], item["date"]))
+        .toList();
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          actions: actions(context),
+        ),
+        body: VoyagerListView(talks, idMapper, objectMapper, null),
+        floatingActionButton: voyager["fabPath"] != null
+            ? VoyagerWidget(
+                path: voyager["fabPath"],
+              )
+            : null);
+  }
+
+  // ignore: avoid_as
+  static String idMapper(dynamic item) => (item as Talk).city;
+  static String objectMapper(dynamic item) =>
+      "/_object/${item.runtimeType.toString()}";
+}
+
+class Talk {
+  const Talk(this.city, this.event, this.date);
+  final String city;
+  final String event;
+  final String date;
+}
+
+class TalkWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final Talk talk = Provider.of<VoyagerArgument>(context).value;
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(talk.city,
+                style: TextStyle(
+                    fontSize: 20,
+                    color: theme.accentColor,
+                    fontWeight: FontWeight.bold)),
+            Text(talk.event, style: const TextStyle(fontSize: 16)),
+            Text(talk.date, style: const TextStyle(fontSize: 14)),
+          ],
+        ));
+  }
+}
+
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Text("Loading",
+        child: const Text("Loading",
             style: TextStyle(fontSize: 24), textDirection: TextDirection.ltr));
   }
+}
+
+List<Widget> actions(BuildContext context) {
+  final List<dynamic> actions = Provider.of<Voyager>(context)["actions"];
+  if (actions == null || actions.isEmpty) {
+    return null;
+  }
+  final widgets = <Widget>[];
+  actions.forEach((dynamic action) {
+    widgets.add(IconButton(
+      icon: IconPlugin.fromHexValue(action["icon"]),
+      onPressed: () {
+        Navigator.of(context).pushNamed(action["target"]);
+      },
+    ));
+  });
+  return widgets;
 }

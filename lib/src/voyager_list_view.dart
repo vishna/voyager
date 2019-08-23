@@ -22,7 +22,7 @@ class VoyagerListView extends StatelessWidget {
         _items = List<_VoyagerItem>(items.length) {
     final n = items.length;
     for (var index = 0; index < n; index++) {
-      final _VoyagerItem item = items[index];
+      final dynamic item = items[index];
       final id = identifier(item);
       final path = pathMapper(item);
       _idToIndex[id] = index;
