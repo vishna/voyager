@@ -72,6 +72,5 @@ class TestScenarios extends VoyagerTestScenarios {
 
 void main() {
   final router = loadRouter(paths(), plugins());
-  voyagerAutomatedTests("voyager auto tests", router, TestScenarios(),
-      forceTests: false);
+  voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
 }

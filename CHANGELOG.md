@@ -1,9 +1,43 @@
-# 0.9.0 (UNRELEASED)
+# 0.9.0
 
-- support adding paths programatically
-- support VoyagerArgument in automated tests
+- support adding config for paths programatically 🎉
+
+```dart
+router.registerConfig('/home', (context, Voyager voyager) {
+  voyager.type = "home";
+  voyager[WidgetPlugin.KEY] =
+      (BuildContext buildContext) => MockHomeWidget();
+  voyager["title"] = "This is Home";
+})
+```
+
+You can also supply a custom inherited Voyager instance...
+
+```dart
+final VoyagerFactory<CustomVoyager> customVoyagerFactory =
+  (abstractContext, context) => CustomVoyager(
+    abstractContext.url(), abstractContext.getExtras().parent);
+
+router.registerConfig<CustomVoyager>('/other/:title', (context, voyager) {
+  final title = context.params["title"];
+  voyager.type = "other";
+  voyager.widget = (BuildContext buildContext) => MockOtherWidget();
+  voyager.title = "This is a $title";
+}, customVoyagerFactory);
+```
+
+> If you aim for flexibility you should stick to YAML config and avoid this method. You can mix programmatic and YAML paths together. Code generator doesn't pick up programmatic paths. You have been warned. Use wisely.
+
+- support supplying VoyagerArgument in automated tests
+
+```dart
+VoyagerTestObjectItemScenario.write("Talk", (WidgetTester tester) async {
+        expect(find.text("Mountain View"), findsOneWidget);
+      }, argument: const Talk("Mountain View", "Google I/O 2020", "19 May"))
+```
+
 - added static code analysis to the project
-- over 90% test coverage
+- over 90% code coverage
 
 # 0.8.0
 
