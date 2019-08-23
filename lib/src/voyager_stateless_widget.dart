@@ -52,12 +52,20 @@ class VoyagerStatelessWidget extends StatelessWidget {
         Provider<Voyager>.value(value: voyager),
         if (useCache)
           Provider<VoyagerParent>.value(
-              value: VoyagerParent(Provider.of<Voyager>(context))),
+              value: VoyagerParent(safeParent(context))),
         if (router != null) Provider<RouterNG>.value(value: router),
         if (argument != null) Provider<VoyagerArgument>.value(value: argument)
       ],
       child: Builder(builder: builder),
     );
+  }
+
+  static Voyager safeParent(BuildContext context) {
+    try {
+      return Provider.of<Voyager>(context);
+    } catch (_) {
+      return null;
+    }
   }
 }
 

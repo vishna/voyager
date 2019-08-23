@@ -31,9 +31,6 @@ class TestScenarios extends VoyagerTestScenarios {
       VoyagerTestHomeScenario.write((WidgetTester tester) async {
         expect(find.text("This is Home"), findsOneWidget);
         expect(find.text("Hello World"), findsOneWidget);
-        fabScenarios()
-            .first
-            .widgetTesterCallback(tester); // yo dawg, nested scenario
       })
     ];
   }
@@ -51,9 +48,30 @@ class TestScenarios extends VoyagerTestScenarios {
       })
     ];
   }
+
+  @override
+  List<VoyagerTestListScenario> listScenarios() {
+    return [
+      VoyagerTestListScenario.write((WidgetTester tester) async {
+        expect(find.text("Berlin"), findsOneWidget);
+        expect(find.text("London"), findsOneWidget);
+        expect(find.text("Łódź"), findsOneWidget);
+      })
+    ];
+  }
+
+  @override
+  List<VoyagerTestObjectItemScenario> objectItemScenarios() {
+    return [
+      VoyagerTestObjectItemScenario.write("Talk", (WidgetTester tester) async {
+        expect(find.text("Mountain View"), findsOneWidget);
+      }, argument: const Talk("Mountain View", "Google I/O 2020", "19 May"))
+    ];
+  }
 }
 
 void main() {
-  final router = loadRouter(paths(), plugins);
-  voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
+  final router = loadRouter(paths(), plugins());
+  voyagerAutomatedTests("voyager auto tests", router, TestScenarios(),
+      forceTests: false);
 }
