@@ -6,6 +6,7 @@ import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
 import 'mock_classes_cupertino.dart';
+import 'navigation_json.dart';
 import 'navigation_yml.dart';
 
 // ignore_for_file: avoid_as
@@ -282,5 +283,41 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text("Other Page"), findsOneWidget);
     });
+  });
+
+  test('loadPathsFromString loads paths from a yaml defined in a string',
+      () async {
+    final paths = await loadPathsFromString(navigation_yml);
+    expect(paths.length, 2);
+
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
+  });
+
+  test('loadPathsFromString loads paths from a json defined in a string',
+      () async {
+    final paths = await loadPathsFromJsonString(navigation_json);
+    expect(paths.length, 2);
+
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
+  });
+
+  test('loadPathsFromString SYNC loads paths from a yaml defined in a string',
+      () {
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    expect(paths.length, 2);
+
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
+  });
+
+  test('loadPathsFromString SYNC loads paths from a json defined in a string',
+      () {
+    final paths = loadPathsFromJsonSync(navigation_json);
+    expect(paths.length, 2);
+
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
   });
 }

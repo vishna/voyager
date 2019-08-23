@@ -9,24 +9,6 @@ import 'navigation_yml.dart';
 // ignore_for_file: avoid_as
 
 void main() {
-  test('loadPathsFromString loads paths from a yaml defined in a string',
-      () async {
-    final paths = await loadPathsFromString(navigation_yml);
-    expect(paths.length, 2);
-
-    expect(paths.map((it) => it.path),
-        containsAll(<String>["/home", "/other/:title"]));
-  });
-
-  test('loadPathsFromString loads paths from a json defined in a string',
-      () async {
-    final paths = await loadPathsFromJsonString(navigation_json);
-    expect(paths.length, 2);
-
-    expect(paths.map((it) => it.path),
-        containsAll(<String>["/home", "/other/:title"]));
-  });
-
   test('loadRouter from a yaml defined in a string', () async {
     final paths = loadPathsFromString(navigation_yml);
     final plugins = [
