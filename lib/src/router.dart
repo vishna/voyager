@@ -18,7 +18,7 @@ import 'router_plugin.dart';
 import 'utils.dart';
 import 'voyager.dart';
 
-List<RouterPath> _loadYaml(String yaml) {
+List<RouterPath> loadPathsFromYamlSync(String yaml) {
   final YamlMap routerMap = loadYaml(yaml);
   final paths = <RouterPath>[];
 
@@ -29,7 +29,7 @@ List<RouterPath> _loadYaml(String yaml) {
   return paths;
 }
 
-List<RouterPath> _loadJson(String jsonString) {
+List<RouterPath> loadPathsFromJsonSync(String jsonString) {
   final Map<String, dynamic> routerMap = json.decode(jsonString);
   final paths = <RouterPath>[];
 
@@ -45,15 +45,15 @@ Future<List<RouterPath>> loadPathsFromAssets(String path,
     {AssetBundle assetBundle}) async {
   assetBundle ??= rootBundle;
   final yaml = await assetBundle.loadString(path);
-  return _loadYaml(yaml);
+  return loadPathsFromYamlSync(yaml);
 }
 
 Future<List<RouterPath>> loadPathsFromString(String yaml) async {
-  return compute(_loadYaml, yaml);
+  return compute(loadPathsFromYamlSync, yaml);
 }
 
 Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
-  return compute(_loadJson, json);
+  return compute(loadPathsFromJsonSync, json);
 }
 
 Future<RouterNG> loadRouter(
