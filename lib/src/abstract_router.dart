@@ -7,11 +7,11 @@ import 'package:voyager/src/utils.dart';
 /// @param <P> the Params class
 abstract class AbstractRouter<O, P> {
   /// Default params shared across all router paths
-  final _globalParams = new Map<String, dynamic>();
+  final _globalParams = <String, dynamic>{};
 
-  final _routes = Map<String, OutputBuilder<O, P>>();
-  final _wildcardRoutes = Map<String, OutputBuilder<O, P>>();
-  final _cachedRoutes = Map<String, RouterParams>();
+  final _routes = <String, OutputBuilder<O, P>>{};
+  final _wildcardRoutes = <String, OutputBuilder<O, P>>{};
+  final _cachedRoutes = <String, RouterParams>{};
 
   /// Map a URL to an OutputBuilder
   ///
@@ -23,9 +23,9 @@ abstract class AbstractRouter<O, P> {
     }
 
     if (VoyagerUtils.isWildcard(format)) {
-      this._wildcardRoutes[format] = builder;
+      _wildcardRoutes[format] = builder;
     } else {
-      this._routes[format] = builder;
+      _routes[format] = builder;
     }
   }
 
@@ -41,7 +41,7 @@ abstract class AbstractRouter<O, P> {
       final openParams = Map<String, String>.from(params.openParams);
 
       // add global params to path specific params
-      for (MapEntry<String, dynamic> entry in _globalParams.entries) {
+      for (final entry in _globalParams.entries) {
         if (!openParams.containsKey(entry.key)) {
           // do not override locally set keys
           openParams[entry.key] = entry.value.toString();
@@ -59,36 +59,32 @@ abstract class AbstractRouter<O, P> {
   /// Takes a url (i.e. "/users/16/hello") and breaks it into a {@link RouterParams} instance where
   /// each of the parameters (like ":id") has been parsed.
   RouterParams<O, P> paramsForUrl(String url) {
-    final String cleanedUrl = VoyagerUtils.cleanUrl(url);
+    final cleanedUrl = VoyagerUtils.cleanUrl(url);
 
-    Uri parsedUri = Uri.parse("http://tempuri.org/" + cleanedUrl);
+    final parsedUri = Uri.parse("http://tempuri.org/" + cleanedUrl);
 
-    String urlPath = parsedUri.path.substring(1);
+    final urlPath = parsedUri.path.substring(1);
 
-    if (this._cachedRoutes[cleanedUrl] != null) {
-      return this._cachedRoutes[cleanedUrl];
+    if (_cachedRoutes[cleanedUrl] != null) {
+      return _cachedRoutes[cleanedUrl];
     }
 
     final givenParts = urlPath.split("/");
 
     // first check for matching non wildcard routes just to avoid being shadowed
     // by more generic wildcard routes
-    RouterParams<O, P> routerParams =
-        _checkRouteSet(this._routes.entries, givenParts, false);
+    var routerParams = _checkRouteSet(_routes.entries, givenParts, false);
 
     // still null, try matching to any wildcard routes
-    if (routerParams == null) {
-      routerParams =
-          _checkRouteSet(this._wildcardRoutes.entries, givenParts, true);
-    }
+    routerParams ??= _checkRouteSet(_wildcardRoutes.entries, givenParts, true);
 
     if (routerParams == null) {
-      throw new RouteNotFoundException("No route found for url $url");
+      throw RouteNotFoundException("No route found for url $url");
     }
 
     routerParams.openParams.addAll(parsedUri.queryParameters);
 
-    this._cachedRoutes[cleanedUrl] = routerParams;
+    _cachedRoutes[cleanedUrl] = routerParams;
     return routerParams;
   }
 
@@ -98,22 +94,21 @@ abstract class AbstractRouter<O, P> {
       bool isWildcard) {
     RouterParams<O, P> routerParams;
 
-    for (MapEntry<String, OutputBuilder<O, P>> entry in routeSet) {
-      String routerUrl = VoyagerUtils.cleanUrl(entry.key);
-      OutputBuilder<O, P> outputBuilder = entry.value;
-      List<String> routerParts = routerUrl.split("/");
+    for (final entry in routeSet) {
+      final routerUrl = VoyagerUtils.cleanUrl(entry.key);
+      final outputBuilder = entry.value;
+      final routerParts = routerUrl.split("/");
 
       if (!isWildcard && (routerParts.length != givenParts.length)) {
         continue;
       }
 
-      Map<String, String> givenParams =
-          _urlToParamsMap(givenParts, routerParts, isWildcard);
+      final givenParams = _urlToParamsMap(givenParts, routerParts, isWildcard);
       if (givenParams == null) {
         continue;
       }
 
-      routerParams = new RouterParams<O, P>();
+      routerParams = RouterParams<O, P>();
       routerParams.openParams = givenParams;
       routerParams.outputBuilder = outputBuilder;
       break;
@@ -134,27 +129,23 @@ abstract class AbstractRouter<O, P> {
 
 /// Thrown if a given route is not found.
 class RouteNotFoundException implements Exception {
-  final String cause;
   const RouteNotFoundException(this.cause);
+  final String cause;
 }
 
 /// The class used when you want to map a function (given in `run`)
 /// to a Router URL.
 abstract class OutputBuilder<O, P> {
-  O outputFor(AbstractRouteContext<P> context);
+  O outputFor(AbstractRouteContext<P> abstractContext);
 }
 
 /// The class supplied to custom callbacks to describe the route route
 class AbstractRouteContext<P> {
-  Map<String, String> _params;
-  P _extras;
-  String _url;
+  const AbstractRouteContext(this._params, this._extras, this._url);
 
-  AbstractRouteContext(Map<String, String> params, P extras, String url) {
-    _params = params;
-    _extras = extras;
-    _url = url;
-  }
+  final Map<String, String> _params;
+  final P _extras;
+  final String _url;
 
   /// Returns the route parameters as specified by the configured route
   Map<String, String> getParams() {
@@ -183,16 +174,16 @@ class RouterParams<O, P> {
 /// @return A map of URL parameters if it's a match (i.e. {"id" => "42"}) or null if there is no match
 Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
     List<String> routerUrlSegments, bool hasWildcard) {
-  final formatParams = Map<String, String>();
-  for (int routerIndex = 0, givenIndex = 0;
+  final formatParams = <String, String>{};
+  for (var routerIndex = 0, givenIndex = 0;
       routerIndex < routerUrlSegments.length &&
           givenIndex < givenUrlSegments.length;
       routerIndex++) {
-    String routerPart = routerUrlSegments[routerIndex];
-    String givenPart = givenUrlSegments[givenIndex];
+    final routerPart = routerUrlSegments[routerIndex];
+    final givenPart = givenUrlSegments[givenIndex];
 
-    if (routerPart.length > 0 && routerPart[0] == ':') {
-      String key = routerPart.substring(1, routerPart.length);
+    if (routerPart.isNotEmpty && routerPart[0] == ':') {
+      var key = routerPart.substring(1, routerPart.length);
 
       // (1) region standard router behavior
       if (!hasWildcard) {
@@ -202,7 +193,7 @@ Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
       }
 
       // (2) first we check if param is indeed a wildcard param
-      bool isWildcard = false;
+      var isWildcard = false;
       if (key[key.length - 1] == ':') {
         key = key.substring(0, key.length - 1);
         isWildcard = true;
@@ -216,7 +207,7 @@ Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
       }
 
       // (4) check remaining segments before consuming wildcard parameter
-      String nextRouterPart = (routerIndex + 1) < routerUrlSegments.length
+      final nextRouterPart = (routerIndex + 1) < routerUrlSegments.length
           ? routerUrlSegments[routerIndex + 1]
           : null;
 
@@ -229,9 +220,9 @@ Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
       }
 
       // (5) all is good, it's time to eat some segments
-      final segments = List<String>();
-      for (int i = givenIndex; i < givenUrlSegments.length; i++) {
-        String tmpPart = givenUrlSegments[i];
+      final segments = <String>[];
+      for (var i = givenIndex; i < givenUrlSegments.length; i++) {
+        final tmpPart = givenUrlSegments[i];
         if (tmpPart == nextRouterPart) {
           break;
         } else {

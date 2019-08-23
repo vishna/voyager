@@ -31,7 +31,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
- voyager: ^0.8.0
+ voyager: ^latest_release
  provider: ^3.0.0+1 # if you don't have it yet
 ```
 

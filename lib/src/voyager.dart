@@ -8,18 +8,17 @@ import 'package:flutter/foundation.dart';
 /// Developer might choose to use `storage` to dynamically put any variables that should be available
 /// to anyone having access to that instance of `Voyager`
 class Voyager {
+  Voyager({this.path, this.parent, Map<String, dynamic> config})
+      : _config = Map<String, dynamic>.from(config);
   static const String KEY_TYPE = "type";
 
   final Voyager parent;
   final Map<String, dynamic> _config;
-  final _output = Map<String, dynamic>();
-  final storage = Map<String, dynamic>();
-  final _onDispose = List<OnDispose>();
-  final path;
+  final _output = <String, dynamic>{};
+  final storage = <String, dynamic>{};
+  final _onDispose = <OnDispose>[];
+  final String path;
   bool _locked = false;
-
-  Voyager({this.path, this.parent, Map<String, dynamic> config})
-      : _config = Map.from(config);
 
   void merge(Voyager other) {
     if (_locked) {
@@ -29,8 +28,8 @@ class Voyager {
     _config.addAll(other._config);
   }
 
-  operator [](String key) {
-    dynamic value = _output[key];
+  dynamic operator [](String key) {
+    final dynamic value = _output[key];
     if (value != null || value == nothing) {
       return value;
     }
@@ -61,7 +60,7 @@ class Voyager {
     _config.clear();
   }
 
-  lock() {
+  void lock() {
     _locked = true;
   }
 

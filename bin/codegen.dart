@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 /// fixed version for predictable builds
 const voyagerVersion = "master-b31e5803db-1";
@@ -11,6 +11,7 @@ const voyagerJarPath =
 const cacheDir = ".jarCache";
 const savePath = "$cacheDir/voyager-codegen-$voyagerVersion.jar";
 
+// ignore: avoid_void_async
 void main(List<String> arguments) async {
   await Directory(cacheDir).create(recursive: true);
   if (FileSystemEntity.typeSync(savePath) == FileSystemEntityType.notFound) {
@@ -33,6 +34,6 @@ void main(List<String> arguments) async {
   });
 }
 
-downloadJar(String url, String target) async {
-  await Process.run('wget', [url, '-O', target]);
+Future<ProcessResult> downloadJar(String url, String target) async {
+  return await Process.run('wget', [url, '-O', target]);
 }

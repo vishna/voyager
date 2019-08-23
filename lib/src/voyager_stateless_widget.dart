@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'voyager_argument.dart';
+import 'plugins/widget_plugin.dart';
 import 'router.dart';
 import 'voyager.dart';
-import 'plugins/widget_plugin.dart';
+import 'voyager_argument.dart';
 
 /// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
 /// supplied in the costructor (e.g. if this is a top widget) or available via `Provider<RouterNG>.of(context)`
@@ -12,11 +12,6 @@ import 'plugins/widget_plugin.dart';
 /// accross [VoyagerStatelessWidget]. Additionally such [Voyager] doesn't hold reference to parent. If you need
 /// parent reference, use [Provider.of<VoyagerParent>(context)].
 class VoyagerStatelessWidget extends StatelessWidget {
-  final String path;
-  final RouterNG router;
-  final bool useCache;
-  final VoyagerArgument argument;
-
   const VoyagerStatelessWidget(
       {@required this.path,
       this.router,
@@ -25,11 +20,16 @@ class VoyagerStatelessWidget extends StatelessWidget {
       Key key})
       : super(key: key);
 
+  final String path;
+  final RouterNG router;
+  final bool useCache;
+  final VoyagerArgument argument;
+
   @override
   Widget build(BuildContext context) {
     final _router = router ?? Provider.of<RouterNG>(context);
 
-    var parentVoyager;
+    Voyager parentVoyager;
     try {
       parentVoyager = useCache ? null : Provider.of<Voyager>(context);
     } catch (t) {
@@ -42,7 +42,7 @@ class VoyagerStatelessWidget extends StatelessWidget {
 
     assert(voyager != null, "voyager instance should not be null");
 
-    final builder = voyager[WidgetPlugin.KEY];
+    final WidgetBuilder builder = voyager[WidgetPlugin.KEY];
 
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add WidgetPlugin?");
@@ -63,6 +63,6 @@ class VoyagerStatelessWidget extends StatelessWidget {
 
 /// this is only exposed when using cache in statless widget
 class VoyagerParent {
-  final Voyager value;
   const VoyagerParent(this.value);
+  final Voyager value;
 }

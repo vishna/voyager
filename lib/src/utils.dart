@@ -1,30 +1,30 @@
+import 'dart:convert';
 import 'package:sprintf/sprintf.dart';
 import 'router_context.dart';
-import 'dart:convert';
 
 const String _VARIABLE_PREFIX = "%{";
 const String _VARIABLE_SUFFIX = "}";
 
 class VoyagerUtils {
   static bool isNullOrBlank(String it) {
-    return it == null || it.trim().length == 0;
+    return it == null || it.trim().isEmpty;
   }
 
   static String interpolate(String format, Map<String, dynamic> values) {
     if (isNullOrBlank(format) || !format.contains(_VARIABLE_PREFIX))
       return format;
-    String convFormat = format;
+    var convFormat = format;
 
     final keys = values.keys.iterator;
-    List<String> valueList = new List<String>();
+    final valueList = <String>[];
 
-    int currentPos = 0;
+    var currentPos = 0;
     while (keys.moveNext()) {
-      String key = keys.current,
+      final key = keys.current,
           formatKey = "$_VARIABLE_PREFIX$key$_VARIABLE_SUFFIX",
           formatPos = "%$currentPos\$s";
-      int index = 0;
-      bool replaced = false;
+      var index = 0;
+      var replaced = false;
       while ((index = convFormat.indexOf(formatKey, index)) != -1) {
         convFormat =
             convFormat.replaceRange(index, index + formatKey.length, formatPos);
@@ -49,14 +49,14 @@ class VoyagerUtils {
     if (param is List) {
       interpolateList(param, context);
     } else if (param is Map) {
-      Map<String, dynamic> map = param;
+      final Map<String, dynamic> map = param;
       final keys = map.keys;
-      for (String key in keys) {
-        final value = map[key];
+      for (final key in keys) {
+        final dynamic value = map[key];
         if (isListOrMap(value)) {
           interpolateDynamic(value, context);
         } else if (value is String) {
-          String newValue = interpolate(value, context.params);
+          final newValue = interpolate(value, context.params);
           map[key] = newValue;
         }
       }
@@ -64,7 +64,8 @@ class VoyagerUtils {
   }
 
   static void interpolateList(List array, RouterContext context) {
-    for (int i = 0, n = array.length; i < n; i++) {
+    final n = array.length;
+    for (var i = 0; i < n; i++) {
       dynamic o = array[i];
 
       if (isListOrMap(o)) {
@@ -88,15 +89,15 @@ class VoyagerUtils {
     if (!isTuple(object)) {
       throw ArgumentError("$object is not a tuple");
     }
-    return (object as Map).entries.first;
+    return object.entries.first;
   }
 
-  static copyIt(dynamic config) {
-    return json.decode(json.encode(config)) as Map<String, dynamic>;
+  static Map<String, dynamic> copyIt(Map<String, dynamic> config) {
+    return json.decode(json.encode(config));
   }
 
   static String cleanUrl(String url) {
-    String outputUrl = url;
+    var outputUrl = url;
     if (outputUrl.startsWith("/")) {
       outputUrl = outputUrl.substring(1, outputUrl.length);
     }
@@ -107,16 +108,16 @@ class VoyagerUtils {
   }
 
   static Uri fromPath(String path) {
-    final String cleanedPath = VoyagerUtils.cleanUrl(path);
+    final cleanedPath = VoyagerUtils.cleanUrl(path);
 
     return Uri.parse("http://tempuri.org/" + cleanedPath);
   }
 
   static bool isWildcard(String format) {
-    String routerUrl = cleanUrl(format);
-    List<String> routerParts = routerUrl.split("/");
+    final routerUrl = cleanUrl(format);
+    final routerParts = routerUrl.split("/");
 
-    for (String routerPart in routerParts) {
+    for (final routerPart in routerParts) {
       if (routerPart.length > 2 &&
           routerPart[0] == ':' &&
           routerPart[routerPart.length - 1] == ':') {

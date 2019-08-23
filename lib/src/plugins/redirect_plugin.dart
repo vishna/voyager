@@ -1,22 +1,23 @@
-import '../router_context.dart';
 import '../../voyager.dart';
+import '../router_context.dart';
 
 class RedirectPlugin extends RouterPlugin {
+  RedirectPlugin() : super(KEY);
   static const KEY = "redirect";
 
-  RedirectPlugin() : super(KEY);
-
   @override
-  void outputFor(RouterContext context, config, Voyager output) {
-    if (!(config is String)) return;
+  void outputFor(RouterContext context, dynamic config, Voyager output) {
+    if (!(config is String)) {
+      return;
+    }
 
-    String targetUrl = config.toString();
+    var targetUrl = config.toString();
 
     /// calculate combined parameters
-    Uri originalUri = VoyagerUtils.fromPath(context.path);
-    Uri targetUri = VoyagerUtils.fromPath(targetUrl);
+    final originalUri = VoyagerUtils.fromPath(context.path);
+    var targetUri = VoyagerUtils.fromPath(targetUrl);
 
-    final combinedParameters = Map<String, String>();
+    final combinedParameters = <String, String>{};
     combinedParameters.addAll(targetUri.queryParameters);
     combinedParameters.addAll(originalUri.queryParameters);
     targetUri = Uri(
@@ -29,7 +30,7 @@ class RedirectPlugin extends RouterPlugin {
       targetUrl = "${targetUri.path}?$query";
     }
 
-    Voyager targetVoyager = context.router.find(targetUrl);
+    final targetVoyager = context.router.find(targetUrl);
     output.merge(targetVoyager);
   }
 }

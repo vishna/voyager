@@ -1,3 +1,10 @@
+# 0.9.0 (UNRELEASED)
+
+- support adding paths programatically
+- support VoyagerArgument in automated tests
+- added static code analysis to the project
+- over 90% test coverage
+
 # 0.8.0
 
 ## SOME BREAKING CHANGES

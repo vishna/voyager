@@ -4,11 +4,13 @@ import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
 
+// ignore_for_file: avoid_as
+
 void main() {
   test('registering null output builder', () {
     final router = RouterNG();
     expect(() => router.registerBuilder("/my/path", null),
-        throwsA(predicate((e) {
+        throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());
       expect((e as ArgumentError).message,
           "You need a non null builder for /my/path");
@@ -76,7 +78,7 @@ void main() {
     final router = await loadRouter(paths, plugins);
 
     expect(() => router.find("/other/quite/ridiculous/thing"),
-        throwsA(predicate((e) {
+        throwsA(predicate((Error e) {
       expect(e, isInstanceOf<StateError>());
       expect((e as StateError).message,
           "Wildcard parameter :whatever: cannot be directly followed by a parameter :id");

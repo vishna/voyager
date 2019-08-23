@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voyager/voyager.dart';
 
-import 'navigation_yml.dart';
-import 'navigation_json.dart';
 import 'mock_classes.dart';
+import 'navigation_json.dart';
+import 'navigation_yml.dart';
+
+// ignore_for_file: avoid_as
 
 void main() {
   test('loadPathsFromString loads paths from a yaml defined in a string',
@@ -12,8 +14,8 @@ void main() {
     final paths = await loadPathsFromString(navigation_yml);
     expect(paths.length, 2);
 
-    expect(
-        paths.map((it) => (it.path)), containsAll(["/home", "/other/:title"]));
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
   });
 
   test('loadPathsFromString loads paths from a json defined in a string',
@@ -21,8 +23,8 @@ void main() {
     final paths = await loadPathsFromJsonString(navigation_json);
     expect(paths.length, 2);
 
-    expect(
-        paths.map((it) => (it.path)), containsAll(["/home", "/other/:title"]));
+    expect(paths.map((it) => it.path),
+        containsAll(<String>["/home", "/other/:title"]));
   });
 
   test('loadRouter from a yaml defined in a string', () async {
@@ -61,13 +63,13 @@ void main() {
 
   test('create router programatically', () async {
     final router = RouterNG();
-    router.registerConfig('/home', (context, voyager) {
+    router.registerConfig('/home', (context, Voyager voyager) {
       voyager.type = "home";
       voyager[WidgetPlugin.KEY] =
           (BuildContext buildContext) => MockHomeWidget();
       voyager["title"] = "This is Home";
     });
-    router.registerConfig('/other/:title', (context, voyager) {
+    router.registerConfig('/other/:title', (context, Voyager voyager) {
       final title = context.params["title"];
       voyager.type = "other";
       voyager[WidgetPlugin.KEY] =
@@ -107,13 +109,13 @@ void main() {
       voyager.title = "This is a $title";
     }, customVoyagerFactory);
 
-    final homeVoyager = router.find("/home") as CustomVoyager;
+    final CustomVoyager homeVoyager = router.find("/home");
 
     expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
     expect(homeVoyager.type, "home");
     expect(homeVoyager.title, "This is Home");
 
-    final otherVoyager = router.find("/other/thing") as CustomVoyager;
+    final CustomVoyager otherVoyager = router.find("/other/thing");
 
     expect(
         otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
@@ -169,10 +171,10 @@ void main() {
   });
 
   test("merging one voyager into another", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
-    Voyager two = Voyager(config: {});
+    final two = Voyager(config: <String, dynamic>{});
     two["mission"] = "Mission 2";
     two["team"] = ["Jon", "Jessie"];
 
@@ -184,15 +186,15 @@ void main() {
   });
 
   test("merging one voyager into another with a lock", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
-    Voyager two = Voyager(config: {});
+    final two = Voyager(config: <String, dynamic>{});
     two["mission"] = "Mission 2";
     two["team"] = ["Jon", "Jessie"];
     two.lock();
 
-    expect(() => two.merge(one), throwsA(predicate((e) {
+    expect(() => two.merge(one), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect((e as FlutterError).message, "Voyager is in lockdown.");
       return true;
@@ -200,7 +202,7 @@ void main() {
   });
 
   test("adding items to a locked voyager", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     one["team"] = ["Jon", "Jessie"];
@@ -208,7 +210,7 @@ void main() {
     expect(() {
       /// sorry John
       one["team"] = ["Jon", "Jessie", "John"];
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect((e as FlutterError).message, "Voyager is in lockdown.");
       return true;
@@ -220,12 +222,12 @@ void main() {
   });
 
   test("disposing unlocked voyager", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     expect(() {
       one.dispose();
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect((e as FlutterError).message,
           "Can't dispose resources before Voyager is locked");
@@ -234,7 +236,7 @@ void main() {
   });
 
   test("disposing properly locked voyager", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -252,7 +254,7 @@ void main() {
   });
 
   test("adding dispose callback to locked voyager should throw", () {
-    Voyager one = Voyager(config: {});
+    final one = Voyager(config: <String, dynamic>{});
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -262,7 +264,7 @@ void main() {
       one.onDispose(() {
         _onDisposeCalled = true;
       });
-    }, throwsA(predicate((e) {
+    }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
       expect((e as FlutterError).message, "Voyager is in lockdown.");
       return true;

@@ -16,24 +16,26 @@ typedef PathMapper = String Function(dynamic item);
 /// ValueKey(s) FTW: https://medium.com/flutter-community/elements-keys-and-flutters-performance-3ef15c90f607
 /// ValueKey(s) + ListView sample: https://github.com/flutter/flutter/issues/21023#issuecomment-510950338
 class VoyagerListView extends StatelessWidget {
-  final Map<String, int> _idToIndex;
-  final List<_VoyagerItem> _items;
-  final ScrollController controller;
-
   VoyagerListView(List<dynamic> items, Identifier identifier,
       PathMapper pathMapper, this.controller)
-      : _idToIndex = Map<String, int>(),
+      : _idToIndex = <String, int>{},
         _items = List<_VoyagerItem>(items.length) {
     final n = items.length;
-    for (int index = 0; index < n; index++) {
-      final item = items[index];
+    for (var index = 0; index < n; index++) {
+      final _VoyagerItem item = items[index];
       final id = identifier(item);
       final path = pathMapper(item);
       _idToIndex[id] = index;
       _items[index] = _VoyagerItem(
-          argument: VoyagerArgument(item), path: path, key: ValueKey(id));
+          argument: VoyagerArgument(item),
+          path: path,
+          key: ValueKey<String>(id));
     }
   }
+
+  final Map<String, int> _idToIndex;
+  final List<_VoyagerItem> _items;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +62,8 @@ class VoyagerListView extends StatelessWidget {
 }
 
 class _VoyagerItem {
+  const _VoyagerItem({this.argument, this.path, this.key});
   final VoyagerArgument argument;
   final ValueKey key;
   final String path;
-
-  const _VoyagerItem({this.argument, this.path, this.key});
 }

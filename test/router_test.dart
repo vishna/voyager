@@ -8,9 +8,11 @@ import 'mock_classes.dart';
 import 'mock_classes_cupertino.dart';
 import 'navigation_yml.dart';
 
+// ignore_for_file: avoid_as
+
 class MyMockedEntity {
-  final Object db;
   const MyMockedEntity(this.db);
+  final Object db;
 }
 
 void main() {
@@ -35,7 +37,7 @@ void main() {
     ];
 
     final router = await loadRouter(paths, plugins);
-    final myDatabase = MyMockedEntity("database");
+    const myDatabase = MyMockedEntity("database");
 
     router.registerGlobalEntity("database", myDatabase);
     expect(router.getGlobalEntity("database"), myDatabase);
@@ -123,7 +125,7 @@ void main() {
     ];
 
     final router = await loadRouter(paths, plugins);
-    expect(() => router.find("/other/thing"), throwsA(predicate((e) {
+    expect(() => router.find("/other/thing"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<AssertionError>());
       expect((e as AssertionError).message,
           "Provided type value must be String but is [1, 2, 3] instead!");
@@ -148,7 +150,7 @@ void main() {
       await tester.pumpWidget(Provider<RouterNG>.value(
           value: router,
           child: MaterialApp(
-              home: VoyagerWidget(path: "/home"),
+              home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
                   router.generator(routeType: RouterNG.materialRoute))));
 
@@ -179,7 +181,7 @@ void main() {
       await tester.pumpWidget(Provider<RouterNG>.value(
           value: router,
           child: CupertinoApp(
-              home: VoyagerWidget(path: "/home"),
+              home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
                   router.generator(routeType: RouterNG.cupertinoRoute))));
 
@@ -210,7 +212,7 @@ void main() {
 
       final generator = router.generator(routeType: 9000);
       try {
-        generator(RouteSettings(name: "/other/thing"));
+        generator(const RouteSettings(name: "/other/thing"));
       } catch (e) {
         expect(e, isInstanceOf<ArgumentError>());
         expect((e as ArgumentError).message, "routeType = 9000 not supported");
@@ -236,7 +238,7 @@ void main() {
       await tester.pumpWidget(Provider<RouterNG>.value(
           value: router,
           child: MaterialApp(
-              home: VoyagerWidget(path: "/home"),
+              home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
                   router.generator(routeType: RouterNG.materialRoute))));
 
@@ -268,7 +270,7 @@ void main() {
       await tester.pumpWidget(Provider<RouterNG>.value(
           value: router,
           child: MaterialApp(
-              home: VoyagerWidget(path: "/home"),
+              home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
                   router.generator(routeType: RouterNG.materialRoute))));
 

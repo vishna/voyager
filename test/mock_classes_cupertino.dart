@@ -7,16 +7,16 @@ class MockCupertinoHomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("Home Title"),
+        middle: const Text("Home Title"),
         trailing: CupertinoButton(
           onPressed: () {
             Navigator.of(context).pushNamed("/other/thing");
           },
-          child: Text("Navigate"),
+          child: const Text("Navigate"),
         ),
       ),
       child: Center(
-        child: Text("Home Page"),
+        child: const Text("Home Page"),
       ),
     );
   }
@@ -25,14 +25,14 @@ class MockCupertinoHomeWidget extends StatelessWidget {
 class MockCupertinoOtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = Provider.of<Voyager>(context)["title"];
+    final String title = Provider.of<Voyager>(context)["title"];
 
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
           middle: Text(title),
         ),
         child: Center(
-          child: Text("Other Page"),
+          child: const Text("Other Page"),
         ));
   }
 }

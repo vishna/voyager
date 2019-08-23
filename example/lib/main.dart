@@ -44,7 +44,7 @@ class IconPlugin extends RouterPlugin {
   IconPlugin() : super("icon");
 
   @override
-  void outputFor(RouterContext context, config, Voyager output) {
+  void outputFor(RouterContext context, dynamic config, Voyager output) {
     output["icon"] = Icon(IconData(int.parse(config.toString(), radix: 16),
         fontFamily: 'MaterialIcons'));
   }
@@ -58,13 +58,13 @@ void main() {
 Widget appOrSplash() {
   return FutureBuilder(
       future: loadRouter(paths(), plugins),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<RouterNG> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
           return Provider<RouterNG>.value(
               value: router,
               child: MaterialApp(
-                title: 'Voyager Demo',
+                title: "Voyager Demo",
                 home:
                     VoyagerWidget(path: VoyagerPaths.pathHome, router: router),
                 theme: themeData(),
@@ -90,16 +90,16 @@ Widget makeMeFab(BuildContext context) {
 ThemeData themeData() {
   return ThemeData(
       brightness: Brightness.dark,
-      primaryColor: Color(0xff5bb974),
+      primaryColor: const Color(0xff5bb974),
       canvasColor: Colors.black,
-      accentColor: Color(0xfffcc934));
+      accentColor: const Color(0xfffcc934));
 }
 
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final voyager = Provider.of<Voyager>(context);
-    final title = voyager["title"];
+    final String title = voyager["title"];
 
     return Scaffold(
         appBar: AppBar(

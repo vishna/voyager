@@ -10,6 +10,7 @@ import 'package:glob/glob.dart';
 ///
 /// This is meant to be similar to the default [rootBundle] for testing.
 class DiskAssetBundle extends CachingAssetBundle {
+  DiskAssetBundle._(this._cache);
   static const _assetManifestDotJson = 'AssetManifest.json';
 
   /// Creates a [DiskAssetBundle] by loading [globs] of assets under `assets/`.
@@ -21,6 +22,7 @@ class DiskAssetBundle extends CachingAssetBundle {
     for (final pattern in globs) {
       await for (final path in Glob(pattern).list(root: from)) {
         if (path is File) {
+          // ignore: avoid_as
           final bytes = await path.readAsBytes() as Uint8List;
           cache[path.path] = ByteData.view(bytes.buffer);
         }
@@ -39,8 +41,6 @@ class DiskAssetBundle extends CachingAssetBundle {
   }
 
   final Map<String, ByteData> _cache;
-
-  DiskAssetBundle._(this._cache);
 
   @override
   Future<ByteData> load(String key) async {
