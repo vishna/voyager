@@ -90,9 +90,9 @@ void main() {
       final paths = loadPathsFromString(navigationYaml);
       final plugins = [
         WidgetPluginBuilder()
-        .add<ListWidget>((_) => ListWidget())
-        .add<TalkWidget>((_) => TalkWidget())
-        .build()
+            .add<ListWidget>((_) => ListWidget())
+            .add<TalkWidget>((_) => TalkWidget())
+            .build()
       ];
 
       final router = await loadRouter(paths, plugins);
