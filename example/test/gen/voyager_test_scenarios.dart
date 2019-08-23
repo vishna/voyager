@@ -24,7 +24,23 @@ void _testVoyagerWidget(
 
       expect(router, isInstanceOf<RouterNG>());
 
-      Widget widget = VoyagerWidget(path: scenario.path(), router: router);
+      VoyagerArgument argument;
+
+      if (scenario.argument != null) {
+        if (scenario.argument is VoyagerArgument) {
+          argument = scenario.argument;
+        } else {
+          argument = VoyagerArgument(scenario.argument);
+        }
+      }
+
+      var widget = scenario.argument == null
+          ? VoyagerWidget(path: scenario.path(), router: router)
+          : VoyagerStatelessWidget(
+              path: scenario.path(),
+              router: router,
+              argument: argument,
+              useCache: true);
       widget = widgetWrapper != null ? widgetWrapper(widget) : widget;
       widget = scenario.widgetWrapper != null
           ? scenario.widgetWrapper(widget)
@@ -43,10 +59,12 @@ void _testVoyagerWidget(
 
 @experimental
 abstract class VoyagerTestScenario {
-  VoyagerTestScenario(this.testDescription, this.widgetTesterCallback);
+  VoyagerTestScenario(this.testDescription, this.widgetTesterCallback,
+      {this.argument});
 
   final String testDescription;
   final WidgetTesterCallback widgetTesterCallback;
+  final dynamic argument;
   WidgetWrapper widgetWrapper;
 
   String path();
@@ -58,8 +76,8 @@ abstract class VoyagerTestScenario {
 @experimental
 class VoyagerTestHomeScenario extends VoyagerTestScenario {
   VoyagerTestHomeScenario.write(WidgetTesterCallback widgetTesterCallback,
-      {String description = ""})
-      : super(description, widgetTesterCallback);
+      {String description = "", dynamic argument})
+      : super(description, widgetTesterCallback, argument: argument);
 
   @override
   String path() {
@@ -71,8 +89,8 @@ class VoyagerTestHomeScenario extends VoyagerTestScenario {
 class VoyagerTestOtherScenario extends VoyagerTestScenario {
   VoyagerTestOtherScenario.write(
       this.title, WidgetTesterCallback widgetTesterCallback,
-      {String description = ""})
-      : super(description, widgetTesterCallback);
+      {String description = "", dynamic argument})
+      : super(description, widgetTesterCallback, argument: argument);
 
   final String title;
 
@@ -85,12 +103,39 @@ class VoyagerTestOtherScenario extends VoyagerTestScenario {
 @experimental
 class VoyagerTestFabScenario extends VoyagerTestScenario {
   VoyagerTestFabScenario.write(WidgetTesterCallback widgetTesterCallback,
-      {String description = ""})
-      : super(description, widgetTesterCallback);
+      {String description = "", dynamic argument})
+      : super(description, widgetTesterCallback, argument: argument);
 
   @override
   String path() {
     return "/fab";
+  }
+}
+
+@experimental
+class VoyagerTestListScenario extends VoyagerTestScenario {
+  VoyagerTestListScenario.write(WidgetTesterCallback widgetTesterCallback,
+      {String description = "", dynamic argument})
+      : super(description, widgetTesterCallback, argument: argument);
+
+  @override
+  String path() {
+    return "/list";
+  }
+}
+
+@experimental
+class VoyagerTestObjectItemScenario extends VoyagerTestScenario {
+  VoyagerTestObjectItemScenario.write(
+      this.className, WidgetTesterCallback widgetTesterCallback,
+      {String description = "", dynamic argument})
+      : super(description, widgetTesterCallback, argument: argument);
+
+  final String className;
+
+  @override
+  String path() {
+    return "/_object/$className";
   }
 }
 
@@ -102,6 +147,8 @@ abstract class VoyagerTestScenarios {
   List<VoyagerTestHomeScenario> homeScenarios();
   List<VoyagerTestOtherScenario> otherScenarios();
   List<VoyagerTestFabScenario> fabScenarios();
+  List<VoyagerTestListScenario> listScenarios();
+  List<VoyagerTestObjectItemScenario> objectItemScenarios();
 }
 
 @isTestGroup
@@ -147,6 +194,34 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
     fabScenarios?.asMap()?.forEach((index, scenario) {
       _testVoyagerWidget(
           "fab scenario $index: path=${scenario.path()} ${scenario.testDescription}",
+          router,
+          testScenarios.defaultWrapper,
+          scenario);
+    });
+    final listScenarios = testScenarios.listScenarios();
+    if (forceTests) {
+      assert(
+          listScenarios != null, "listScenarios seems to lack implementation");
+      assert(listScenarios.isNotEmpty,
+          "listScenarios must return at least one test scenario");
+    }
+    listScenarios?.asMap()?.forEach((index, scenario) {
+      _testVoyagerWidget(
+          "list scenario $index: path=${scenario.path()} ${scenario.testDescription}",
+          router,
+          testScenarios.defaultWrapper,
+          scenario);
+    });
+    final objectItemScenarios = testScenarios.objectItemScenarios();
+    if (forceTests) {
+      assert(objectItemScenarios != null,
+          "objectItemScenarios seems to lack implementation");
+      assert(objectItemScenarios.isNotEmpty,
+          "objectItemScenarios must return at least one test scenario");
+    }
+    objectItemScenarios?.asMap()?.forEach((index, scenario) {
+      _testVoyagerWidget(
+          "objectItem scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
           scenario);

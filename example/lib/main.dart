@@ -39,9 +39,9 @@ String requirements() {
     - city: "Łódź"
       event: Mobilization
       date: October 26, 2019
-'/_object/:class':
+'/_object/:className':
   type: object_item
-  widget: "%{class}Widget"
+  widget: "%{className}Widget"
 ''';
 }
 
@@ -133,7 +133,7 @@ class PageWidget extends StatelessWidget {
           actions: actions(context),
         ),
         body: Center(
-          child: Text(voyager["body"], style: TextStyle(fontSize: 24)),
+          child: Text(voyager["body"], style: const TextStyle(fontSize: 24)),
         ),
         floatingActionButton: voyager["fabPath"] != null
             ? VoyagerWidget(
