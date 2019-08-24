@@ -1,3 +1,7 @@
+# 0.9.1
+
+- `WidgetWrapper` for generated tests now has extra 2 parameters, `router` and `scenarios`. This should facilitate creation of the wrapping widget.
+
 # 0.9.0
 
 - support adding config for paths programatically 🎉

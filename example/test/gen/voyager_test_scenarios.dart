@@ -5,13 +5,15 @@ import 'package:meta/meta.dart';
 import 'package:test_api/test_api.dart' as test_package;
 import 'package:voyager/voyager.dart';
 
-typedef WidgetWrapper = Widget Function(Widget nonWrappedWidget);
+typedef WidgetWrapper<T extends VoyagerTestScenarios> = Widget Function(
+    Widget nonWrappedWidget, RouterNG router, T scenarios);
 
 @isTest
-void _testVoyagerWidget(
+void _testVoyagerWidget<T extends VoyagerTestScenarios>(
   String description,
   Future<RouterNG> routerFuture,
   WidgetWrapper widgetWrapper,
+  T scenarios,
   VoyagerTestScenario scenario, {
   bool skip = false,
   test_package.Timeout timeout,
@@ -41,9 +43,11 @@ void _testVoyagerWidget(
               router: router,
               argument: argument,
               useCache: true);
-      widget = widgetWrapper != null ? widgetWrapper(widget) : widget;
+      widget = widgetWrapper != null
+          ? widgetWrapper(widget, router, scenarios)
+          : widget;
       widget = scenario.widgetWrapper != null
-          ? scenario.widgetWrapper(widget)
+          ? scenario.widgetWrapper(widget, router, scenarios)
           : widget;
 
       await tester.pumpWidget(widget);
@@ -153,8 +157,8 @@ abstract class VoyagerTestScenarios {
 
 @isTestGroup
 @experimental
-void voyagerAutomatedTests(String description, Future<RouterNG> router,
-    VoyagerTestScenarios testScenarios,
+void voyagerAutomatedTests<T extends VoyagerTestScenarios>(String description,
+    Future<RouterNG> router, VoyagerTestScenarios testScenarios,
     {bool forceTests = true}) {
   group(description, () {
     final homeScenarios = testScenarios.homeScenarios();
@@ -165,10 +169,11 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
           "homeScenarios must return at least one test scenario");
     }
     homeScenarios?.asMap()?.forEach((index, scenario) {
-      _testVoyagerWidget(
+      _testVoyagerWidget<T>(
           "home scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
+          testScenarios,
           scenario);
     });
     final otherScenarios = testScenarios.otherScenarios();
@@ -179,10 +184,11 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
           "otherScenarios must return at least one test scenario");
     }
     otherScenarios?.asMap()?.forEach((index, scenario) {
-      _testVoyagerWidget(
+      _testVoyagerWidget<T>(
           "other scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
+          testScenarios,
           scenario);
     });
     final fabScenarios = testScenarios.fabScenarios();
@@ -192,10 +198,11 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
           "fabScenarios must return at least one test scenario");
     }
     fabScenarios?.asMap()?.forEach((index, scenario) {
-      _testVoyagerWidget(
+      _testVoyagerWidget<T>(
           "fab scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
+          testScenarios,
           scenario);
     });
     final listScenarios = testScenarios.listScenarios();
@@ -206,10 +213,11 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
           "listScenarios must return at least one test scenario");
     }
     listScenarios?.asMap()?.forEach((index, scenario) {
-      _testVoyagerWidget(
+      _testVoyagerWidget<T>(
           "list scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
+          testScenarios,
           scenario);
     });
     final objectItemScenarios = testScenarios.objectItemScenarios();
@@ -220,10 +228,11 @@ void voyagerAutomatedTests(String description, Future<RouterNG> router,
           "objectItemScenarios must return at least one test scenario");
     }
     objectItemScenarios?.asMap()?.forEach((index, scenario) {
-      _testVoyagerWidget(
+      _testVoyagerWidget<T>(
           "objectItem scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
+          testScenarios,
           scenario);
     });
   });
