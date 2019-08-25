@@ -21,39 +21,38 @@ void _testVoyagerWidget<T extends VoyagerTestScenarios>(
   bool semanticsEnabled = false,
 }) {
   testWidgets(description, (WidgetTester tester) async {
+    RouterNG router;
     await tester.runAsync(() async {
-      final router = await routerFuture;
-
-      expect(router, isInstanceOf<RouterNG>());
-
-      VoyagerArgument argument;
-
-      if (scenario.argument != null) {
-        if (scenario.argument is VoyagerArgument) {
-          argument = scenario.argument;
-        } else {
-          argument = VoyagerArgument(scenario.argument);
-        }
-      }
-
-      var widget = scenario.argument == null
-          ? VoyagerWidget(path: scenario.path(), router: router)
-          : VoyagerStatelessWidget(
-              path: scenario.path(),
-              router: router,
-              argument: argument,
-              useCache: true);
-      widget = widgetWrapper != null
-          ? widgetWrapper(widget, router, scenarios)
-          : widget;
-      widget = scenario.widgetWrapper != null
-          ? scenario.widgetWrapper(widget, router, scenarios)
-          : widget;
-
-      await tester.pumpWidget(widget);
-
-      scenario.widgetTesterCallback(tester);
+      router = await routerFuture;
+      expect(router, isNotNull);
     });
+
+    VoyagerArgument argument;
+
+    if (scenario.argument != null) {
+      if (scenario.argument is VoyagerArgument) {
+        argument = scenario.argument;
+      } else {
+        argument = VoyagerArgument(scenario.argument);
+      }
+    }
+
+    var widget = scenario.argument == null
+        ? VoyagerWidget(path: scenario.path(), router: router)
+        : VoyagerStatelessWidget(
+            path: scenario.path(),
+            router: router,
+            argument: argument,
+            useCache: true);
+    widget = widgetWrapper != null
+        ? widgetWrapper(widget, router, scenarios)
+        : widget;
+    widget = scenario.widgetWrapper != null
+        ? scenario.widgetWrapper(widget, router, scenarios)
+        : widget;
+
+    await tester.pumpWidget(widget);
+    await scenario.widgetTesterCallback(tester);
   },
       skip: skip,
       timeout: timeout,

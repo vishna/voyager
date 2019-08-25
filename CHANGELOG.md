@@ -1,3 +1,7 @@
+# 0.9.2
+
+- `WidgetWrapper` no longer runs in tester.runAsync scope by default
+
 # 0.9.1
 
 - `WidgetWrapper` for generated tests now has extra 2 parameters, `router` and `scenarios`. This should facilitate creation of the wrapping widget.
