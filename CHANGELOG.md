@@ -1,3 +1,8 @@
+# 1.0.0 (Unreleased)
+
+- YAML config validation
+- `VoyagerData` with strong typed `Voyager` fields
+
 # 0.9.2
 
 - `WidgetWrapper` no longer runs in tester.runAsync scope by default
