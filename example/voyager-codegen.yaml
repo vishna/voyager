@@ -1,6 +1,67 @@
 ## This file should be checked in version control
 ## Describes sources and targets for the voyager-codegen tool
-- name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests etc.
+- name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests, VoyagerData etc.
   source: lib/main.dart
   target: lib/gen/voyager_gen.dart
   testTarget: test/gen/voyager_test_scenarios.dart
+  definitions:
+    icon:
+      type: string
+      pattern: "^[a-fA-F0-9]{4}$"
+    talk:
+      type: object
+      required: [city, event, date]
+      properties:
+        city:
+          type: string
+        event:
+          type: string
+        date:
+          type: string
+    action:
+      type: object
+      required: [target, icon]
+      properties:
+        target:
+          type: string
+        icon:
+          $ref: "#/definitions/icon"
+  schema:
+    title:
+      output: String
+      input:
+        type: string
+    widget:
+      input:
+        type: string
+        enum: [PageWidget, FabWidget, ListWidget, "%{className}Widget"]
+    body:
+      output: String
+      input:
+        type: string
+    fabPath:
+      output: String
+      input:
+        type: string
+    target:
+      output: String
+      input:
+        type: string
+    icon:
+      output: Icon
+      import: "package:flutter/widgets.dart"
+      input:
+        $ref: "#/definitions/icon"
+    actions:
+      output: List<dynamic>
+      generateStub: true
+      input:
+        type: array
+        items:
+          $ref: "#/definitions/action"
+    items:
+      output: List<dynamic>
+      input:
+        type: array
+        items:
+          $ref: "#/definitions/talk"

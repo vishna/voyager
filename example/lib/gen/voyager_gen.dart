@@ -1,4 +1,8 @@
 /// Generated file, DO NOT EDIT
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:voyager/voyager.dart';
+
 class VoyagerPaths {
   static const String pathHome = "/home";
   static const String typeHome = "home";
@@ -16,4 +20,29 @@ class VoyagerPaths {
   }
 
   static const String typeObjectItem = "object_item";
+}
+
+class VoyagerData {
+  VoyagerData(this.voyager);
+  final Voyager voyager;
+
+  String get type => voyager.type;
+  String get title => voyager["title"];
+  String get body => voyager["body"];
+  String get fabPath => voyager["fabPath"];
+  String get target => voyager["target"];
+  Icon get icon => voyager["icon"];
+  List<dynamic> get actions => voyager["actions"];
+  List<dynamic> get items => voyager["items"];
+
+  // ignore: prefer_constructors_over_static_methods
+  static VoyagerData of(BuildContext context) {
+    final voyager = Provider.of<Voyager>(context);
+    VoyagerData data = voyager.storage["VoyagerData"];
+    if (data == null) {
+      data = VoyagerData(voyager);
+      voyager.storage["VoyagerData"] = data;
+    }
+    return data;
+  }
 }

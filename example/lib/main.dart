@@ -103,13 +103,13 @@ Widget appOrSplash() {
 }
 
 Widget makeMeFab(BuildContext context) {
-  final voyager = Provider.of<Voyager>(context);
+  final voyager = VoyagerData.of(context);
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context).pushNamed(voyager["target"]);
+      Navigator.of(context).pushNamed(voyager.target);
     },
     tooltip: 'Navigate',
-    child: voyager["icon"],
+    child: voyager.icon,
   );
 }
 
@@ -124,20 +124,19 @@ ThemeData themeData() {
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = Provider.of<Voyager>(context);
-    final String title = voyager["title"];
+    final voyager = VoyagerData.of(context);
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(voyager.title),
           actions: actions(context),
         ),
         body: Center(
-          child: Text(voyager["body"], style: const TextStyle(fontSize: 24)),
+          child: Text(voyager.body, style: const TextStyle(fontSize: 24)),
         ),
-        floatingActionButton: voyager["fabPath"] != null
+        floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
-                path: voyager["fabPath"],
+                path: voyager.fabPath,
               )
             : null);
   }
@@ -146,24 +145,23 @@ class PageWidget extends StatelessWidget {
 class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = Provider.of<Voyager>(context);
-    final String title = voyager["title"];
+    final voyager = VoyagerData.of(context);
 
     // ignore: avoid_as
-    final talks = (voyager["items"] as List<dynamic>)
+    final talks = (voyager.items)
         .toList()
         .map((dynamic item) => Talk(item["city"], item["event"], item["date"]))
         .toList();
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(voyager.title),
           actions: actions(context),
         ),
         body: VoyagerListView(talks, idMapper, objectMapper, null),
-        floatingActionButton: voyager["fabPath"] != null
+        floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
-                path: voyager["fabPath"],
+                path: voyager.fabPath,
               )
             : null);
   }
