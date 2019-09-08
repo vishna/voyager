@@ -48,13 +48,13 @@
       input:
         type: string
     icon:
+      pluginStub: true
       output: Icon
       import: "package:flutter/widgets.dart"
       input:
         $ref: "#/definitions/icon"
     actions:
       output: List<dynamic>
-      generateStub: true
       input:
         type: array
         items:

@@ -268,4 +268,35 @@ void main() {
     expect(fabVoyager[WidgetPlugin.KEY](null),
         isInstanceOf<FloatingActionButton>());
   });
+
+  test("mock object plugin", () {
+    final voyager = Voyager(config: <String, dynamic>{});
+    final mockPlugin = _MockPlugin();
+    mockPlugin.outputFor(null, null, voyager);
+    voyager.lock();
+    expect(voyager["mock"], isInstanceOf<_MockObject>());
+    final mock = voyager["mock"] as _MockObject;
+    expect(mock.disposed, false);
+    voyager.dispose();
+    expect(mock.disposed, true);
+  });
+}
+
+class _MockObject {
+  bool disposed = false;
+}
+
+class _MockPlugin extends RouterObjectPlugin<_MockObject> {
+  _MockPlugin() : super("mock");
+
+  @override
+  void onDispose(_MockObject t) {
+    super.onDispose(t);
+    t.disposed = true;
+  }
+
+  @override
+  _MockObject buildObject(RouterContext context, dynamic config) {
+    return _MockObject();
+  }
 }

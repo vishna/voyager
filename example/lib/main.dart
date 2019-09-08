@@ -61,14 +61,10 @@ List<RouterPlugin> plugins() => [
       IconPlugin()
     ];
 
-class IconPlugin extends RouterPlugin {
-  IconPlugin() : super("icon");
-
+class IconPlugin extends IconPluginStub {
   @override
-  void outputFor(RouterContext context, dynamic config, Voyager output) {
-    output["icon"] = Icon(IconData(int.parse(config.toString(), radix: 16),
-        fontFamily: 'MaterialIcons'));
-  }
+  Icon buildObject(RouterContext context, dynamic config) =>
+      fromHexValue(config.toString());
 
   static Icon fromHexValue(String hexValue) {
     return Icon(

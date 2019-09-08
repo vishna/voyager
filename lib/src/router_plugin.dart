@@ -7,3 +7,20 @@ abstract class RouterPlugin {
 
   void outputFor(RouterContext context, dynamic config, Voyager output);
 }
+
+abstract class RouterObjectPlugin<T> extends RouterPlugin {
+  RouterObjectPlugin(String node) : super(node);
+
+  T buildObject(RouterContext context, dynamic config);
+
+  void onDispose(T t) {}
+
+  @override
+  void outputFor(RouterContext context, dynamic config, Voyager output) {
+    final object = buildObject(context, config);
+    output[node] = object;
+    output.onDispose(() {
+      onDispose(object);
+    });
+  }
+}

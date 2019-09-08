@@ -1,7 +1,8 @@
 # 1.0.0 (Unreleased)
 
 - YAML config validation
-- `VoyagerData` with strong typed `Voyager` fields
+- Generated `VoyagerData` with strong typed `Voyager` fields.
+- Option to generate PluginStubs
 
 # 0.9.2
 

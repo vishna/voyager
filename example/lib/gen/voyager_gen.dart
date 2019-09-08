@@ -46,3 +46,7 @@ class VoyagerData {
     return data;
   }
 }
+
+abstract class IconPluginStub extends RouterObjectPlugin<Icon> {
+  IconPluginStub() : super("icon");
+}
