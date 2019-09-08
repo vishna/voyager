@@ -47,3 +47,11 @@ class DiskAssetBundle extends CachingAssetBundle {
     return _cache[key];
   }
 }
+
+String pathPrefix() {
+  if (Directory.current.path.endsWith("test")) {
+    return "assets";
+  }
+
+  return "test/assets";
+}
