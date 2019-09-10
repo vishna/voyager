@@ -26,6 +26,24 @@ void main() {
     expect(homeVoyager.type, "home");
   });
 
+  test('loadRouter from a yaml defined in a string + mock factory', () async {
+    final paths = loadPathsFromString(navigation_yml);
+    final plugins = [
+      WidgetPlugin({
+        "HomeWidget": (context) => MockHomeWidget(),
+        "OtherWidget": (context) => MockOtherWidget(),
+      })
+    ];
+
+    final router =
+        await loadRouter(paths, plugins, voyagerFactory: _mockFactory);
+
+    final homeVoyager = router.find("/home");
+
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
+  });
+
   test('loadRouter from a json defined in a string', () async {
     final paths = loadPathsFromJsonString(navigation_json);
     final plugins = [
@@ -264,3 +282,10 @@ void main() {
     expect(one["brief"], null);
   });
 }
+
+Voyager _mockFactory(
+        AbstractRouteContext abstractContext, Map<String, dynamic> config) =>
+    Voyager(
+        path: abstractContext.url(),
+        parent: abstractContext.getExtras().parent,
+        config: config);

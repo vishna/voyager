@@ -2,7 +2,12 @@
 
 - YAML config validation
 - Generated `VoyagerData` with strong typed `Voyager` fields.
-- Option to generate PluginStubs
+- Option to generate PluginStubs based on config validation schema
+
+## BREAKING CHANGES
+
+- old `VoyagerFactory` becomes `ProgrammaticVoyagerFactory`
+- new `VoyagerFactory` is used to instantiate generated `VoyagerData`
 
 # 0.9.2
 
