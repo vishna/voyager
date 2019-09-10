@@ -74,7 +74,7 @@ void main() {
   });
 
   test('create router programatically with custom voyager factory', () async {
-    final VoyagerFactory<CustomVoyager> customVoyagerFactory =
+    final ProgrammaticVoyagerFactory<CustomVoyager> customVoyagerFactory =
         (abstractContext, context) => CustomVoyager(
             abstractContext.url(), abstractContext.getExtras().parent);
 

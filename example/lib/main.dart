@@ -79,7 +79,8 @@ void main() {
 
 Widget appOrSplash() {
   return FutureBuilder(
-      future: loadRouter(paths(), plugins()),
+      future:
+          loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory),
       builder: (BuildContext context, AsyncSnapshot<RouterNG> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
@@ -99,7 +100,7 @@ Widget appOrSplash() {
 }
 
 Widget makeMeFab(BuildContext context) {
-  final voyager = VoyagerData.of(context);
+  final VoyagerData voyager = Provider.of<Voyager>(context);
   return FloatingActionButton(
     onPressed: () {
       Navigator.of(context).pushNamed(voyager.target);
@@ -120,7 +121,7 @@ ThemeData themeData() {
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = VoyagerData.of(context);
+    final VoyagerData voyager = Provider.of<Voyager>(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -141,7 +142,7 @@ class PageWidget extends StatelessWidget {
 class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = VoyagerData.of(context);
+    final VoyagerData voyager = Provider.of<Voyager>(context);
 
     // ignore: avoid_as
     final talks = (voyager.items)

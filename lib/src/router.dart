@@ -57,8 +57,11 @@ Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
 }
 
 Future<RouterNG> loadRouter(
-    Future<List<RouterPath>> paths, List<RouterPlugin> plugins) {
-  final router = RouterNG();
+    Future<List<RouterPath>> paths, List<RouterPlugin> plugins,
+    {VoyagerFactory voyagerFactory}) {
+  final router = voyagerFactory != null
+      ? RouterNG(voyagerFactory: voyagerFactory)
+      : RouterNG();
 
   plugins.forEach((plugin) {
     router.registerPlugin(plugin);
@@ -74,9 +77,11 @@ Future<RouterNG> loadRouter(
 }
 
 class RouterNG extends AbstractRouter<Voyager, RouteParam> {
+  RouterNG({this.voyagerFactory = _defaultFactory});
   final _plugins = <String, RouterPlugin>{};
   final _globalEntities = <String, dynamic>{};
   final _cache = <String, Voyager>{};
+  final VoyagerFactory voyagerFactory;
 
   RouterNG registerPlugin(RouterPlugin plugin) {
     _plugins[plugin.node] = plugin;
@@ -98,7 +103,7 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
 
   void registerConfig<T extends Voyager>(
       String path, VoyagerConfig<T> voyagerConfig,
-      [VoyagerFactory<T> voyagerFactory]) {
+      [ProgrammaticVoyagerFactory<T> voyagerFactory]) {
     registerBuilder(
         path,
         _ProgrammaticRouteBuilder(
@@ -190,10 +195,7 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
 
-    final Voyager parent = abstractContext.getExtras().parent;
-
-    final output =
-        Voyager(path: abstractContext.url(), parent: parent, config: config);
+    final output = routerNG.voyagerFactory(abstractContext, config);
 
     config.keys.forEach((String key) {
       if (key == Voyager.KEY_TYPE) {
@@ -220,7 +222,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
   _ProgrammaticRouteBuilder(
       {this.path, this.voyagerFactory, this.voyagerConfig, this.routerNG});
   final String path;
-  final VoyagerFactory<T> voyagerFactory;
+  final ProgrammaticVoyagerFactory<T> voyagerFactory;
   final VoyagerConfig<T> voyagerConfig;
   final RouterNG routerNG;
 
@@ -233,7 +235,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
 
     final newInstance = voyagerFactory != null
         ? voyagerFactory(abstractContext, context)
-        : _defaultFactory(abstractContext, context);
+        : _defaultProgrammaticFactory(abstractContext, context);
 
     voyagerConfig(context, newInstance);
 
@@ -243,15 +245,26 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
   }
 }
 
-final VoyagerFactory _defaultFactory = (abstractContext, context) => Voyager(
-    path: abstractContext.url(),
-    parent: abstractContext.getExtras().parent,
-    config: <String, dynamic>{});
+typedef VoyagerFactory<T extends Voyager> = T Function(
+    AbstractRouteContext abstractContext, Map<String, dynamic> config);
+
+Voyager _defaultFactory(
+        AbstractRouteContext abstractContext, Map<String, dynamic> config) =>
+    Voyager(
+        path: abstractContext.url(),
+        parent: abstractContext.getExtras().parent,
+        config: config);
 
 /// allows programmatic path specification
 typedef VoyagerConfig<T extends Voyager> = void Function(
     RouterContext context, T voyager);
 
 /// creates voyager instance, can be used to supply Voyager subclasses
-typedef VoyagerFactory<T extends Voyager> = T Function(
+typedef ProgrammaticVoyagerFactory<T extends Voyager> = T Function(
     AbstractRouteContext abstractContext, RouterContext context);
+
+final ProgrammaticVoyagerFactory _defaultProgrammaticFactory =
+    (abstractContext, context) => Voyager(
+        path: abstractContext.url(),
+        parent: abstractContext.getExtras().parent,
+        config: <String, dynamic>{});

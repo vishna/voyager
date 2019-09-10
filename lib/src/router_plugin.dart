@@ -1,14 +1,14 @@
 import 'router_context.dart';
 import 'voyager.dart';
 
-abstract class RouterPlugin {
+abstract class RouterPlugin<VoyagerExtended extends Voyager> {
   const RouterPlugin(this.node);
   final String node;
 
-  void outputFor(RouterContext context, dynamic config, Voyager output);
+  void outputFor(RouterContext context, dynamic config, VoyagerExtended output);
 }
 
-abstract class RouterObjectPlugin<T> extends RouterPlugin {
+abstract class RouterObjectPlugin<T> extends RouterPlugin<Voyager> {
   RouterObjectPlugin(String node) : super(node);
 
   T buildObject(RouterContext context, dynamic config);
