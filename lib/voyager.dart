@@ -1,5 +1,6 @@
 library voyager;
 
+export './src/abstract_router.dart';
 export './src/plugins/redirect_plugin.dart';
 export './src/plugins/widget_plugin.dart';
 export './src/router.dart';

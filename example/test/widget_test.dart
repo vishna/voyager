@@ -1,3 +1,4 @@
+import 'package:example/gen/voyager_gen.dart';
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,6 +73,7 @@ class TestScenarios extends VoyagerTestScenarios {
 }
 
 void main() {
-  final router = loadRouter(paths(), plugins());
+  final router =
+      loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory);
   voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
 }
