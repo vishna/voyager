@@ -8,7 +8,7 @@ import 'mock_classes.dart';
 
 void main() {
   test('registering null output builder', () {
-    final router = RouterNG();
+    final router = Router();
     expect(() => router.registerBuilder("/my/path", null),
         throwsA(predicate((Error e) {
       expect(e, isInstanceOf<ArgumentError>());

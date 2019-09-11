@@ -110,7 +110,7 @@ final plugins = [
 Now you're all set for getting your router instance:
 
 ```dart
-Future<RouterNG> router = loadRouter(paths, plugins)
+Future<Router> router = loadRouter(paths, plugins)
 ```
 
 ### Custom Plugins
@@ -191,7 +191,7 @@ Defining inital path & handling navigation
 ```dart
 final initalPath = "/my/fancy/super/path"
 
-Provider<RouterNG>.value(
+Provider<Router>.value(
   value: router,
   child: MaterialApp(
     home: VoyagerWidget(path: initalPath),
@@ -347,7 +347,7 @@ class TestScenarios extends VoyagerTestScenarios {
 }
 
 void main() {
-  /// finally invoke tests, you need to suply `router` as `Future<RouterNG>`
+  /// finally invoke tests, you need to suply `router` as `Future<Router>`
   voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
 }
 ```

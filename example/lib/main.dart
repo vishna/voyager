@@ -81,10 +81,10 @@ Widget appOrSplash() {
   return FutureBuilder(
       future:
           loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory),
-      builder: (BuildContext context, AsyncSnapshot<RouterNG> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Router> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
-          return Provider<RouterNG>.value(
+          return Provider<Router>.value(
               value: router,
               child: MaterialApp(
                 title: "Voyager Demo",

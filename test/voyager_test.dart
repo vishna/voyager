@@ -62,7 +62,7 @@ void main() {
   });
 
   test('create router programatically', () async {
-    final router = RouterNG();
+    final router = Router();
     router.registerConfig('/home', (context, Voyager voyager) {
       voyager.type = "home";
       voyager[WidgetPlugin.KEY] =
@@ -96,7 +96,7 @@ void main() {
         (abstractContext, context) => CustomVoyager(
             abstractContext.url(), abstractContext.getExtras().parent);
 
-    final router = RouterNG();
+    final router = Router();
     router.registerConfig<CustomVoyager>('/home', (context, voyager) {
       voyager.type = "home";
       voyager.widget = (BuildContext buildContext) => MockHomeWidget();
@@ -136,7 +136,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<RouterNG>());
+      expect(router, isInstanceOf<Router>());
 
       await tester.pumpWidget(
           MaterialApp(home: VoyagerWidget(path: "/home", router: router)));
@@ -160,7 +160,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<RouterNG>());
+      expect(router, isInstanceOf<Router>());
 
       await tester.pumpWidget(MaterialApp(
           home: VoyagerWidget(path: "/other/foobar123", router: router)));

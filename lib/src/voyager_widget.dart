@@ -18,7 +18,7 @@ class VoyagerWidget extends StatefulWidget {
       : super(key: key);
   final String path;
   final bool keepAlive;
-  final RouterNG router;
+  final Router router;
   final VoyagerArgument argument;
 
   @override
@@ -32,7 +32,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
   String _path;
   Voyager _voyager;
   final bool keepAlive;
-  RouterNG _lastRouter;
+  Router _lastRouter;
 
   @override
   void initState() {
@@ -47,9 +47,9 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     }
 
     var hasRouterProvider = false;
-    RouterNG router;
+    Router router;
     try {
-      router = Provider.of<RouterNG>(context);
+      router = Provider.of<Router>(context);
       hasRouterProvider = true;
     } catch (t) {
       router = widget.router;
@@ -79,7 +79,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     return MultiProvider(
       providers: [
         Provider<Voyager>.value(value: _voyager),
-        if (!hasRouterProvider) Provider<RouterNG>.value(value: router),
+        if (!hasRouterProvider) Provider<Router>.value(value: router),
         if (widget.argument != null)
           Provider<VoyagerArgument>.value(value: widget.argument)
       ],

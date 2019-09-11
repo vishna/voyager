@@ -97,7 +97,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<RouterNG>());
+      expect(router, isInstanceOf<Router>());
 
       await tester.pumpWidget(
           MaterialApp(home: VoyagerWidget(path: "/list", router: router)));

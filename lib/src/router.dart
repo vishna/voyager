@@ -56,12 +56,12 @@ Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
   return compute(loadPathsFromJsonSync, json);
 }
 
-Future<RouterNG> loadRouter(
+Future<Router> loadRouter(
     Future<List<RouterPath>> paths, List<RouterPlugin> plugins,
     {VoyagerFactory voyagerFactory}) {
   final router = voyagerFactory != null
-      ? RouterNG(voyagerFactory: voyagerFactory)
-      : RouterNG();
+      ? Router(voyagerFactory: voyagerFactory)
+      : Router();
 
   plugins.forEach((plugin) {
     router.registerPlugin(plugin);
@@ -76,19 +76,19 @@ Future<RouterNG> loadRouter(
   });
 }
 
-class RouterNG extends AbstractRouter<Voyager, RouteParam> {
-  RouterNG({this.voyagerFactory = _defaultFactory});
+class Router extends AbstractRouter<Voyager, RouteParam> {
+  Router({this.voyagerFactory = _defaultFactory});
   final _plugins = <String, RouterPlugin>{};
   final _globalEntities = <String, dynamic>{};
   final _cache = <String, Voyager>{};
   final VoyagerFactory voyagerFactory;
 
-  RouterNG registerPlugin(RouterPlugin plugin) {
+  Router registerPlugin(RouterPlugin plugin) {
     _plugins[plugin.node] = plugin;
     return this;
   }
 
-  RouterNG registerGlobalEntity(String key, dynamic value) {
+  Router registerGlobalEntity(String key, dynamic value) {
     _globalEntities[key] = value;
     return this;
   }
@@ -144,7 +144,7 @@ class RouterNG extends AbstractRouter<Voyager, RouteParam> {
         // is off the stack as PageRoute will hold old router
         // reference
         try {
-          isWrappedWithRouter = Provider.of<RouterNG>(context) != null;
+          isWrappedWithRouter = Provider.of<Router>(context) != null;
         } catch (_) {}
 
         dynamic argument;
@@ -183,7 +183,7 @@ class RouteParam {
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
   RouteBuilder({this.path, this.routerNG});
   final RouterPath path;
-  final RouterNG routerNG;
+  final Router routerNG;
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
@@ -224,7 +224,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
   final String path;
   final ProgrammaticVoyagerFactory<T> voyagerFactory;
   final VoyagerConfig<T> voyagerConfig;
-  final RouterNG routerNG;
+  final Router routerNG;
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {

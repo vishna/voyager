@@ -21,13 +21,13 @@ class VoyagerStatelessWidget extends StatelessWidget {
       : super(key: key);
 
   final String path;
-  final RouterNG router;
+  final Router router;
   final bool useCache;
   final VoyagerArgument argument;
 
   @override
   Widget build(BuildContext context) {
-    final _router = router ?? Provider.of<RouterNG>(context);
+    final _router = router ?? Provider.of<Router>(context);
 
     Voyager parentVoyager;
     try {
@@ -53,7 +53,7 @@ class VoyagerStatelessWidget extends StatelessWidget {
         if (useCache)
           Provider<VoyagerParent>.value(
               value: VoyagerParent(safeParent(context))),
-        if (router != null) Provider<RouterNG>.value(value: router),
+        if (router != null) Provider<Router>.value(value: router),
         if (argument != null) Provider<VoyagerArgument>.value(value: argument)
       ],
       child: Builder(builder: builder),

@@ -6,6 +6,7 @@
 
 ## BREAKING CHANGES
 
+- `RouterNG` becomes `Router`
 - old `VoyagerFactory` becomes `ProgrammaticVoyagerFactory`
 - new `VoyagerFactory` is used to instantiate generated `VoyagerData`
 
