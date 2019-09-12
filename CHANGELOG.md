@@ -7,7 +7,7 @@
 
 Add your validation in `voyager-codegen.yaml`, for instance to cover `IconPlugin` you can now do this:
 
-```
+```yaml
 - name: Voyager
   source: lib/main.dart
   target: lib/gen/voyager_gen.dart
@@ -46,13 +46,13 @@ __NOTE__: You must tell `Router` to use generated `VoyagerFactory`, so that it s
 loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory)
 ```
 
-Finally, `pluginStub: true` gets you an abstract plugin class, so that you can avoid typing any strings and just focus on parsing the config input:
+Finally, `pluginStub: true` gets you an abstract plugin class, so that you can avoid typing `voyager["node_name"]` manually. Just focus on parsing the node's config input into an expected output:
 
 ```dart
 class IconPlugin extends IconPluginStub {
   @override
   Icon buildObject(RouterContext context, dynamic config) {
-    /// place for your code here
+    /// write your code here
   }
 }
 ```
