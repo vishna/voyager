@@ -40,8 +40,6 @@ class VoyagerStatelessWidget extends StatelessWidget {
         ? _router.findCached(path)
         : _router.find(path, parent: parentVoyager);
 
-    assert(voyager != null, "voyager instance should not be null");
-
     final WidgetBuilder builder = voyager[WidgetPlugin.KEY];
 
     assert(builder != null,

@@ -92,6 +92,7 @@ void main() {
   });
 
   test('create router programatically with custom voyager factory', () async {
+    // ignore: omit_local_variable_types
     final ProgrammaticVoyagerFactory<CustomVoyager> customVoyagerFactory =
         (abstractContext, context) => CustomVoyager(
             abstractContext.url(), abstractContext.getExtras().parent);
@@ -310,6 +311,7 @@ void main() {
       final _MockAppState mockElementState = mockElement.state;
 
       mockElementState.path = "/other/thing";
+      // ignore: invalid_use_of_protected_member
       mockElementState.setState(() {});
 
       await tester.pumpAndSettle();
@@ -343,6 +345,47 @@ void main() {
         router: router,
         keepAlive: true,
       )));
+
+      expect(tester.takeException(), isAssertionError);
+    });
+  });
+
+  testWidgets('create HomeWidget via VoyagerStatelessWidget',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidget(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      await tester.pumpWidget(MaterialApp(
+          home: VoyagerStatelessWidget(path: "/home", router: router)));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+    });
+  });
+
+  testWidgets(
+      'create HomeWidget via VoyagerStatelessWidget without widget builder',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [_MockRouterPlugin()];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      await tester.pumpWidget(MaterialApp(
+          home: VoyagerStatelessWidget(path: "/home", router: router)));
 
       expect(tester.takeException(), isAssertionError);
     });
