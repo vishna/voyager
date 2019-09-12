@@ -30,7 +30,10 @@ class Voyager {
 
   dynamic operator [](String key) {
     final dynamic value = _output[key];
-    if (value != null || value == nothing) {
+    if (value == nothing) {
+      return null;
+    }
+    if (value != null) {
       return value;
     }
 

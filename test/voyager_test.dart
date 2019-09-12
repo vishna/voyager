@@ -281,6 +281,107 @@ void main() {
     expect(one["mission"], null);
     expect(one["brief"], null);
   });
+
+  testWidgets('test VoyagerWidget didUpdateWidget',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidget(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      const mockKey = Key("mockApp");
+
+      final mockApp = _MockApp(mockKey, router: router, path: "/home");
+
+      await tester.pumpWidget(mockApp);
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+
+      final mockElement = tester.element<StatefulElement>(find.byKey(mockKey));
+      final _MockAppState mockElementState = mockElement.state;
+
+      mockElementState.path = "/other/thing";
+      mockElementState.setState(() {});
+
+      await tester.pumpAndSettle();
+
+      expect(find.text("Other Page"), findsOneWidget);
+      expect(find.text("This is thing"), findsOneWidget);
+    });
+  });
+
+  testWidgets('create HomeWidget via VoyagerWidget without router',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+        MaterialApp(home: const VoyagerWidget(path: "/home", router: null)));
+    expect(tester.takeException(), isAssertionError);
+  });
+
+  testWidgets(
+      'create HomeWidget via VoyagerWidget without widget builder + keepAlive',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [_MockRouterPlugin()];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      await tester.pumpWidget(MaterialApp(
+          home: VoyagerWidget(
+        path: "/home",
+        router: router,
+        keepAlive: true,
+      )));
+
+      expect(tester.takeException(), isAssertionError);
+    });
+  });
+}
+
+class _MockApp extends StatefulWidget {
+  const _MockApp(Key key, {this.path, this.router}) : super(key: key);
+  final String path;
+  final Router router;
+
+  @override
+  State<StatefulWidget> createState() => _MockAppState();
+}
+
+class _MockRouterPlugin extends RouterPlugin {
+  _MockRouterPlugin() : super("widget");
+
+  @override
+  void outputFor(RouterContext context, dynamic config, Voyager output) {
+    output["widget"] = Voyager.nothing;
+  }
+}
+
+class _MockAppState extends State<_MockApp> {
+  String path;
+  Router router;
+
+  @override
+  void initState() {
+    super.initState();
+    path = widget.path;
+    router = widget.router;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: VoyagerWidget(path: path, router: router));
+  }
 }
 
 Voyager _mockFactory(

@@ -99,7 +99,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
   @override
   void dispose() {
-    _voyager.dispose();
+    _voyager?.dispose();
     super.dispose();
   }
 
