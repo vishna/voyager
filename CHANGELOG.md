@@ -1,8 +1,62 @@
-# 1.0.0 (Unreleased)
+# 1.0.0 (UNRELEASED)
 
+- Full library code test coverage
 - YAML config validation
 - Generated `VoyagerData` with strong typed `Voyager` fields.
 - Option to generate PluginStubs based on config validation schema
+
+Add your validation in `voyager-codegen.yaml`, for instance to cover `IconPlugin` you can now do this:
+
+```
+- name: Voyager
+  source: lib/main.dart
+  target: lib/gen/voyager_gen.dart
+  schema:
+    icon:
+      pluginStub: true # add if you want a pregenerated plugin stub
+      output: Icon # associated Dart class
+      import: "package:flutter/widgets.dart" # Dart import for the class, if necessary
+      input: # write schema for your the icon node (JSON Schema draft-07 layout)
+        type: string
+        pattern: "^[a-fA-F0-9]{4}$"
+```
+
+Now whenever you run `voyager:codegen` you'll get an extra message stating all is fine:
+
+```
+✅ Schema validated properly
+```
+
+or an error specific to your router configuration map, e.g.:
+
+```
+🚨 /fab@icon: #/icon: string [e88fd] does not match pattern ^[a-fA-F0-9]{4}$
+```
+
+Furthermore you gain **strong typed** reference to the plugin output:
+
+```dart
+final voyager = VoyagerProvider.of(context);
+assert(voyager.icon is Icon);
+```
+
+__NOTE__: You must tell `Router` to use generated `VoyagerFactory`, so that it starts providing extended Voyager instances instead of vanilla ones:
+
+```dart
+loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory)
+```
+
+Finally, `pluginStub: true` gets you an abstract plugin class, so that you can avoid typing any strings and just focus on parsing the config input:
+
+```dart
+class IconPlugin extends IconPluginStub {
+  @override
+  Icon buildObject(RouterContext context, dynamic config) {
+    /// place for your code here
+  }
+}
+```
+
 
 ## BREAKING CHANGES
 
