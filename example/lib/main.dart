@@ -100,7 +100,7 @@ Widget appOrSplash() {
 }
 
 Widget makeMeFab(BuildContext context) {
-  final VoyagerData voyager = Provider.of<Voyager>(context);
+  final voyager = VoyagerProvider.of(context);
   return FloatingActionButton(
     onPressed: () {
       Navigator.of(context).pushNamed(voyager.target);
@@ -121,7 +121,7 @@ ThemeData themeData() {
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final VoyagerData voyager = Provider.of<Voyager>(context);
+    final voyager = VoyagerProvider.of(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -142,7 +142,7 @@ class PageWidget extends StatelessWidget {
 class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final VoyagerData voyager = Provider.of<Voyager>(context);
+    final voyager = VoyagerProvider.of(context);
 
     // ignore: avoid_as
     final talks = (voyager.items)

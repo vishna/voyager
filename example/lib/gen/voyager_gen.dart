@@ -1,6 +1,7 @@
 /// Generated file, DO NOT EDIT
 import 'package:flutter/widgets.dart';
 import 'package:voyager/voyager.dart';
+import 'package:provider/provider.dart';
 
 class VoyagerPaths {
   static const String pathHome = "/home";
@@ -32,6 +33,10 @@ class VoyagerData extends Voyager {
   Icon get icon => this["icon"];
   List<dynamic> get actions => this["actions"];
   List<dynamic> get items => this["items"];
+}
+
+class VoyagerProvider {
+  static VoyagerData of(BuildContext context) => Provider.of<Voyager>(context);
 }
 
 VoyagerData voyagerDataFactory(
