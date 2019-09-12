@@ -1,4 +1,4 @@
-# 1.0.0 (UNRELEASED)
+# 1.0.0
 
 - Full library code test coverage
 - YAML config validation

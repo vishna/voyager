@@ -22,7 +22,7 @@ class DiskAssetBundle extends CachingAssetBundle {
     for (final pattern in globs) {
       await for (final path in Glob(pattern).list(root: from)) {
         if (path is File) {
-          // ignore: avoid_as
+          // ignore: avoid_as, unnecessary_cast
           final bytes = await path.readAsBytes() as Uint8List;
           cache[path.path] = ByteData.view(bytes.buffer);
         }

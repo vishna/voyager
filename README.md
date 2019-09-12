@@ -18,10 +18,12 @@ If your app is a list of screens with respective paths then this library is for 
     - parameters interpolation in subsections
     - logicless
     - deliverable over the air (think Firebase remote config)
-    - code generator for paths/tests
+    - code generator for paths/tests/plugins
+    - schema validation (draft v7)
 - Highly customizable plugin architecture.
 - VoyagerWidget to embed your `path` at any point
 - Provider to inject any data coming with the `path`
+- Works with Flutter Web
 
 ## Getting started
 
@@ -305,6 +307,60 @@ you can rely on your IDE's autocompletion and do this:
 
 ```dart
 Navigator.of(context).pushNamed(VoyagerPaths.pathOther("thingy"));
+```
+
+#### Schema Validation & Strong Typed Outputs
+
+Add your validation in `voyager-codegen.yaml`, for instance to cover `IconPlugin` you can now do this:
+
+```yaml
+- name: Voyager
+  source: lib/main.dart
+  target: lib/gen/voyager_gen.dart
+  schema:
+    icon:
+      pluginStub: true # add if you want to generate aplugin stub
+      output: Icon # associated Dart class produced by the plugin
+      import: "package:flutter/widgets.dart" # Dart import for the output class, if necessary
+      input: # write schema for your the icon node (JSON Schema draft-07 layout)
+        type: string
+        pattern: "^[a-fA-F0-9]{4}$"
+```
+
+Now whenever you run `voyager:codegen` you'll get an extra message stating all is fine:
+
+```
+✅ Schema validated properly
+```
+
+...or an error specific to your router configuration map, e.g.:
+
+```
+🚨 /fab@icon: #/icon: string [e88fd] does not match pattern ^[a-fA-F0-9]{4}$
+```
+
+Furthermore you gain **strong typed** reference to the plugin output in extended `Voyager` instance:
+
+```dart
+final voyager = VoyagerProvider.of(context);
+assert(voyager.icon is Icon);
+```
+
+__NOTE__: You must tell `Router` to use generated `VoyagerFactory`, so that it starts providing extended Voyager instances instead of vanilla ones:
+
+```dart
+loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory)
+```
+
+Finally, `pluginStub: true` gets you an abstract plugin class, so that you can avoid typing `voyager["node_name"]` manually. Just focus on parsing the node's config input and converting it into an expected output:
+
+```dart
+class IconPlugin extends IconPluginStub {
+  @override
+  Icon buildObject(RouterContext context, dynamic config) {
+    /// write your code here
+  }
+}
 ```
 
 #### Automated Widget Tests (Experimental Feautre)
