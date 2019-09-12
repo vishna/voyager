@@ -1,3 +1,7 @@
+# 1.0.1
+
+- add missing `import 'package:flutter/widgets.dart';` to generated file
+
 # 1.0.0
 
 - Full library code test coverage
