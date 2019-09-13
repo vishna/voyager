@@ -13,7 +13,7 @@ String requirements() {
   body: "Hello World"
   fabPath: /fab
   actions:
-    - target: /list
+    - target: /talks
       icon: e896
 '/other/:title' :
   type: 'other'
@@ -25,8 +25,8 @@ String requirements() {
   widget: FabWidget
   target: /other/thing
   icon: e88f # check icons.dart for reference
-'/list' :
-  type: 'list'
+'/talks' :
+  type: 'talks'
   widget: ListWidget
   title: "Voyager Talks"
   items:

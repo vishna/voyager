@@ -116,14 +116,14 @@ class VoyagerTestFabScenario extends VoyagerTestScenario {
 }
 
 @experimental
-class VoyagerTestListScenario extends VoyagerTestScenario {
-  VoyagerTestListScenario.write(WidgetTesterCallback widgetTesterCallback,
+class VoyagerTestTalksScenario extends VoyagerTestScenario {
+  VoyagerTestTalksScenario.write(WidgetTesterCallback widgetTesterCallback,
       {String description = "", dynamic argument})
       : super(description, widgetTesterCallback, argument: argument);
 
   @override
   String path() {
-    return "/list";
+    return "/talks";
   }
 }
 
@@ -150,7 +150,7 @@ abstract class VoyagerTestScenarios {
   List<VoyagerTestHomeScenario> homeScenarios();
   List<VoyagerTestOtherScenario> otherScenarios();
   List<VoyagerTestFabScenario> fabScenarios();
-  List<VoyagerTestListScenario> listScenarios();
+  List<VoyagerTestTalksScenario> talksScenarios();
   List<VoyagerTestObjectItemScenario> objectItemScenarios();
 }
 
@@ -204,16 +204,16 @@ void voyagerAutomatedTests<T extends VoyagerTestScenarios>(String description,
           testScenarios,
           scenario);
     });
-    final listScenarios = testScenarios.listScenarios();
+    final talksScenarios = testScenarios.talksScenarios();
     if (forceTests) {
-      assert(
-          listScenarios != null, "listScenarios seems to lack implementation");
-      assert(listScenarios.isNotEmpty,
-          "listScenarios must return at least one test scenario");
+      assert(talksScenarios != null,
+          "talksScenarios seems to lack implementation");
+      assert(talksScenarios.isNotEmpty,
+          "talksScenarios must return at least one test scenario");
     }
-    listScenarios?.asMap()?.forEach((index, scenario) {
+    talksScenarios?.asMap()?.forEach((index, scenario) {
       _testVoyagerWidget<T>(
-          "list scenario $index: path=${scenario.path()} ${scenario.testDescription}",
+          "talks scenario $index: path=${scenario.path()} ${scenario.testDescription}",
           router,
           testScenarios.defaultWrapper,
           testScenarios,

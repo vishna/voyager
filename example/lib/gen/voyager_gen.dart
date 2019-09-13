@@ -13,8 +13,8 @@ class VoyagerPaths {
   static const String typeOther = "other";
   static const String pathFab = "/fab";
   static const String typeFab = "fab";
-  static const String pathList = "/list";
-  static const String typeList = "list";
+  static const String pathTalks = "/talks";
+  static const String typeTalks = "talks";
   static String pathObjectItem(String className) {
     return "/_object/$className";
   }

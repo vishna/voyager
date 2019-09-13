@@ -52,9 +52,9 @@ class TestScenarios extends VoyagerTestScenarios {
   }
 
   @override
-  List<VoyagerTestListScenario> listScenarios() {
+  List<VoyagerTestTalksScenario> talksScenarios() {
     return [
-      VoyagerTestListScenario.write((WidgetTester tester) async {
+      VoyagerTestTalksScenario.write((WidgetTester tester) async {
         expect(find.text("Berlin"), findsOneWidget);
         expect(find.text("London"), findsOneWidget);
         expect(find.text("Łódź"), findsOneWidget);
