@@ -266,7 +266,7 @@ flutter packages pub run voyager:codegen
 This should create a `voyager-codegen.yaml` file in a root of your project, like so:
 
 ```yaml
-- name: Voyager # base name for generated classes, e.g. VoyagerPaths, VoyagerTests etc.
+- name: Voyager # base name for generated classes, e.g. VoyagerData, VoyagerTests etc.
   source: assets/navigation.yaml
   target: lib/gen/voyager_gen.dart
 ```
@@ -306,7 +306,7 @@ Navigator.of(context).pushNamed("/other/thingy");
 you can rely on your IDE's autocompletion and do this:
 
 ```dart
-Navigator.of(context).pushNamed(VoyagerPaths.pathOther("thingy"));
+Navigator.of(context).pushNamed(pathOther("thingy"));
 ```
 
 #### Schema Validation & Strong Typed Outputs

@@ -88,8 +88,7 @@ Widget appOrSplash() {
               value: router,
               child: MaterialApp(
                 title: "Voyager Demo",
-                home:
-                    VoyagerWidget(path: VoyagerPaths.pathHome, router: router),
+                home: VoyagerWidget(path: pathHome, router: router),
                 theme: themeData(),
                 onGenerateRoute: router.generator(),
               ));
@@ -166,7 +165,7 @@ class ListWidget extends StatelessWidget {
   // ignore: avoid_as
   static String idMapper(dynamic item) => (item as Talk).city;
   static String objectMapper(dynamic item) =>
-      "/_object/${item.runtimeType.toString()}";
+      pathObjectItem(item.runtimeType.toString());
 }
 
 class Talk {

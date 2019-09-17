@@ -1,3 +1,27 @@
+# 1.0.2
+
+- Drop `VoyagerPaths` generated class
+
+## BREAKING CHANGE
+
+Generated paths/types are no longer wrapped in a class, so:
+
+```dart
+VoyagerPaths.pathHome
+```
+
+now simply becomes:
+
+```dart
+pathHome
+```
+
+If you want to go back to old notation you can add`as VoyagerPaths` to the import statement, e.g.:
+
+```dart
+import 'package:example/gen/voyager_gen.dart' as VoyagerPaths;
+```
+
 # 1.0.1
 
 - add missing `import 'package:flutter/widgets.dart';` to generated file
