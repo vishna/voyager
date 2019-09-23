@@ -1,3 +1,7 @@
+# 1.0.3
+
+- `VoyagerList` can now take arguments which `ListView.custom` normally takes
+
 # 1.0.2
 
 - Drop `VoyagerPaths` generated class

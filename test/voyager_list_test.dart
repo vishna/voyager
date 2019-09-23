@@ -50,7 +50,7 @@ class ListWidget extends StatelessWidget {
         appBar: AppBar(
           title: Text(title),
         ),
-        body: VoyagerListView(talks, idMapper, objectMapper, null),
+        body: VoyagerListView(talks, idMapper, objectMapper),
         floatingActionButton: voyager["fabPath"] != null
             ? VoyagerWidget(
                 path: voyager["fabPath"],
@@ -106,7 +106,7 @@ class ListWidget2 extends StatelessWidget {
         appBar: AppBar(
           title: Text(title),
         ),
-        body: VoyagerListView(talks, idMapper, objectMapper, null),
+        body: VoyagerListView(talks, idMapper, objectMapper),
         floatingActionButton: voyager["fabPath"] != null
             ? VoyagerWidget(
                 path: voyager["fabPath"],

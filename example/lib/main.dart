@@ -154,7 +154,7 @@ class ListWidget extends StatelessWidget {
           title: Text(voyager.title),
           actions: actions(context),
         ),
-        body: VoyagerListView(talks, idMapper, objectMapper, null),
+        body: VoyagerListView(talks, idMapper, objectMapper),
         floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
                 path: voyager.fabPath,

@@ -16,10 +16,24 @@ typedef PathMapper = String Function(dynamic item);
 /// ValueKey(s) FTW: https://medium.com/flutter-community/elements-keys-and-flutters-performance-3ef15c90f607
 /// ValueKey(s) + ListView sample: https://github.com/flutter/flutter/issues/21023#issuecomment-510950338
 class VoyagerListView extends StatelessWidget {
-  VoyagerListView(List<dynamic> items, Identifier identifier,
-      PathMapper pathMapper, this.controller)
-      : _idToIndex = <String, int>{},
-        _items = List<_VoyagerItem>(items.length) {
+  VoyagerListView(
+    List<dynamic> items,
+    Identifier identifier,
+    PathMapper pathMapper, {
+    Key key,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics = const AlwaysScrollableScrollPhysics(),
+    this.shrinkWrap = false,
+    this.padding,
+    this.itemExtent,
+    this.cacheExtent,
+    this.semanticChildCount,
+  })  : _idToIndex = <String, int>{},
+        _items = List<_VoyagerItem>(items.length),
+        super(key: key) {
     final n = items.length;
     for (var index = 0; index < n; index++) {
       final dynamic item = items[index];
@@ -36,11 +50,20 @@ class VoyagerListView extends StatelessWidget {
   final Map<String, int> _idToIndex;
   final List<_VoyagerItem> _items;
   final ScrollController controller;
+  final Axis scrollDirection;
+  final bool reverse;
+  final bool primary;
+  final ScrollPhysics physics;
+  final bool shrinkWrap;
+  final EdgeInsetsGeometry padding;
+  final double itemExtent;
+  final double cacheExtent;
+  final int semanticChildCount;
 
   @override
   Widget build(BuildContext context) {
     return ListView.custom(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: physics,
       controller: controller,
       childrenDelegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
@@ -57,6 +80,14 @@ class VoyagerListView extends StatelessWidget {
             final String id = valueKey.value;
             return _idToIndex[id];
           }),
+      scrollDirection: scrollDirection,
+      reverse: reverse,
+      primary: primary,
+      shrinkWrap: shrinkWrap,
+      padding: padding,
+      itemExtent: itemExtent,
+      cacheExtent: cacheExtent,
+      semanticChildCount: semanticChildCount,
     );
   }
 }
