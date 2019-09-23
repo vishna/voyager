@@ -58,10 +58,6 @@ void main() {
   test('forbidden wildcard parameter', () async {
     final paths = loadPathsFromString('''
 ---
-'/other/:whatever:' :
-  type: 'whatever'
-  widget: OtherWidget
-  title: "Now the wild %{whatever}"
 '/other/:whatever:/:id' :
   type: 'whatever_faulty'
   widget: OtherWidget
@@ -77,15 +73,13 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    try {
-      final voyager = router.find("/other/quite/ridiculous/thing");
-      expect(voyager, isNotNull);
-      print("This should not happen... but: ${voyager.path}");
-    } catch (e) {
+    expect(() => router.find("/other/quite/ridiculous/thing"),
+        throwsA(predicate((Error e) {
       expect(e, isInstanceOf<StateError>());
       expect((e as StateError).message,
           "Wildcard parameter :whatever: cannot be directly followed by a parameter :id");
-    }
+      return true;
+    })));
   });
 
   test('multi param or wildcard', () async {
