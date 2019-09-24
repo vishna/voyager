@@ -35,9 +35,13 @@ class VoyagerListView extends StatelessWidget {
         _items = List<_VoyagerItem>(items.length),
         super(key: key) {
     final n = items.length;
+    final duplicateCounter = <String, int>{};
     for (var index = 0; index < n; index++) {
       final dynamic item = items[index];
-      final id = identifier(item);
+      final _id = identifier(item);
+      final count = (duplicateCounter[_id] ?? -1) + 1;
+      duplicateCounter[_id] = count;
+      final id = itemKeyId(_id, duplicateNumber: count);
       final path = pathMapper(item);
       _idToIndex[id] = index;
       _items[index] = _VoyagerItem(
@@ -90,6 +94,9 @@ class VoyagerListView extends StatelessWidget {
       semanticChildCount: semanticChildCount,
     );
   }
+
+  static String itemKeyId(String itemId, {int duplicateNumber = 0}) =>
+      "$duplicateNumber:$itemId";
 }
 
 class _VoyagerItem {

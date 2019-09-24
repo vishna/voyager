@@ -187,6 +187,50 @@ void main() {
       expect(find.text("London"), findsOneWidget);
     });
   });
+
+  testWidgets('create VoyagerList with dynamic Items + rearrange + duplicates',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigationYaml2);
+      final plugins = [
+        WidgetPluginBuilder()
+            .add<ListWidget2>((_) => ListWidget2())
+            .add<TalkWidget>((_) => TalkWidget())
+            .build()
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      const talks1 = <Talk>[
+        Talk("London", "FlutterLDN", "October 21, 2019"),
+        Talk("London", "FlutterLDN", "October 21, 2019"),
+        Talk("Łódź", "Mobilization", "October 26, 2019"),
+        Talk("Łódź", "Mobilization", "October 26, 2019")
+      ];
+
+      const talks2 = <Talk>[
+        Talk("Łódź", "Mobilization", "October 26, 2019"),
+        Talk("London", "FlutterLDN", "October 21, 2019"),
+        Talk("Berlin", "Droidcon", "July 1, 2019"),
+        Talk("London", "FlutterLDN", "October 21, 2019"),
+      ];
+
+      await tester.pumpWidget(TalksWidget(
+          talks: talks1, router: router, key: const Key("test_talk")));
+
+      expect(find.text("Łódź"), findsNWidgets(2));
+      expect(find.text("London"), findsNWidgets(2));
+
+      await tester.pumpWidget(TalksWidget(
+          talks: talks2, router: router, key: const Key("test_talk")));
+
+      expect(find.text("Berlin"), findsOneWidget);
+      expect(find.text("Łódź"), findsOneWidget);
+      expect(find.text("London"), findsNWidgets(2));
+    });
+  });
 }
 
 class TalksWidget extends StatefulWidget {
@@ -199,18 +243,10 @@ class TalksWidget extends StatefulWidget {
 }
 
 class TalksWidgetState extends State<TalksWidget> {
-  List<Talk> _talks;
-
-  @override
-  void initState() {
-    super.initState();
-    _talks = widget.talks;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Provider.value(
-        value: _talks,
+        value: widget.talks,
         child: MaterialApp(
             home: VoyagerWidget(path: "/list", router: widget.router)));
   }

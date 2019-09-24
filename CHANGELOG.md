@@ -1,3 +1,7 @@
+# 1.0.4
+
+- make duplicate items (that is having the same `id`) work properly with `VoyagerList`
+
 # 1.0.3
 
 - `VoyagerList` can now take arguments which `ListView.custom` normally takes
