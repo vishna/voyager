@@ -390,6 +390,42 @@ void main() {
       expect(tester.takeException(), isAssertionError);
     });
   });
+
+  test('overriding existing path behavior', () async {
+    final paths = loadPathsFromString(navigation_yml);
+    final plugins = [
+      WidgetPlugin({
+        "HomeWidget": (context) => MockHomeWidget(),
+        "OtherWidget": (context) => MockOtherWidget(),
+      })
+    ];
+
+    final router = await loadRouter(paths, plugins);
+
+    final homeVoyager = router.find("/home");
+
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager.type, "home");
+    expect(homeVoyager["title"], "This is Home");
+
+    final overridenPart = await loadPathsFromString('''
+'/home' :
+  type: 'home'
+  widget: OtherWidget
+  title: "This is Remote Home"
+  fab: /other/thing
+''');
+
+    router.clearCache();
+    router.registerPath(overridenPart.first);
+
+    final remoteHomeVoyager = router.find("/home");
+
+    expect(remoteHomeVoyager[WidgetPlugin.KEY](null),
+        isInstanceOf<MockOtherWidget>());
+    expect(remoteHomeVoyager.type, "home");
+    expect(remoteHomeVoyager["title"], "This is Remote Home");
+  });
 }
 
 class _MockApp extends StatefulWidget {

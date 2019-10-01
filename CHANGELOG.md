@@ -1,3 +1,11 @@
+# 1.0.5
+
+Code generator improvements:
+
+- `--set-exit-if-changed` will set exit to 1 if there was change in generated code
+- You can keep schema in a separate file using `sourceSchema` field, check out [voyager_bloc/example](https://github.com/vishna/voyager_bloc/blob/master/example/voyager-codegen.yaml)
+- You can scope paths to packages by using `package: name` in `voyager-codegen.yaml` and under respective paths in your navigation schema
+
 # 1.0.4
 
 - make duplicate items (that is having the same `id`) work properly with `VoyagerList`
