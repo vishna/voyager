@@ -1,3 +1,7 @@
+# 1.0.6
+
+- fix issue where `voyager:codgen` would not work even though `dartfmt` was present
+
 # 1.0.5
 
 Code generator improvements:
