@@ -52,6 +52,11 @@ class WidgetPluginBuilder {
     });
     return this;
   }
+
+  WidgetPluginBuilder addBuilder(WidgetPluginBuilder builder) {
+    _builders.addAll(builder._builders);
+    return this;
+  }
 }
 
 /// Necessary to obtain generic [Type]

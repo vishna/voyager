@@ -1,3 +1,7 @@
+# 1.0.7
+
+- Ability to combine WidgetPluginBuilders together using `addBuilder`
+
 # 1.0.6
 
 - fix issue where `voyager:codgen` would not work even though `dartfmt` was present

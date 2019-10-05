@@ -269,6 +269,52 @@ void main() {
         isInstanceOf<FloatingActionButton>());
   });
 
+  test('test adding widget plugin builders', () async {
+    final paths = loadPathsFromString('''
+---
+'/home' :
+  type: 'home'
+  widget: MockHomeWidget
+  title: "This is Home"
+  fab: /other/thing
+'/other/:title' :
+  type: 'other'
+  widget: MockOtherWidget
+  title: "This is %{title}"
+'/fab' :
+  type: 'fab'
+  widget: FabWidget
+''');
+    final builderA = WidgetPluginBuilder()
+        .add<MockHomeWidget>((context) => MockHomeWidget());
+    final builderB = WidgetPluginBuilder()
+        .add<MockOtherWidget>((context) => MockOtherWidget());
+    final plugins = [
+      WidgetPluginBuilder()
+          .addBuilder(builderA)
+          .addBuilder(builderB)
+          .addMethod(mockFab, "FabWidget")
+          .build(),
+      RedirectPlugin()
+    ];
+
+    final router = await loadRouter(paths, plugins);
+
+    final homeVoyager = router.find("/home");
+
+    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+
+    final otherVoyager = router.find("/other/thing");
+
+    expect(
+        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+
+    final fabVoyager = router.find("/fab");
+
+    expect(fabVoyager[WidgetPlugin.KEY](null),
+        isInstanceOf<FloatingActionButton>());
+  });
+
   test("mock object plugin", () {
     final voyager = Voyager(config: <String, dynamic>{});
     final mockPlugin = _MockPlugin();
