@@ -1,6 +1,7 @@
 # 1.0.7
 
 - Ability to combine WidgetPluginBuilders together using `addBuilder`
+- more resilient `dartfmt` resolution
 
 # 1.0.6
 
