@@ -2,6 +2,7 @@
 
 - Ability to combine WidgetPluginBuilders together using `addBuilder`
 - more resilient `dartfmt` resolution
+- use `curl` instead of `wget` for codgen jar download
 
 # 1.0.6
 

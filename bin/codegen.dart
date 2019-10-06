@@ -35,5 +35,5 @@ void main(List<String> arguments) async {
 }
 
 Future<ProcessResult> downloadJar(String url, String target) async {
-  return await Process.run('wget', [url, '-O', target]);
+  return await Process.run('curl', [url, '-o', target]);
 }
