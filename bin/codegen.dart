@@ -6,7 +6,7 @@ const voyagerVersion = "master-21624d082d-1";
 
 /// fat jar baked on jitpack
 const voyagerJarPath =
-    "https://jitpack.io/com/github/vishna/voyager-codegen/cli/$voyagerVersion/cli-$voyagerVersion-all.jar";
+    "https://www.jitpack.io/com/github/vishna/voyager-codegen/cli/$voyagerVersion/cli-$voyagerVersion-all.jar";
 
 const cacheDir = ".jarCache";
 const savePath = "$cacheDir/voyager-codegen-$voyagerVersion.jar";
@@ -18,7 +18,7 @@ void main(List<String> arguments) async {
     print("Trying to download voyager-codegen-$voyagerVersion.jar ...");
 
     try {
-      await downloadJar(voyagerJarPath, savePath);
+      await downloadFile(voyagerJarPath, savePath);
       print("Downloaded voyager-codegen-$voyagerVersion.jar");
     } catch (_) {
       // wget gets the job done while dart based http file download errors 500 ¯\_(ツ)_/¯
@@ -34,6 +34,16 @@ void main(List<String> arguments) async {
   });
 }
 
-Future<ProcessResult> downloadJar(String url, String target) async {
-  return await Process.run('curl', [url, '-o', target]);
+Future<void> downloadFile(String url, String filename) async {
+  final _client = HttpClient();
+
+  final request = await _client.getUrl(Uri.parse(url));
+
+  final response = await request.close();
+
+  await response.pipe(File(filename).openWrite());
+
+  _client.close(force: true);
+
+  return;
 }
