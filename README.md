@@ -420,6 +420,8 @@ The router is loaded every time the scenario is running - if this is something y
 
 - [library tests](https://github.com/vishna/voyager/blob/master/test)
 - [sample app](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
+- [bloc plugin](https://pub.dev/packages/voyager_bloc)
+- [object to widget routing](https://pub.dev/packages/voyager_list)
 
 ### Acknowledgments
 

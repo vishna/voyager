@@ -19,6 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  voyager: '>=1.0.0 <2.0.0'
+  voyager_list: '<=0.1.0'
+
+dependency_overrides:
   voyager:
     path: ../
 
