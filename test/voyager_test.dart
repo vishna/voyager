@@ -373,6 +373,29 @@ void main() {
     });
   });
 
+  testWidgets('create HomeWidget via VoyagerStatelessWidget with cache',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidget(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        })
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      await tester.pumpWidget(MaterialApp(
+          home: VoyagerStatelessWidget(path: "/home", router: router, useCache: true)));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+    });
+  });
+
   testWidgets(
       'create HomeWidget via VoyagerStatelessWidget without widget builder',
       (WidgetTester tester) async {

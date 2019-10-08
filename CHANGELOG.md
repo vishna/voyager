@@ -1,3 +1,9 @@
+# 1.1.0
+
+- jar codegen downloader now works using `dart:io` only
+- improved messaging in case of missing JDK
+- `VoyagerListView` is now part of [voyager_list](https://pub.dev/packages/voyager_list) package **BREAKING CHANGE**
+
 # 1.0.7
 
 - Ability to combine WidgetPluginBuilders together using `addBuilder`

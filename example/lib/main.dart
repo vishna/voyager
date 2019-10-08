@@ -2,6 +2,7 @@ import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
 import 'package:provider/provider.dart';
+import 'package:voyager_list/voyager_list.dart';
 
 String requirements() {
   return '''
@@ -39,6 +40,9 @@ String requirements() {
     - city: "Łódź"
       event: Mobilization
       date: October 26, 2019
+    - city: "San Francisco"
+      event: Droidcon
+      date: November 25-26, 2019
 '/_object/:className':
   type: object_item
   widget: "%{className}Widget"
