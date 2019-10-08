@@ -1,3 +1,7 @@
+# 1.1.1
+
+- fix deadlock in code generator
+
 # 1.1.0
 
 - jar codegen downloader now works using `dart:io` only
