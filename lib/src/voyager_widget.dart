@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:voyager/src/router_context.dart';
-import 'package:voyager/src/router_plugin.dart';
 import 'plugins/widget_plugin.dart';
 import 'router.dart';
 import 'voyager.dart';

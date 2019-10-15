@@ -1,3 +1,7 @@
+# 1.1.3
+
+- remove unused imports
+
 # 1.1.2
 
 - expose `VoyagerArgument` (if available) in `RouteContext`
