@@ -389,7 +389,8 @@ void main() {
       expect(router, isInstanceOf<Router>());
 
       await tester.pumpWidget(MaterialApp(
-          home: VoyagerStatelessWidget(path: "/home", router: router, useCache: true)));
+          home: VoyagerStatelessWidget(
+              path: "/home", router: router, useCache: true)));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);

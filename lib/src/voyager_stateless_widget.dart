@@ -38,7 +38,7 @@ class VoyagerStatelessWidget extends StatelessWidget {
 
     final voyager = useCache
         ? _router.findCached(path)
-        : _router.find(path, parent: parentVoyager);
+        : _router.find(path, parent: parentVoyager, argument: argument);
 
     final WidgetBuilder builder = voyager[WidgetPlugin.KEY];
 

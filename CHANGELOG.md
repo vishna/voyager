@@ -1,3 +1,7 @@
+# 1.1.2
+
+- expose `VoyagerArgument` (if available) in `RouteContext`
+
 # 1.1.1
 
 - fix deadlock in code generator

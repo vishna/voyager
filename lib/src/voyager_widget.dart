@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:voyager/src/router_context.dart';
+import 'package:voyager/src/router_plugin.dart';
 import 'plugins/widget_plugin.dart';
 import 'router.dart';
 import 'voyager.dart';
@@ -66,7 +68,8 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
     if (_voyager == null || _lastRouter != router) {
       _lastRouter = router;
-      _voyager = _lastRouter.find(_path, parent: parentVoyager);
+      _voyager = _lastRouter.find(_path,
+          parent: parentVoyager, argument: widget.argument);
     }
 
     assert(_voyager != null, "voyager instance should not be null");
