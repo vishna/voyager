@@ -285,6 +285,42 @@ void main() {
     });
   });
 
+  testWidgets(
+      'test material navigation with argument 2 - check presence in route context',
+      (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      final argumentInContext = _MockArgumentInContext();
+      final paths = loadPathsFromString(navigation_yml);
+      final plugins = [
+        WidgetPlugin({
+          "HomeWidget": (context) => MockHomeWidgetArgument2(),
+          "OtherWidget": (context) => MockOtherWidget(),
+        }),
+        argumentInContext
+      ];
+
+      final router = await loadRouter(paths, plugins);
+
+      expect(router, isInstanceOf<Router>());
+
+      await tester.pumpWidget(Provider<Router>.value(
+          value: router,
+          child: MaterialApp(
+              home: const VoyagerWidget(path: "/home"),
+              onGenerateRoute:
+                  router.generator(routeType: Router.materialRoute))));
+
+      expect(find.text("Home Page"), findsOneWidget);
+      expect(find.text("Home Title"), findsOneWidget);
+      expect(find.text("Other Page"), findsNothing);
+
+      await tester.tap(find.byType(Icon));
+      await tester.pumpAndSettle();
+      expect(find.text("Other Page"), findsOneWidget);
+      expect(argumentInContext.hasEncounteredVoyagerArgument, true);
+    });
+  });
+
   test('loadPathsFromString loads paths from a yaml defined in a string',
       () async {
     final paths = await loadPathsFromString(navigation_yml);
@@ -320,4 +356,20 @@ void main() {
     expect(paths.map((it) => it.path),
         containsAll(<String>["/home", "/other/:title"]));
   });
+}
+
+class _MockArgumentInContext extends RouterObjectPlugin<String> {
+  _MockArgumentInContext() : super("title");
+
+  bool hasEncounteredVoyagerArgument = false;
+
+  @override
+  String buildObject(RouterContext context, dynamic config) {
+    if (context.argument != null &&
+        context.argument.value != null &&
+        context.argument.value == "hello") {
+      hasEncounteredVoyagerArgument = true;
+    }
+    return config;
+  }
 }

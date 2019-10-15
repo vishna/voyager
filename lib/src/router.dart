@@ -117,8 +117,9 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
     return _plugins;
   }
 
-  Voyager find(String routerPath, {Voyager parent}) {
-    return outputFor(routerPath, extras: RouteParam(parent: parent));
+  Voyager find(String routerPath, {Voyager parent, VoyagerArgument argument}) {
+    return outputFor(routerPath,
+        extras: RouteParam(parent: parent, argument: argument));
   }
 
   Voyager findCached(String routerPath) {
@@ -175,9 +176,9 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 }
 
 class RouteParam {
-  RouteParam({this.parent, this.data});
+  RouteParam({this.parent, this.argument});
   final Voyager parent;
-  final dynamic data;
+  final VoyagerArgument argument;
 }
 
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
@@ -188,9 +189,17 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
     final allTheParams = Map<String, String>.from(abstractContext.getParams());
+    final dynamic extras = abstractContext.getExtras();
+    VoyagerArgument argument;
+    if (extras is RouteParam) {
+      argument = extras.argument;
+    }
 
     final context = RouterContext(
-        path: abstractContext.url(), params: allTheParams, router: routerNG);
+        path: abstractContext.url(),
+        params: allTheParams,
+        router: routerNG,
+        argument: argument);
 
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
