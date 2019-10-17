@@ -1,6 +1,6 @@
 ![banner](https://user-images.githubusercontent.com/121164/56737645-274c8a80-676b-11e9-86ec-0c99e41582fc.png)
 
-[![pub package](https://img.shields.io/pub/v/voyager.svg)](https://pub.dartlang.org/packages/voyager) [![Codemagic build status](https://api.codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/status_badge.svg)](https://codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/latest_build) [![codecov](https://codecov.io/gh/vishna/voyager/branch/master/graph/badge.svg)](https://codecov.io/gh/vishna/voyager)
+[![pub package](https://img.shields.io/pub/v/voyager.svg)](https://pub.dartlang.org/packages/voyager) [![Codemagic build status](https://api.codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/status_badge.svg)](https://codemagic.io/apps/5d52c99acb00320011561e79/5d52c99acb00320011561e78/latest_build) [![codecov](https://codecov.io/gh/vishna/voyager/branch/master/graph/badge.svg)](https://codecov.io/gh/vishna/voyager) [![Kotlinlang slack](https://img.shields.io/static/v1?label=Flutter+Community&message=voyager&color=brightgreen&logo=slack&style=flat-square)](https://fluttercommunity.slack.com/messages/CP5GU9T19)
 
 
 > Navigate and prosper 🖖

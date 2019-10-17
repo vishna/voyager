@@ -1,3 +1,7 @@
+# 1.1.4
+
+- add slack channel badge
+
 # 1.1.3
 
 - remove unused imports
