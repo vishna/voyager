@@ -1,6 +1,7 @@
 # 1.1.4
 
 - add slack channel badge
+- allow adding onDispose callback to `Voyager` instance after lockdown.
 
 # 1.1.3
 

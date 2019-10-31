@@ -48,9 +48,6 @@ class Voyager {
   }
 
   void onDispose(OnDispose callback) {
-    if (_locked) {
-      throw FlutterError("Voyager is in lockdown.");
-    }
     _onDispose.add(callback);
   }
 
@@ -59,6 +56,7 @@ class Voyager {
       throw FlutterError("Can't dispose resources before Voyager is locked");
     }
     _onDispose.forEach((callback) => callback());
+    _onDispose.clear();
     _output.clear();
     _config.clear();
   }

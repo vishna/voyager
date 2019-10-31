@@ -254,29 +254,23 @@ void main() {
     expect(one["brief"], null);
   });
 
-  test("adding dispose callback to locked voyager should throw", () {
+  test("adding dispose callback to locked voyager shouldn't throw", () {
     final one = Voyager(config: <String, dynamic>{});
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     one.lock();
 
-    expect(() {
-      one.onDispose(() {
-        _onDisposeCalled = true;
-      });
-    }, throwsA(predicate((Error e) {
-      expect(e, isInstanceOf<FlutterError>());
-      expect((e as FlutterError).message, "Voyager is in lockdown.");
-      return true;
-    })));
+    one.onDispose(() {
+      _onDisposeCalled = true;
+    });
 
     expect(_onDisposeCalled, false);
     expect(one["mission"], "Mission 1");
     expect(one["brief"], "A short brief from 1");
 
     one.dispose();
-    expect(_onDisposeCalled, false);
+    expect(_onDisposeCalled, true);
 
     /// since callback wasn't added
     expect(one["mission"], null);
