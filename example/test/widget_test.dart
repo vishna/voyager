@@ -67,7 +67,9 @@ class TestScenarios extends VoyagerTestScenarios {
     return [
       VoyagerTestObjectItemScenario.write("Talk", (WidgetTester tester) async {
         expect(find.text("Mountain View"), findsOneWidget);
-      }, argument: const Talk("Mountain View", "Google I/O 2020", "19 May"))
+      },
+          argument: const Talk("Mountain View", "Google I/O 2020", "19 May"),
+          stateless: true)
     ];
   }
 }

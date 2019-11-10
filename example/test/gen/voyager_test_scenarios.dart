@@ -37,8 +37,9 @@ void _testVoyagerWidget<T extends VoyagerTestScenarios>(
       }
     }
 
-    var widget = scenario.argument == null
-        ? VoyagerWidget(path: scenario.path(), router: router)
+    var widget = scenario.stateless == false
+        ? VoyagerWidget(
+            path: scenario.path(), router: router, argument: argument)
         : VoyagerStatelessWidget(
             path: scenario.path(),
             router: router,
@@ -63,11 +64,12 @@ void _testVoyagerWidget<T extends VoyagerTestScenarios>(
 @experimental
 abstract class VoyagerTestScenario {
   VoyagerTestScenario(this.testDescription, this.widgetTesterCallback,
-      {this.argument});
+      {this.argument, this.stateless = false});
 
   final String testDescription;
   final WidgetTesterCallback widgetTesterCallback;
   final dynamic argument;
+  final bool stateless;
   WidgetWrapper widgetWrapper;
 
   String path();
@@ -79,8 +81,9 @@ abstract class VoyagerTestScenario {
 @experimental
 class VoyagerTestHomeScenario extends VoyagerTestScenario {
   VoyagerTestHomeScenario.write(WidgetTesterCallback widgetTesterCallback,
-      {String description = "", dynamic argument})
-      : super(description, widgetTesterCallback, argument: argument);
+      {String description = "", dynamic argument, bool stateless = false})
+      : super(description, widgetTesterCallback,
+            argument: argument, stateless: stateless);
 
   @override
   String path() {
@@ -92,8 +95,9 @@ class VoyagerTestHomeScenario extends VoyagerTestScenario {
 class VoyagerTestOtherScenario extends VoyagerTestScenario {
   VoyagerTestOtherScenario.write(
       this.title, WidgetTesterCallback widgetTesterCallback,
-      {String description = "", dynamic argument})
-      : super(description, widgetTesterCallback, argument: argument);
+      {String description = "", dynamic argument, bool stateless = false})
+      : super(description, widgetTesterCallback,
+            argument: argument, stateless: stateless);
 
   final String title;
 
@@ -106,8 +110,9 @@ class VoyagerTestOtherScenario extends VoyagerTestScenario {
 @experimental
 class VoyagerTestFabScenario extends VoyagerTestScenario {
   VoyagerTestFabScenario.write(WidgetTesterCallback widgetTesterCallback,
-      {String description = "", dynamic argument})
-      : super(description, widgetTesterCallback, argument: argument);
+      {String description = "", dynamic argument, bool stateless = false})
+      : super(description, widgetTesterCallback,
+            argument: argument, stateless: stateless);
 
   @override
   String path() {
@@ -118,8 +123,9 @@ class VoyagerTestFabScenario extends VoyagerTestScenario {
 @experimental
 class VoyagerTestTalksScenario extends VoyagerTestScenario {
   VoyagerTestTalksScenario.write(WidgetTesterCallback widgetTesterCallback,
-      {String description = "", dynamic argument})
-      : super(description, widgetTesterCallback, argument: argument);
+      {String description = "", dynamic argument, bool stateless = false})
+      : super(description, widgetTesterCallback,
+            argument: argument, stateless: stateless);
 
   @override
   String path() {
@@ -131,8 +137,9 @@ class VoyagerTestTalksScenario extends VoyagerTestScenario {
 class VoyagerTestObjectItemScenario extends VoyagerTestScenario {
   VoyagerTestObjectItemScenario.write(
       this.className, WidgetTesterCallback widgetTesterCallback,
-      {String description = "", dynamic argument})
-      : super(description, widgetTesterCallback, argument: argument);
+      {String description = "", dynamic argument, bool stateless = false})
+      : super(description, widgetTesterCallback,
+            argument: argument, stateless: stateless);
 
   final String className;
 

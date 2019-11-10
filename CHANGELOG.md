@@ -1,3 +1,7 @@
+# 1.1.5
+
+- allow passing `VoyagerArgument` to stateful widgets in tests
+
 # 1.1.4
 
 - add slack channel badge
