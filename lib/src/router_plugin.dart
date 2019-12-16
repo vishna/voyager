@@ -1,5 +1,4 @@
-import 'router_context.dart';
-import 'voyager.dart';
+import 'package:voyager/voyager.dart';
 
 abstract class RouterPlugin<VoyagerExtended extends Voyager> {
   const RouterPlugin(this.node);

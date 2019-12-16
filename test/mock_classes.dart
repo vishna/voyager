@@ -9,8 +9,8 @@ class MockHomeWidget extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home Title"),
       ),
-      body: Center(
-        child: const Text("Home Page"),
+      body: const Center(
+        child: Text("Home Page"),
       ),
       floatingActionButton: mockFab(context),
     );
@@ -36,8 +36,8 @@ class MockOtherWidget extends StatelessWidget {
         appBar: AppBar(
           title: Text(title),
         ),
-        body: Center(
-          child: const Text("Other Page"),
+        body: const Center(
+          child: Text("Other Page"),
         ));
   }
 }
@@ -49,8 +49,8 @@ class MockHomeWidgetArgument1 extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home Title"),
       ),
-      body: Center(
-        child: const Text("Home Page"),
+      body: const Center(
+        child: Text("Home Page"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -70,8 +70,8 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home Title"),
       ),
-      body: Center(
-        child: const Text("Home Page"),
+      body: const Center(
+        child: Text("Home Page"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

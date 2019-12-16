@@ -1,5 +1,4 @@
-import '../../voyager.dart';
-import '../router_context.dart';
+import 'package:voyager/voyager.dart';
 
 class RedirectPlugin extends RouterPlugin {
   RedirectPlugin() : super(KEY);

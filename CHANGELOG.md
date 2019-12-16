@@ -1,3 +1,8 @@
+# 1.1.6
+
+- remove deprecated `test_api` package import from generated test files
+- use package imports everywhere, [related issue](https://github.com/flutter/flutter/issues/40421#issuecomment-564330783)
+
 # 1.1.5
 
 - allow passing `VoyagerArgument` to stateful widgets in tests

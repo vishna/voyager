@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:sprintf/sprintf.dart';
-import 'router_context.dart';
+import 'package:voyager/voyager.dart';
 
 const String _VARIABLE_PREFIX = "%{";
 const String _VARIABLE_SUFFIX = "}";

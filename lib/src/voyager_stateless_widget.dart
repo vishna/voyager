@@ -1,9 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'plugins/widget_plugin.dart';
-import 'router.dart';
-import 'voyager.dart';
-import 'voyager_argument.dart';
+import 'package:voyager/voyager.dart';
 
 /// Widget that allows you embed any path anywhere in the widget tree. The requirement is router
 /// supplied in the costructor (e.g. if this is a top widget) or available via `Provider<RouterNG>.of(context)`

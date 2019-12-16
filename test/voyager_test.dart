@@ -318,7 +318,7 @@ void main() {
   testWidgets('create HomeWidget via VoyagerWidget without router',
       (WidgetTester tester) async {
     await tester.pumpWidget(
-        MaterialApp(home: const VoyagerWidget(path: "/home", router: null)));
+        const MaterialApp(home: VoyagerWidget(path: "/home", router: null)));
     expect(tester.takeException(), isAssertionError);
   });
 

@@ -2,7 +2,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:test_api/test_api.dart' as test_package;
 import 'package:voyager/voyager.dart';
 
 typedef WidgetWrapper<T extends VoyagerTestScenarios> = Widget Function(
@@ -16,7 +15,7 @@ void _testVoyagerWidget<T extends VoyagerTestScenarios>(
   T scenarios,
   VoyagerTestScenario scenario, {
   bool skip = false,
-  test_package.Timeout timeout,
+  Timeout timeout,
   Duration initialTimeout,
   bool semanticsEnabled = false,
 }) {

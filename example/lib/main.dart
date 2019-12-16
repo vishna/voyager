@@ -204,8 +204,8 @@ class TalkWidget extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: const Text("Loading",
+    return const Center(
+        child: Text("Loading",
             style: TextStyle(fontSize: 24), textDirection: TextDirection.ltr));
   }
 }

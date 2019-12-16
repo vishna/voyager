@@ -7,16 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:voyager/src/voyager_widget.dart';
 import 'package:voyager/voyager.dart';
 import 'package:yaml/yaml.dart';
-
-import 'abstract_router.dart';
-import 'router_context.dart';
-import 'router_path.dart';
-import 'router_plugin.dart';
-import 'utils.dart';
-import 'voyager.dart';
 
 List<RouterPath> loadPathsFromYamlSync(String yaml) {
   final YamlMap routerMap = loadYaml(yaml);

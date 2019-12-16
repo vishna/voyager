@@ -1,4 +1,4 @@
-import 'package:voyager/src/utils.dart';
+import 'package:voyager/voyager.dart';
 
 /// Base router implementation for given output/parameter.
 /// Ported from eyeem/router OSS project and improved upon.

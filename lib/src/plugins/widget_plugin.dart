@@ -1,8 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:voyager/src/utils.dart';
-import '../router_context.dart';
-import '../router_plugin.dart';
-import '../voyager.dart';
+import 'package:voyager/voyager.dart';
 
 class WidgetPlugin extends RouterPlugin {
   WidgetPlugin(this.builders) : super(KEY);

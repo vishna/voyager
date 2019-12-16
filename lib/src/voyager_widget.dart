@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'plugins/widget_plugin.dart';
-import 'router.dart';
-import 'voyager.dart';
-import 'voyager_argument.dart';
+import 'package:voyager/voyager.dart';
 
 /// Just like [VoyagerStatelessWidget] but stateful. It has additional parameter called `keepAlive` which is usefull
 /// when embedding the widget in things like `TabBarView`. Most of the time you don't want this. Retains [Voyager]

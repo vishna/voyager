@@ -15,8 +15,8 @@ class MockCupertinoHomeWidget extends StatelessWidget {
           child: const Text("Navigate"),
         ),
       ),
-      child: Center(
-        child: const Text("Home Page"),
+      child: const Center(
+        child: Text("Home Page"),
       ),
     );
   }
@@ -31,8 +31,8 @@ class MockCupertinoOtherWidget extends StatelessWidget {
         navigationBar: CupertinoNavigationBar(
           middle: Text(title),
         ),
-        child: Center(
-          child: const Text("Other Page"),
+        child: const Center(
+          child: Text("Other Page"),
         ));
   }
 }
