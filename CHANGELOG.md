@@ -1,3 +1,7 @@
+# 1.2.0
+
+- use provider 4.x.x
+
 # 1.1.6
 
 - remove deprecated `test_api` package import from generated test files

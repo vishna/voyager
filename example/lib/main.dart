@@ -2,7 +2,6 @@ import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
 import 'package:provider/provider.dart';
-import 'package:voyager_list/voyager_list.dart';
 
 String requirements() {
   return '''
@@ -158,7 +157,16 @@ class ListWidget extends StatelessWidget {
           title: Text(voyager.title),
           actions: actions(context),
         ),
-        body: VoyagerListView(talks, idMapper, objectMapper),
+        body: ListView.builder(
+          itemCount: talks.length,
+          itemBuilder: (context, index) {
+            final talk = talks[index];
+            return VoyagerWidget(
+                key: ValueKey(idMapper(talk)),
+                path: objectMapper(talk),
+                argument: VoyagerArgument(talk));
+          },
+        ),
         floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
                 path: voyager.fabPath,
