@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:voyager/voyager.dart';
-import 'package:provider/provider.dart';
 
 class MockHomeWidget extends StatelessWidget {
   @override
@@ -30,7 +29,23 @@ Widget mockFab(BuildContext context) {
 class MockOtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final String title = Provider.of<Voyager>(context)["title"];
+    final String title = context.voyager["title"];
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: const Center(
+          child: Text("Other Page"),
+        ));
+  }
+}
+
+class MockOtherWidgetWithArgument extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final String title = context.voyager["title"];
+    assert(context.voyagerArgument != null);
 
     return Scaffold(
         appBar: AppBar(

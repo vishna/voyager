@@ -137,7 +137,8 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
         // is off the stack as PageRoute will hold old router
         // reference
         try {
-          isWrappedWithRouter = Provider.of<Router>(context) != null;
+          isWrappedWithRouter =
+              Provider.of<Router>(context, listen: false) != null;
         } catch (_) {}
 
         dynamic argument;

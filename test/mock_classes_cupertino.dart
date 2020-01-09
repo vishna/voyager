@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:voyager/voyager.dart';
-import 'package:provider/provider.dart';
 
 class MockCupertinoHomeWidget extends StatelessWidget {
   @override
@@ -25,7 +24,7 @@ class MockCupertinoHomeWidget extends StatelessWidget {
 class MockCupertinoOtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final String title = Provider.of<Voyager>(context)["title"];
+    final String title = context.voyager["title"];
 
     return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(

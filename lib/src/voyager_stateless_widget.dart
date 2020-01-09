@@ -24,11 +24,11 @@ class VoyagerStatelessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _router = router ?? Provider.of<Router>(context);
+    final _router = router ?? Provider.of<Router>(context, listen: false);
 
     Voyager parentVoyager;
     try {
-      parentVoyager = useCache ? null : Provider.of<Voyager>(context);
+      parentVoyager = useCache ? null : context.voyager;
     } catch (t) {
       parentVoyager = null;
     }
@@ -57,7 +57,7 @@ class VoyagerStatelessWidget extends StatelessWidget {
 
   static Voyager safeParent(BuildContext context) {
     try {
-      return Provider.of<Voyager>(context);
+      return context.voyager;
     } catch (_) {
       return null;
     }

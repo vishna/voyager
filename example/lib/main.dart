@@ -82,8 +82,7 @@ void main() {
 
 Widget appOrSplash() {
   return FutureBuilder(
-      future:
-          loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory),
+      future: loadRouter(paths(), plugins()),
       builder: (BuildContext context, AsyncSnapshot<Router> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
@@ -102,7 +101,7 @@ Widget appOrSplash() {
 }
 
 Widget makeMeFab(BuildContext context) {
-  final voyager = VoyagerProvider.of(context);
+  final voyager = context.voyager;
   return FloatingActionButton(
     onPressed: () {
       Navigator.of(context).pushNamed(voyager.target);
@@ -123,7 +122,7 @@ ThemeData themeData() {
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = VoyagerProvider.of(context);
+    final voyager = context.voyager;
 
     return Scaffold(
         appBar: AppBar(
@@ -144,7 +143,7 @@ class PageWidget extends StatelessWidget {
 class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = VoyagerProvider.of(context);
+    final voyager = context.voyager;
 
     // ignore: avoid_as
     final talks = (voyager.items)
@@ -191,7 +190,7 @@ class TalkWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Talk talk = Provider.of<VoyagerArgument>(context).value;
+    final Talk talk = context.voyagerArgument.value;
     return Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Column(
@@ -219,7 +218,7 @@ class SplashScreen extends StatelessWidget {
 }
 
 List<Widget> actions(BuildContext context) {
-  final List<dynamic> actions = Provider.of<Voyager>(context)["actions"];
+  final actions = context.voyager.actions;
   if (actions == null || actions.isEmpty) {
     return null;
   }

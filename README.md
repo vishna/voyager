@@ -159,10 +159,10 @@ VoyagerWidget(path: "/home", router: router);
 
 ### Inject your information via Provider
 
-If you use `VoyagerWidget` to create screens for your paths, you can obtain `Voyager` anywhere from `BuildContext` using [Provider](https://pub.dev/packages/provider):
+If you use `VoyagerWidget` to create screens for your paths, you can obtain `Voyager` anywhere from `BuildContext` using extension getter (that is using [Provider](https://pub.dev/packages/provider) underneath):
 
 ```dart
-final voyager = Provider.of<Voyager>(context);
+final voyager = context.voyager;
 ```
 
 Now going back to our mystery `OtherWidget` class from the example navigation spec, that widget could be implemented something like this:
@@ -171,7 +171,7 @@ Now going back to our mystery `OtherWidget` class from the example navigation sp
 class OtherWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final voyager = Provider.of<Voyager>(context); // injecting voyager from build context
+    final voyager = context.voyager; // injecting voyager from build context
     final title = voyager["title"];
 
     return Scaffold(
@@ -342,14 +342,7 @@ Now whenever you run `voyager:codegen` you'll get an extra message stating all i
 Furthermore you gain **strong typed** reference to the plugin output in extended `Voyager` instance:
 
 ```dart
-final voyager = VoyagerProvider.of(context);
 assert(voyager.icon is Icon);
-```
-
-__NOTE__: You must tell `Router` to use generated `VoyagerFactory`, so that it starts providing extended Voyager instances instead of vanilla ones:
-
-```dart
-loadRouter(paths(), plugins(), voyagerFactory: voyagerDataFactory)
 ```
 
 Finally, `pluginStub: true` gets you an abstract plugin class, so that you can avoid typing `voyager["node_name"]` manually. Just focus on parsing the node's config input and converting it into an expected output:

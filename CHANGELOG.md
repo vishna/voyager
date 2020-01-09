@@ -1,3 +1,13 @@
+# 2.0.0
+
+- use provider 4.x.x
+- use extensions, e.g. context.voyager / context.voyagerArgument
+- use extensions in generated code/drop VoyagerProvider/no need for voyager factory
+
+# 1.2.0+1
+
+- hotfix - provider4 will come in 2.0.0
+
 # 1.2.0
 
 - use provider 4.x.x

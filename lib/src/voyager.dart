@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 /// This class is a composite product of `RouterPlugin`s for the given router's path -
 /// this means all the information resolved from the navigation file that is relevant to creating
@@ -75,6 +77,10 @@ class Voyager {
 
 class Nothing {
   Nothing._private();
+}
+
+extension VoyagerContextExtension on BuildContext {
+  Voyager get voyager => Provider.of<Voyager>(this, listen: false);
 }
 
 typedef OnDispose = void Function();

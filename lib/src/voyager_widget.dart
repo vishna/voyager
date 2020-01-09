@@ -46,7 +46,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     var hasRouterProvider = false;
     Router router;
     try {
-      router = Provider.of<Router>(context);
+      router = Provider.of<Router>(context, listen: false);
       hasRouterProvider = true;
     } catch (t) {
       router = widget.router;
@@ -56,7 +56,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
     Voyager parentVoyager;
     try {
-      parentVoyager = Provider.of<Voyager>(context);
+      parentVoyager = context.voyager;
     } catch (t) {
       parentVoyager = null;
     }

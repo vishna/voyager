@@ -228,7 +228,7 @@ void main() {
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidgetArgument1(),
-          "OtherWidget": (context) => MockOtherWidget(),
+          "OtherWidget": (context) => MockOtherWidgetWithArgument(),
         })
       ];
 
