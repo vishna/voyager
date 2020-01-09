@@ -1,3 +1,7 @@
+# 2.0.0+1
+
+- fix extra unused import in generated code
+
 # 2.0.0
 
 - use provider 4.x.x
