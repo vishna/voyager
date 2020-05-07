@@ -76,6 +76,7 @@ class IconPlugin extends IconPluginStub {
 }
 
 void main() {
+  _setupVoyagerObfuscation();
   // wrapped with a builder, otherwise hot reload doesn't quite click
   runApp(Builder(builder: (builder) => appOrSplash()));
 }
@@ -176,7 +177,7 @@ class ListWidget extends StatelessWidget {
   // ignore: avoid_as
   static String idMapper(dynamic item) => (item as Talk).city;
   static String objectMapper(dynamic item) =>
-      pathObjectItem(item.runtimeType.toString());
+      pathObjectItem(VoyagerUtils.deobfuscate(item.runtimeType.toString()));
 }
 
 class Talk {
@@ -232,4 +233,14 @@ List<Widget> actions(BuildContext context) {
     ));
   });
   return widgets;
+}
+
+/// web release obfuscates class names, sadly we need to do this
+void _setupVoyagerObfuscation() {
+  VoyagerUtils.addObfuscationMap({
+    PageWidget: "PageWidget",
+    ListWidget: "ListWidget",
+    TalkWidget: "TalkWidget",
+    Talk: "Talk",
+  });
 }

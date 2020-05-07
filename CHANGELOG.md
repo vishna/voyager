@@ -1,3 +1,7 @@
+# 2.1.0
+
+- add a class obfuscation workaround to support Web in `release` mode
+
 # 2.0.0+1
 
 - fix extra unused import in generated code

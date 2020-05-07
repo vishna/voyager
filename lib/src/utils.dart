@@ -5,6 +5,7 @@ import 'package:voyager/voyager.dart';
 const String _VARIABLE_PREFIX = "%{";
 const String _VARIABLE_SUFFIX = "}";
 
+// ignore: avoid_classes_with_only_static_members
 class VoyagerUtils {
   static bool isNullOrBlank(String it) {
     return it == null || it.trim().isEmpty;
@@ -126,4 +127,26 @@ class VoyagerUtils {
     }
     return false;
   }
+
+  /// Necessary to obtain generic [Type]
+  /// https://github.com/dart-lang/sdk/issues/11923
+  static String stringTypeOf<T>() {
+    final className = T.toString();
+    return deobfuscate(className);
+  }
+
+  static String deobfuscate(String className) {
+    return _obfuscationMap[className] ?? className;
+  }
+
+  /// If you're targeting WEB use this method to register class symbols used by navigation map.
+  /// dart2js is obfuscating class names thus making it impossible to resolve them during runtime
+  /// in the release mode
+  static void addObfuscationMap(Map<Type, String> map) {
+    map.forEach((key, value) {
+      _obfuscationMap[key.toString()] = value;
+    });
+  }
+
+  static final _obfuscationMap = <String, String>{};
 }
