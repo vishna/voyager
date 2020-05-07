@@ -26,7 +26,7 @@ class WidgetPluginBuilder {
 
   WidgetPluginBuilder add<T extends Widget>(WidgetBuilder builder,
       {List<String> aliases}) {
-    final type = _typeOf<T>().toString();
+    final type = VoyagerUtils.stringTypeOf<T>();
     if (type == "Widget") {
       /// method used without specifying T
       throw ArgumentError(
@@ -41,12 +41,12 @@ class WidgetPluginBuilder {
     assert(!VoyagerUtils.isNullOrBlank(type),
         "Widget type might not be null or blank");
     assert(_builders[type] == null, "Type $type is already registered.");
-    _builders[type] = builder;
     aliases?.forEach((alias) {
       assert(
           _builders[alias] == null, "Alias $alias for $type is already used.");
       _builders[alias] = builder;
     });
+    _builders[type] = builder;
     return this;
   }
 
@@ -55,7 +55,3 @@ class WidgetPluginBuilder {
     return this;
   }
 }
-
-/// Necessary to obtain generic [Type]
-/// https://github.com/dart-lang/sdk/issues/11923
-Type _typeOf<T>() => T;

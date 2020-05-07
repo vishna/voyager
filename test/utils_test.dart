@@ -86,6 +86,12 @@ void main() {
     expect(VoyagerUtils.cleanUrl(""), "");
     expect(VoyagerUtils.cleanUrl("//"), "");
   });
+
+  test('VoyagerUtils - obfuscation', () {
+    expect(VoyagerUtils.stringTypeOf<bool>(), "bool");
+    VoyagerUtils.addObfuscationMap({bool: "xyz"});
+    expect(VoyagerUtils.stringTypeOf<bool>(), "xyz");
+  });
 }
 
 /// whoops https://github.com/dart-lang/sdk/issues/32559

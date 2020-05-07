@@ -99,13 +99,11 @@ The other important ingredient of voyager router are plugins. You need to tell r
 
 ```dart
 final plugins = [
-  [
-    WidgetPluginBuilder() /// provide widget builders for expressions used in YAML
-      .add<HomeWidget>((context) => HomeWidget())
-      .add<OtherWidget>((context) => OtherWidget())
-      .build(),
-    TitlePlugin() /// custom plugin
-  ]
+  WidgetPluginBuilder() /// provide widget builders for expressions used in YAML
+    .add<HomeWidget>((context) => HomeWidget())
+    .add<OtherWidget>((context) => OtherWidget())
+    .build(),
+  TitlePlugin() /// custom plugin
 ];
 ```
 
