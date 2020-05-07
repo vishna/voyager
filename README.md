@@ -145,6 +145,17 @@ assert(voyager["widget"] is WidgetBuilder); /// originates from the widget plugi
 
 **NOTE:** Any attempt to modify voyager keys will fail unless done from plugin's `outputFor` method. If you want to add some values to Voyager later on, use `Voyager.storage` public map.
 
+**NOTE:** Planning on using Voyager with Flutter web? Keep in mind that class names in `release` mode are getting obfuscated by `dart2js`. Currently the workaround for this is to provide obfuscation map yourself before registering any plugins:
+
+```dart
+VoyagerUtils.addObfuscationMap({
+  HomeWidget: "HomeWidget",
+  OtherWidget: "OtherWidget"
+});
+```
+
+Failure to provide obfuscation map might result in grey screen of death.
+
 ### Embed any screen path with VoyagerWidget
 
 If your path uses `widget` plugin you can try using `VoyagerWidget` and embed any path you want like this:
