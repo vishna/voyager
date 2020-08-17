@@ -2,15 +2,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:voyager/voyager.dart';
+import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' as voyager;
 
 typedef WidgetWrapper<T extends VoyagerTestScenarios> = Widget Function(
-    Widget nonWrappedWidget, Router router, T scenarios);
+    Widget nonWrappedWidget, voyager.Router router, T scenarios);
 
 @isTest
 void _testVoyagerWidget<T extends VoyagerTestScenarios>(
   String description,
-  Future<Router> routerFuture,
+  Future<voyager.Router> routerFuture,
   WidgetWrapper widgetWrapper,
   T scenarios,
   VoyagerTestScenario scenario, {
@@ -20,7 +21,7 @@ void _testVoyagerWidget<T extends VoyagerTestScenarios>(
   bool semanticsEnabled = false,
 }) {
   testWidgets(description, (WidgetTester tester) async {
-    Router router;
+    voyager.Router router;
     await tester.runAsync(() async {
       router = await routerFuture;
       expect(router, isNotNull);
@@ -163,7 +164,7 @@ abstract class VoyagerTestScenarios {
 @isTestGroup
 @experimental
 void voyagerAutomatedTests<T extends VoyagerTestScenarios>(String description,
-    Future<Router> router, VoyagerTestScenarios testScenarios,
+    Future<voyager.Router> router, VoyagerTestScenarios testScenarios,
     {bool forceTests = true}) {
   group(description, () {
     final homeScenarios = testScenarios.homeScenarios();

@@ -1,6 +1,7 @@
 import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
-import 'package:voyager/voyager.dart';
+import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' as voyager;
 import 'package:provider/provider.dart';
 
 String requirements() {
@@ -84,10 +85,10 @@ void main() {
 Widget appOrSplash() {
   return FutureBuilder(
       future: loadRouter(paths(), plugins()),
-      builder: (BuildContext context, AsyncSnapshot<Router> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<voyager.Router> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data;
-          return Provider<Router>.value(
+          return Provider<voyager.Router>.value(
               value: router,
               child: MaterialApp(
                 title: "Voyager Demo",

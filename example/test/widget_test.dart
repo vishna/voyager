@@ -21,7 +21,8 @@ class TestScenarios extends VoyagerTestScenarios {
         final widget = icon.evaluate().first.widget;
         expect(widget, isInstanceOf<Icon>());
         final Icon iconWidget = widget;
-        expect(iconWidget.icon, Icons.info_outline);
+        expect(iconWidget.icon,
+            const IconData(0xE88F, fontFamily: 'MaterialIcons'));
       })
     ];
   }

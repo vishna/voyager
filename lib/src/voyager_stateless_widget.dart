@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Router;
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
 

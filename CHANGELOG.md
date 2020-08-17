@@ -1,3 +1,14 @@
+# 2.1.1
+
+Hide Voyager's Router from generated code to avoid class name class:
+
+```
+import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' as voyager;
+
+final voyager.Router router;
+```
+
 # 2.1.0
 
 - add a class obfuscation workaround to support Web in `release` mode

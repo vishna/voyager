@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' hide Router;
+import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:voyager/voyager.dart';
+import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' as voyager;
 
 import 'mock_classes.dart';
 import 'mock_classes_cupertino.dart';
@@ -146,14 +147,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<Router>.value(
+      await tester.pumpWidget(Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: Router.materialRoute))));
+                  router.generator(routeType: voyager.Router.materialRoute))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -177,14 +178,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<Router>.value(
+      await tester.pumpWidget(Provider<voyager.Router>.value(
           value: router,
           child: CupertinoApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: Router.cupertinoRoute))));
+                  router.generator(routeType: voyager.Router.cupertinoRoute))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -209,7 +210,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
       final generator = router.generator(routeType: 9000);
       try {
@@ -234,14 +235,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<Router>.value(
+      await tester.pumpWidget(Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: Router.materialRoute))));
+                  router.generator(routeType: voyager.Router.materialRoute))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -266,14 +267,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<Router>.value(
+      await tester.pumpWidget(Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: Router.materialRoute))));
+                  router.generator(routeType: voyager.Router.materialRoute))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -301,14 +302,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<Router>());
+      expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<Router>.value(
+      await tester.pumpWidget(Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: Router.materialRoute))));
+                  router.generator(routeType: voyager.Router.materialRoute))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);

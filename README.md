@@ -48,7 +48,9 @@ dependencies:
 Then in the code, make sure you import voyager package:
 
 ```dart
-import 'package:voyager/voyager.dart';
+/// prevent name clash with upcoming Flutter's Router class using hide
+import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' as voyager;
 ```
 
 ### Navigation Spec
@@ -110,7 +112,7 @@ final plugins = [
 Now you're all set for getting your router instance:
 
 ```dart
-Future<Router> router = loadRouter(paths, plugins)
+Future<voyager.Router> router = loadRouter(paths, plugins)
 ```
 
 ### Custom Plugins
@@ -202,7 +204,7 @@ Defining inital path & handling navigation
 ```dart
 final initalPath = "/my/fancy/super/path"
 
-Provider<Router>.value(
+Provider<voyager.Router>.value(
   value: router,
   child: MaterialApp(
     home: VoyagerWidget(path: initalPath),

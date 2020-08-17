@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 /// fixed version for predictable builds
-const voyagerVersion = "master-fbbac73868-1";
+const voyagerVersion = "master-b761cad143-1";
 
 /// fat jar baked on jitpack
 const voyagerJarPath =
