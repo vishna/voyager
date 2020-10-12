@@ -158,7 +158,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 
       switch (routeType) {
         case materialRoute:
-          return MaterialPageRoute<dynamic>(builder: builder);
+          return MaterialPageRoute<dynamic>(builder: builder, settings: settings);
         case cupertinoRoute:
           return CupertinoPageRoute<dynamic>(builder: builder);
         default:
