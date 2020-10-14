@@ -160,7 +160,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
         case materialRoute:
           return MaterialPageRoute<dynamic>(builder: builder, settings: settings);
         case cupertinoRoute:
-          return CupertinoPageRoute<dynamic>(builder: builder);
+          return CupertinoPageRoute<dynamic>(builder: builder, settings: settings);
         default:
           throw ArgumentError("routeType = $routeType not supported");
       }
