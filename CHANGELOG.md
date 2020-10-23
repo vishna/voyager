@@ -1,3 +1,7 @@
+# 2.1.2
+
+- pass settings instance in routed pages - thx [@i5o](https://github.com/i5o)
+
 # 2.1.1
 
 Hide Voyager's Router from generated code to avoid class name class:
