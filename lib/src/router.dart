@@ -34,7 +34,7 @@ List<RouterPath> loadPathsFromJsonSync(String jsonString) {
 
 // e.g. "assets/navigation.yml"
 Future<List<RouterPath>> loadPathsFromAssets(String path,
-    {AssetBundle assetBundle}) async {
+    {AssetBundle? assetBundle}) async {
   assetBundle ??= rootBundle;
   final yaml = await assetBundle.loadString(path);
   return loadPathsFromYamlSync(yaml);
@@ -50,7 +50,7 @@ Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
 
 Future<Router> loadRouter(
     Future<List<RouterPath>> paths, List<RouterPlugin> plugins,
-    {VoyagerFactory voyagerFactory}) {
+    {VoyagerFactory? voyagerFactory}) {
   final router = voyagerFactory != null
       ? Router(voyagerFactory: voyagerFactory)
       : Router();
@@ -95,7 +95,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 
   void registerConfig<T extends Voyager>(
       String path, VoyagerConfig<T> voyagerConfig,
-      [ProgrammaticVoyagerFactory<T> voyagerFactory]) {
+      [ProgrammaticVoyagerFactory<T>? voyagerFactory]) {
     registerBuilder(
         path,
         _ProgrammaticRouteBuilder(
@@ -109,16 +109,19 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
     return _plugins;
   }
 
-  Voyager find(String routerPath, {Voyager parent, VoyagerArgument argument}) {
+  Voyager? find(String routerPath,
+      {Voyager? parent, VoyagerArgument? argument}) {
     return outputFor(routerPath,
         extras: RouteParam(parent: parent, argument: argument));
   }
 
-  Voyager findCached(String routerPath) {
+  Voyager? findCached(String routerPath) {
     var voyager = _cache[routerPath];
     if (voyager == null) {
       voyager = find(routerPath);
-      _cache[routerPath] = voyager;
+      if (voyager != null) {
+        _cache[routerPath] = voyager;
+      }
     }
     return voyager;
   }
@@ -128,7 +131,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 
   RouteFactory generator({int routeType = materialRoute}) {
     return (RouteSettings settings) {
-      final path = settings.name;
+      final path = settings.name!;
       final builder = (BuildContext context) {
         var isWrappedWithRouter = false;
 
@@ -138,7 +141,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
         // reference
         try {
           isWrappedWithRouter =
-              Provider.of<Router>(context, listen: false) != null;
+              Provider.of<Router?>(context, listen: false) != null;
         } catch (_) {}
 
         dynamic argument;
@@ -158,9 +161,11 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 
       switch (routeType) {
         case materialRoute:
-          return MaterialPageRoute<dynamic>(builder: builder, settings: settings);
+          return MaterialPageRoute<dynamic>(
+              builder: builder, settings: settings);
         case cupertinoRoute:
-          return CupertinoPageRoute<dynamic>(builder: builder, settings: settings);
+          return CupertinoPageRoute<dynamic>(
+              builder: builder, settings: settings);
         default:
           throw ArgumentError("routeType = $routeType not supported");
       }
@@ -170,12 +175,12 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
 
 class RouteParam {
   RouteParam({this.parent, this.argument});
-  final Voyager parent;
-  final VoyagerArgument argument;
+  final Voyager? parent;
+  final VoyagerArgument? argument;
 }
 
 class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
-  RouteBuilder({this.path, this.routerNG});
+  RouteBuilder({required this.path, required this.routerNG});
   final RouterPath path;
   final Router routerNG;
 
@@ -183,7 +188,7 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
   Voyager outputFor(AbstractRouteContext abstractContext) {
     final allTheParams = Map<String, String>.from(abstractContext.getParams());
     final dynamic extras = abstractContext.getExtras();
-    VoyagerArgument argument;
+    VoyagerArgument? argument;
     if (extras is RouteParam) {
       argument = extras.argument;
     }
@@ -222,9 +227,12 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
 class _ProgrammaticRouteBuilder<T extends Voyager>
     extends OutputBuilder<Voyager, RouteParam> {
   _ProgrammaticRouteBuilder(
-      {this.path, this.voyagerFactory, this.voyagerConfig, this.routerNG});
+      {required this.path,
+      this.voyagerFactory,
+      required this.voyagerConfig,
+      required this.routerNG});
   final String path;
-  final ProgrammaticVoyagerFactory<T> voyagerFactory;
+  final ProgrammaticVoyagerFactory<T>? voyagerFactory;
   final VoyagerConfig<T> voyagerConfig;
   final Router routerNG;
 
@@ -236,10 +244,11 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
         path: abstractContext.url(), params: allTheParams, router: routerNG);
 
     final newInstance = voyagerFactory != null
-        ? voyagerFactory(abstractContext, context)
+        ? voyagerFactory!(abstractContext, context)
         : _defaultProgrammaticFactory(abstractContext, context);
 
-    voyagerConfig(context, newInstance);
+    // ignore: avoid_as
+    voyagerConfig(context, newInstance as T);
 
     newInstance.lock();
 

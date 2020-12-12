@@ -237,12 +237,16 @@ void main() {
 
       expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<voyager.Router>.value(
+      await tester.pumpWidget(
+        Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
-              home: const VoyagerWidget(path: "/home"),
-              onGenerateRoute:
-                  router.generator(routeType: voyager.Router.materialRoute))));
+            home: const VoyagerWidget(path: "/home"),
+            onGenerateRoute:
+                router.generator(routeType: voyager.Router.materialRoute),
+          ),
+        ),
+      );
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -269,12 +273,16 @@ void main() {
 
       expect(router, isInstanceOf<voyager.Router>());
 
-      await tester.pumpWidget(Provider<voyager.Router>.value(
+      await tester.pumpWidget(
+        Provider<voyager.Router>.value(
           value: router,
           child: MaterialApp(
-              home: const VoyagerWidget(path: "/home"),
-              onGenerateRoute:
-                  router.generator(routeType: voyager.Router.materialRoute))));
+            home: const VoyagerWidget(path: "/home"),
+            onGenerateRoute:
+                router.generator(routeType: voyager.Router.materialRoute),
+          ),
+        ),
+      );
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -367,8 +375,8 @@ class _MockArgumentInContext extends RouterObjectPlugin<String> {
   @override
   String buildObject(RouterContext context, dynamic config) {
     if (context.argument != null &&
-        context.argument.value != null &&
-        context.argument.value == "hello") {
+        context.argument?.value != null &&
+        context.argument?.value == "hello") {
       hasEncounteredVoyagerArgument = true;
     }
     return config;

@@ -1,8 +1,15 @@
-# 2.1.2
+## 3.0.0-nullsafety
+
+### BREAKING CHANGE
+
+- migration to null-safety
+- all Voyager classes are now prefixed with `Voyager`. This is due to introduction of Router in Navigator 2.0 API
+
+## 2.1.2
 
 - pass settings instance in routed pages - thx [@i5o](https://github.com/i5o)
 
-# 2.1.1
+## 2.1.1
 
 Hide Voyager's Router from generated code to avoid class name class:
 
@@ -13,71 +20,71 @@ import 'package:voyager/voyager.dart' as voyager;
 final voyager.Router router;
 ```
 
-# 2.1.0
+## 2.1.0
 
 - add a class obfuscation workaround to support Web in `release` mode
 
-# 2.0.0+1
+## 2.0.0+1
 
 - fix extra unused import in generated code
 
-# 2.0.0
+## 2.0.0
 
 - use provider 4.x.x
 - use extensions, e.g. context.voyager / context.voyagerArgument
 - use extensions in generated code/drop VoyagerProvider/no need for voyager factory
 
-# 1.2.0+1
+## 1.2.0+1
 
 - hotfix - provider4 will come in 2.0.0
 
-# 1.2.0
+## 1.2.0
 
 - use provider 4.x.x
 
-# 1.1.6
+## 1.1.6
 
 - remove deprecated `test_api` package import from generated test files
 - use package imports everywhere, [related issue](https://github.com/flutter/flutter/issues/40421#issuecomment-564330783)
 
-# 1.1.5
+## 1.1.5
 
 - allow passing `VoyagerArgument` to stateful widgets in tests
 
-# 1.1.4
+## 1.1.4
 
 - add slack channel badge
 - allow adding onDispose callback to `Voyager` instance after lockdown.
 
-# 1.1.3
+## 1.1.3
 
 - remove unused imports
 
-# 1.1.2
+## 1.1.2
 
 - expose `VoyagerArgument` (if available) in `RouteContext`
 
-# 1.1.1
+## 1.1.1
 
 - fix deadlock in code generator
 
-# 1.1.0
+## 1.1.0
 
 - jar codegen downloader now works using `dart:io` only
 - improved messaging in case of missing JDK
 - `VoyagerListView` is now part of [voyager_list](https://pub.dev/packages/voyager_list) package **BREAKING CHANGE**
 
-# 1.0.7
+## 1.0.7
 
 - Ability to combine WidgetPluginBuilders together using `addBuilder`
 - more resilient `dartfmt` resolution
 - use `curl` instead of `wget` for codgen jar download
 
-# 1.0.6
+## 1.0.6
 
 - fix issue where `voyager:codgen` would not work even though `dartfmt` was present
 
-# 1.0.5
+## 1.0.5
 
 Code generator improvements:
 
@@ -85,19 +92,19 @@ Code generator improvements:
 - You can keep schema in a separate file using `sourceSchema` field, check out [voyager_bloc/example](https://github.com/vishna/voyager_bloc/blob/master/example/voyager-codegen.yaml)
 - You can scope paths to packages by using `package: name` in `voyager-codegen.yaml` and under respective paths in your navigation schema
 
-# 1.0.4
+## 1.0.4
 
 - make duplicate items (that is having the same `id`) work properly with `VoyagerList`
 
-# 1.0.3
+## 1.0.3
 
 - `VoyagerList` can now take arguments which `ListView.custom` normally takes
 
-# 1.0.2
+## 1.0.2
 
 - Drop `VoyagerPaths` generated class
 
-## BREAKING CHANGE
+### BREAKING CHANGE
 
 Generated paths/types are no longer wrapped in a class, so:
 
@@ -181,21 +188,21 @@ class IconPlugin extends IconPluginStub {
 ```
 
 
-## BREAKING CHANGES
+### BREAKING CHANGES
 
 - `RouterNG` becomes `Router`
 - old `VoyagerFactory` becomes `ProgrammaticVoyagerFactory`
 - new `VoyagerFactory` is used to instantiate generated `VoyagerData`
 
-# 0.9.2
+## 0.9.2
 
 - `WidgetWrapper` no longer runs in tester.runAsync scope by default
 
-# 0.9.1
+## 0.9.1
 
 - `WidgetWrapper` for generated tests now has extra 2 parameters, `router` and `scenarios`. This should facilitate creation of the wrapping widget.
 
-# 0.9.0
+## 0.9.0
 
 - support adding config for paths programatically 🎉
 
@@ -236,9 +243,9 @@ VoyagerTestObjectItemScenario.write("Talk", (WidgetTester tester) async {
 - added static code analysis to the project
 - over 90% code coverage
 
-# 0.8.0
+## 0.8.0
 
-## SOME BREAKING CHANGES
+### SOME BREAKING CHANGES
 
 - dropped `TypePlugin` since it was redundant, but since `type` has a special place in Voyager, it is exposed as getter and also is validated at runtime, so it must be a String if anything
 - you can now pass custom AssetBundle to `loadPathsFromAssets` method
@@ -259,19 +266,19 @@ final plugins = [
 
 You can still use the old syntax, but the above one brings more type safety to your code.
 
-# 0.7.3
+## 0.7.3
 
 - expose `VoyagerParent` in build context when using a stateless widget
 
-# 0.7.2
+## 0.7.2
 
 - `VoyagerListView`, a widget that allows mapping a list of items onto respective list of paths and then displaying them
 
-# 0.7.1
+## 0.7.1
 
 - add optional `Key` constructor parameter to `VoyagerWidget` and `VoyagerStatelessWidget`
 
-# 0.7.0
+## 0.7.0
 
 - ...and we're back to stateful widget by default - while you should use StatelessWidget whenever possible, navigation is causing widget recreation which means recreation of Voyager instance - and that's something we don't want to do.
 - `generator` now supports CupertinoPageRoute that can be specified via additional parameter
@@ -289,13 +296,13 @@ output.onDispose(() {
 });
 ```
 
-# 0.6.1
+## 0.6.1
 
 - display information in case `dartfmt` is missing from your path and you're using code generation tool.
 
-# 0.6.0
+## 0.6.0
 
-## SOME BREAKING CHANGES
+### BREAKING CHANGES
 
 - `VoyagerWidget` becomes stateless by default. If you want to have stateful behavior, please use `VoyagerStatefulWidget`
 - Dropped `Voyager.fromPath` method, it was redundant and confusing. Use constructor directly instead.
@@ -319,19 +326,19 @@ _The decision to change `VoyagerWidget` to stateless widget and removal of `from
 
 _It's a MUST READ for any Flutter developer._
 
-# 0.5.2
+## 0.5.2
 
 - update to patched code generator version
 
-# 0.5.1
+## 0.5.1
 
 - decrease occurences of voyager instance creation
 
-# 0.5.0
+## 0.5.0
 
 > You will be automated, resistance is futile.
 
-## BREAKING CHANGES
+### BREAKING CHANGES
 
 - automated widget tests (EXPERIMENTAL)
 - removal of deprecated `VoyagerProvider`, see version `0.2.0` for migration steps (VoyagerProvider will return in a changed form...)
@@ -339,37 +346,37 @@ _It's a MUST READ for any Flutter developer._
 - `RedirectPlugin`, allows mapping virtual paths to existing ones
 - `ScreenPlugin` is now called `WidgetPlugin`, you also need to change `screen` to `widget` in your yaml/json specs
 
-# 0.4.2
+## 0.4.2
 
 - use `dartfmt` to make sure generated code is formatted corectly
 
-# 0.4.1
+## 0.4.1
 
 - package health
 
-# 0.4.0
+## 0.4.0
 
 - [code generation](https://github.com/vishna/voyager#code-generation) for paths, simply run `flutter packages pub run voyager:codegen` at the top of your flutter project and behold!
 
-# 0.3.0
+## 0.3.0
 
 - drop angel_route dependency in favor of [abstract_router.dart](https://github.com/vishna/voyager/blob/master/lib/src/abstract_router.dart)
 
-# 0.2.3
+## 0.2.3
 
 - json support
 
-# 0.2.2
+## 0.2.2
 
 - formatting
 
-# 0.2.1
+## 0.2.1
 
 - fixes around how VoyagerWidget reacts to hot reload
 - improve sample app
 - add a sample app gif to README
 
-# 0.2.0
+# #0.2.0
 
 **API DEPRECATION**
 
@@ -379,8 +386,8 @@ Migration:
 - change `VoyagerProvider.of(context)` to `Provider.of<Voyager>(context)`
 - change `VoyagerProvider.routerOf(context)` to `Provider.of<RouterNG>(context)`
 
-# 0.1.1
+## 0.1.1
 - Package health fixes
 
-# 0.1.0
+## 0.1.0
 - Initial release

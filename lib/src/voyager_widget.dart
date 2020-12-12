@@ -7,16 +7,16 @@ import 'package:voyager/voyager.dart';
 /// unless path or router changes
 class VoyagerWidget extends StatefulWidget {
   const VoyagerWidget(
-      {@required this.path,
+      {required this.path,
       this.keepAlive = false,
       this.router,
       this.argument,
-      Key key})
+      Key? key})
       : super(key: key);
   final String path;
   final bool keepAlive;
-  final Router router;
-  final VoyagerArgument argument;
+  final Router? router;
+  final VoyagerArgument? argument;
 
   @override
   State<StatefulWidget> createState() =>
@@ -25,11 +25,11 @@ class VoyagerWidget extends StatefulWidget {
 
 class _VoyagerWidgetState extends State<VoyagerWidget>
     with AutomaticKeepAliveClientMixin<VoyagerWidget> {
-  _VoyagerWidgetState({this.keepAlive});
-  String _path;
-  Voyager _voyager;
+  _VoyagerWidgetState({required this.keepAlive});
+  late String _path;
+  Voyager? _voyager;
   final bool keepAlive;
-  Router _lastRouter;
+  Router? _lastRouter;
 
   @override
   void initState() {
@@ -49,12 +49,10 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
       router = Provider.of<Router>(context, listen: false);
       hasRouterProvider = true;
     } catch (t) {
-      router = widget.router;
+      router = widget.router!;
     }
 
-    assert(router != null, "router instance should not be null");
-
-    Voyager parentVoyager;
+    Voyager? parentVoyager;
     try {
       parentVoyager = context.voyager;
     } catch (t) {
@@ -63,25 +61,24 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
 
     if (_voyager == null || _lastRouter != router) {
       _lastRouter = router;
-      _voyager = _lastRouter.find(_path,
-          parent: parentVoyager, argument: widget.argument);
+      _voyager =
+          router.find(_path, parent: parentVoyager, argument: widget.argument);
     }
 
     assert(_voyager != null, "voyager instance should not be null");
 
-    final WidgetBuilder builder = _voyager[WidgetPlugin.KEY];
+    final WidgetBuilder? builder = _voyager![WidgetPlugin.KEY];
 
     assert(builder != null,
         "WidgetBuilder of _voyager should not be null, did you forget to add WidgetPlugin?");
 
     return MultiProvider(
       providers: [
-        Provider<Voyager>.value(value: _voyager),
+        Provider<Voyager>.value(value: _voyager!),
         if (!hasRouterProvider) Provider<Router>.value(value: router),
-        if (widget.argument != null)
-          Provider<VoyagerArgument>.value(value: widget.argument)
+        Provider<VoyagerArgument?>.value(value: widget.argument)
       ],
-      child: Builder(builder: builder),
+      child: Builder(builder: builder!),
     );
   }
 

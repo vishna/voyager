@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glob/glob.dart';
+import 'package:glob/list_local_fs.dart';
 
 /// A simple implementation of [AssetBundle] that reads files from an asset dir.
 ///
@@ -23,7 +24,7 @@ class DiskAssetBundle extends CachingAssetBundle {
       await for (final path in Glob(pattern).list(root: from)) {
         if (path is File) {
           // ignore: avoid_as, unnecessary_cast
-          final bytes = await path.readAsBytes() as Uint8List;
+          final bytes = await (path as File).readAsBytes() as Uint8List;
           cache[path.path] = ByteData.view(bytes.buffer);
         }
       }
@@ -44,7 +45,7 @@ class DiskAssetBundle extends CachingAssetBundle {
 
   @override
   Future<ByteData> load(String key) async {
-    return _cache[key];
+    return _cache[key]!;
   }
 }
 

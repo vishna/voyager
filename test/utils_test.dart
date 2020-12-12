@@ -1,7 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:voyager/voyager.dart';
 
 void main() {
+  test("sprintf sanity", () {
+    // argnum starts at 1
+    expect(sprintf("Hello %1\$s!", ["World"]), "Hello World!");
+  });
+
   test(
       'VoyagerUtils.interpolate() interpolates string containg %{} with a given value',
       () {
@@ -11,7 +17,11 @@ void main() {
   });
 
   test('interpolate dynamic list or map', () {
-    final context = RouterContext(params: {"foo": "Hello"});
+    final context = RouterContext(
+      params: {"foo": "Hello"},
+      path: "/mock/path",
+      router: Router(),
+    );
 
     final list = [
       "%{foo} World",

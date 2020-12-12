@@ -19,10 +19,10 @@ class MockHomeWidget extends StatelessWidget {
 Widget mockFab(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context).pushNamed("/other/thing");
+      Navigator.of(context)!.pushNamed("/other/thing");
     },
     tooltip: 'Navigate',
-    child: Icon(Icons.add),
+    child: const Icon(Icons.add),
   );
 }
 
@@ -69,10 +69,10 @@ class MockHomeWidgetArgument1 extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed("/other/thing", arguments: "hello");
+          Navigator.of(context)!.pushNamed("/other/thing", arguments: "hello");
         },
         tooltip: 'Navigate',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -90,18 +90,18 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
+          Navigator.of(context)!
               .pushNamed("/other/thing", arguments: VoyagerArgument("hello"));
         },
         tooltip: 'Navigate',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class CustomVoyager extends Voyager {
-  CustomVoyager(String path, Voyager parent)
+  CustomVoyager(String path, Voyager? parent)
       : super(path: path, parent: parent, config: <String, dynamic>{});
 
   set widget(WidgetBuilder builder) {

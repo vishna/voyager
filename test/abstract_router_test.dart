@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voyager/src/router.dart';
 import 'package:voyager/voyager.dart';
@@ -7,17 +8,6 @@ import 'mock_classes.dart';
 // ignore_for_file: avoid_as
 
 void main() {
-  test('registering null output builder', () {
-    final router = Router();
-    expect(() => router.registerBuilder("/my/path", null),
-        throwsA(predicate((Error e) {
-      expect(e, isInstanceOf<ArgumentError>());
-      expect((e as ArgumentError).message,
-          "You need a non null builder for /my/path");
-      return true;
-    })));
-  });
-
   test('test wildcard parameter', () async {
     final paths = loadPathsFromString('''
 ---
@@ -35,23 +25,20 @@ void main() {
   widget: OtherWidget
   title: "Now the wild %{whatever}"
 ''');
-    final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      }),
-      RedirectPlugin()
-    ];
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final plugins = [WidgetPlugin(widgetMappings), RedirectPlugin()];
 
     final router = await loadRouter(paths, plugins);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], widgetMappings["OtherWidget"]);
     expect(otherVoyager["title"], "This is a thing");
 
-    final wildVoyager = router.find("/other/thing/is/here");
+    final wildVoyager = router.find("/other/thing/is/here")!;
     expect(wildVoyager["title"], "Now the wild thing/is/here");
   });
 
@@ -102,11 +89,11 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    final beerPosition = router.find("/position/52.4915536/13.4265027");
+    final beerPosition = router.find("/position/52.4915536/13.4265027")!;
     expect(beerPosition["title"], "The beer is 52.4915536 and 13.4265027");
 
     final beerInCityPosition =
-        router.find("/location/Berlin/52.4915536/13.4265027");
+        router.find("/location/Berlin/52.4915536/13.4265027")!;
     expect(beerInCityPosition.path, "/location/Berlin/52.4915536/13.4265027");
     expect(beerInCityPosition["title"], "Beer is located in Berlin");
   });
@@ -127,10 +114,10 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    final beerPosition = router.find("/position/52.4915536/13.4265027");
+    final beerPosition = router.find("/position/52.4915536/13.4265027")!;
     expect(beerPosition["title"], "The beer is 52.4915536 and 13.4265027");
 
-    final anotherBeerPosition = router.find("/position/52.4915536/13.4265027");
+    final anotherBeerPosition = router.find("/position/52.4915536/13.4265027")!;
     expect(
         anotherBeerPosition["title"], "The beer is 52.4915536 and 13.4265027");
 
@@ -154,7 +141,7 @@ void main() {
     final router = await loadRouter(paths, plugins);
     router.globalParam("city", "Berlin");
 
-    final beerPosition = router.find("/position/52.4915536/13.4265027");
+    final beerPosition = router.find("/position/52.4915536/13.4265027")!;
     expect(beerPosition["title"],
         "The beer is 52.4915536 and 13.4265027 in Berlin");
   });

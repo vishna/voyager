@@ -25,7 +25,7 @@ class WidgetPluginBuilder {
   WidgetPlugin build() => WidgetPlugin(_builders);
 
   WidgetPluginBuilder add<T extends Widget>(WidgetBuilder builder,
-      {List<String> aliases}) {
+      {List<String>? aliases}) {
     final type = VoyagerUtils.stringTypeOf<T>();
     if (type == "Widget") {
       /// method used without specifying T
@@ -36,8 +36,7 @@ class WidgetPluginBuilder {
   }
 
   WidgetPluginBuilder addMethod(WidgetBuilder builder, String type,
-      {List<String> aliases}) {
-    assert(builder != null, "Builder must be provided");
+      {List<String>? aliases}) {
     assert(!VoyagerUtils.isNullOrBlank(type),
         "Widget type might not be null or blank");
     assert(_builders[type] == null, "Type $type is already registered.");

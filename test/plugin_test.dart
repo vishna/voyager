@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voyager/src/abstract_router.dart';
 import 'package:voyager/voyager.dart';
@@ -29,20 +29,20 @@ void main() {
 '/different/fail' :
   redirect: '/non/existing/path'
 ''');
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
     final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      }),
-      RedirectPlugin()
+      WidgetPlugin(widgetMappings),
+      RedirectPlugin(),
     ];
 
     final router = await loadRouter(paths, plugins);
 
-    final differentVoyager = router.find("/different/one?bar=world");
+    final differentVoyager = router.find("/different/one?bar=world")!;
 
-    expect(differentVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<MockOtherWidget>());
+    expect(differentVoyager[WidgetPlugin.KEY], widgetMappings["OtherWidget"]);
 
     expect(differentVoyager["type"], "other");
     expect(differentVoyager.type, "other");
@@ -74,20 +74,20 @@ void main() {
   widget: OtherWidget2
   title: "This is %{title}"
 ''');
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
     final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      }),
-      RedirectPlugin()
+      WidgetPlugin(widgetMappings),
+      RedirectPlugin(),
     ];
 
     final router = await loadRouter(paths, plugins);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], widgetMappings["OtherWidget"]);
 
     expect(() => router.find("/other2/thing"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
@@ -114,24 +114,25 @@ void main() {
   widget: OtherWidget2
   title: "This is %{title}"
 ''');
+    final homeBuilder = (BuildContext context) => MockHomeWidget();
+    final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
       WidgetPluginBuilder()
-          .add<MockHomeWidget>((context) => MockHomeWidget())
-          .add<MockOtherWidget>((context) => MockOtherWidget())
+          .add<MockHomeWidget>(homeBuilder)
+          .add<MockOtherWidget>(otherBuilder)
           .build(),
       RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], homeBuilder);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], otherBuilder);
 
     expect(() => router.find("/other2/thing"), throwsA(predicate((Error e) {
       expect(e, isInstanceOf<FlutterError>());
@@ -158,43 +159,32 @@ void main() {
   widget: OtherWidget2
   title: "This is %{title}"
 ''');
+    final homeBuilder = (BuildContext context) => MockHomeWidget();
+    final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
-      WidgetPluginBuilder().add<MockHomeWidget>((context) => MockHomeWidget(),
-          aliases: [
-            "HomeWidget"
-          ]).add<MockOtherWidget>((context) => MockOtherWidget(),
-          aliases: ["OtherWidget", "OtherWidget2"]).build(),
+      WidgetPluginBuilder().add<MockHomeWidget>(
+        homeBuilder,
+        aliases: ["HomeWidget"],
+      ).add<MockOtherWidget>(
+        otherBuilder,
+        aliases: ["OtherWidget", "OtherWidget2"],
+      ).build(),
       RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], homeBuilder);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], otherBuilder);
 
-    final other2Voyager = router.find("/other2/thing");
+    final other2Voyager = router.find("/other2/thing")!;
 
-    expect(
-        other2Voyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
-  });
-
-  test('test widget plugin null builder', () async {
-    expect(() {
-      WidgetPluginBuilder().add<MockHomeWidget>(null, aliases: [
-        "HomeWidget"
-      ]).add<MockOtherWidget>((context) => MockOtherWidget(),
-          aliases: ["OtherWidget", "OtherWidget2"]).build();
-    }, throwsA(predicate((Error e) {
-      expect(e, isInstanceOf<AssertionError>());
-      expect((e as AssertionError).message, "Builder must be provided");
-      return true;
-    })));
+    expect(other2Voyager[WidgetPlugin.KEY], otherBuilder);
   });
 
   test('widget plugin duplicate alias', () async {
@@ -243,10 +233,12 @@ void main() {
   type: 'fab'
   widget: FabWidget
 ''');
+    final homeBuilder = (BuildContext context) => MockHomeWidget();
+    final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
       WidgetPluginBuilder()
-          .add<MockHomeWidget>((context) => MockHomeWidget())
-          .add<MockOtherWidget>((context) => MockOtherWidget())
+          .add<MockHomeWidget>(homeBuilder)
+          .add<MockOtherWidget>(otherBuilder)
           .addMethod(mockFab, "FabWidget")
           .build(),
       RedirectPlugin()
@@ -254,19 +246,17 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], homeBuilder);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], otherBuilder);
 
-    final fabVoyager = router.find("/fab");
+    final fabVoyager = router.find("/fab")!;
 
-    expect(fabVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<FloatingActionButton>());
+    expect(fabVoyager[WidgetPlugin.KEY], mockFab);
   });
 
   test('test adding widget plugin builders', () async {
@@ -285,10 +275,11 @@ void main() {
   type: 'fab'
   widget: FabWidget
 ''');
-    final builderA = WidgetPluginBuilder()
-        .add<MockHomeWidget>((context) => MockHomeWidget());
-    final builderB = WidgetPluginBuilder()
-        .add<MockOtherWidget>((context) => MockOtherWidget());
+    final builderAClosure = (BuildContext context) => MockHomeWidget();
+    final builderA = WidgetPluginBuilder().add<MockHomeWidget>(builderAClosure);
+    final builderBClosure = (BuildContext context) => MockOtherWidget();
+    final builderB =
+        WidgetPluginBuilder().add<MockOtherWidget>(builderBClosure);
     final plugins = [
       WidgetPluginBuilder()
           .addBuilder(builderA)
@@ -300,25 +291,25 @@ void main() {
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], builderAClosure);
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], builderBClosure);
 
-    final fabVoyager = router.find("/fab");
+    final fabVoyager = router.find("/fab")!;
 
-    expect(fabVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<FloatingActionButton>());
+    expect(fabVoyager[WidgetPlugin.KEY], mockFab);
   });
 
   test("mock object plugin", () {
-    final voyager = Voyager(config: <String, dynamic>{});
+    final voyager = Voyager(config: <String, dynamic>{}, path: "/mock/path");
     final mockPlugin = _MockPlugin();
-    mockPlugin.outputFor(null, null, voyager);
+    final mockContext =
+        RouterContext(path: "/mock/path", params: {}, router: Router());
+    mockPlugin.outputFor(mockContext, null, voyager);
     voyager.lock();
     expect(voyager["mock"], isInstanceOf<_MockObject>());
     final mock = voyager["mock"] as _MockObject;

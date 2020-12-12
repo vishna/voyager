@@ -11,88 +11,86 @@ import 'navigation_yml.dart';
 
 void main() {
   test('loadRouter from a yaml defined in a string', () async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
     final paths = loadPathsFromString(navigation_yml);
-    final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      })
-    ];
+    final plugins = [WidgetPlugin(widgetMappings)];
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
     expect(homeVoyager.type, "home");
   });
 
   test('loadRouter from a yaml defined in a string + mock factory', () async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
     final paths = loadPathsFromString(navigation_yml);
-    final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      })
-    ];
+    final plugins = [WidgetPlugin(widgetMappings)];
 
     final router =
         await loadRouter(paths, plugins, voyagerFactory: _mockFactory);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
     expect(homeVoyager.type, "home");
   });
 
   test('loadRouter from a json defined in a string', () async {
     final paths = loadPathsFromJsonString(navigation_json);
-    final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      })
-    ];
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final plugins = [WidgetPlugin(widgetMappings)];
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
     expect(homeVoyager.type, "home");
   });
 
   test('create router programatically', () async {
+    final homeClosure = (BuildContext buildContext) => MockHomeWidget();
+    final otherClosure = (BuildContext buildContext) => MockOtherWidget();
     final router = voyager.Router();
     router.registerConfig('/home', (context, Voyager voyager) {
       voyager.type = "home";
-      voyager[WidgetPlugin.KEY] =
-          (BuildContext buildContext) => MockHomeWidget();
+      voyager[WidgetPlugin.KEY] = homeClosure;
       voyager["title"] = "This is Home";
     });
     router.registerConfig('/other/:title', (context, Voyager voyager) {
       final title = context.params["title"];
       voyager.type = "other";
-      voyager[WidgetPlugin.KEY] =
-          (BuildContext buildContext) => MockOtherWidget();
+      voyager[WidgetPlugin.KEY] = otherClosure;
       voyager["title"] = "This is a $title";
     });
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], homeClosure);
     expect(homeVoyager.type, "home");
     expect(homeVoyager["title"], "This is Home");
 
-    final otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing")!;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], otherClosure);
     expect(otherVoyager.type, "other");
     expect(otherVoyager["title"], "This is a thing");
   });
 
   test('create router programatically with custom voyager factory', () async {
+    final homeClosure = (BuildContext buildContext) => MockHomeWidget();
+    final otherClosure = (BuildContext buildContext) => MockOtherWidget();
     // ignore: omit_local_variable_types
     final ProgrammaticVoyagerFactory<CustomVoyager> customVoyagerFactory =
         (abstractContext, context) => CustomVoyager(
@@ -101,26 +99,25 @@ void main() {
     final router = voyager.Router();
     router.registerConfig<CustomVoyager>('/home', (context, voyager) {
       voyager.type = "home";
-      voyager.widget = (BuildContext buildContext) => MockHomeWidget();
+      voyager.widget = homeClosure;
       voyager.title = "This is Home";
     }, customVoyagerFactory);
     router.registerConfig<CustomVoyager>('/other/:title', (context, voyager) {
       final title = context.params["title"];
       voyager.type = "other";
-      voyager.widget = (BuildContext buildContext) => MockOtherWidget();
+      voyager.widget = otherClosure;
       voyager.title = "This is a $title";
     }, customVoyagerFactory);
 
-    final CustomVoyager homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home") as CustomVoyager;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], homeClosure);
     expect(homeVoyager.type, "home");
     expect(homeVoyager.title, "This is Home");
 
-    final CustomVoyager otherVoyager = router.find("/other/thing");
+    final otherVoyager = router.find("/other/thing") as CustomVoyager;
 
-    expect(
-        otherVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockOtherWidget>());
+    expect(otherVoyager[WidgetPlugin.KEY], otherClosure);
     expect(otherVoyager.type, "other");
     expect(otherVoyager.title, "This is a thing");
   });
@@ -173,10 +170,16 @@ void main() {
   });
 
   test("merging one voyager into another", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
-    final two = Voyager(config: <String, dynamic>{});
+    final two = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     two["mission"] = "Mission 2";
     two["team"] = ["Jon", "Jessie"];
 
@@ -188,10 +191,16 @@ void main() {
   });
 
   test("merging one voyager into another with a lock", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
-    final two = Voyager(config: <String, dynamic>{});
+    final two = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     two["mission"] = "Mission 2";
     two["team"] = ["Jon", "Jessie"];
     two.lock();
@@ -204,7 +213,10 @@ void main() {
   });
 
   test("adding items to a locked voyager", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     one["team"] = ["Jon", "Jessie"];
@@ -224,7 +236,10 @@ void main() {
   });
 
   test("disposing unlocked voyager", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     expect(() {
@@ -238,7 +253,10 @@ void main() {
   });
 
   test("disposing properly locked voyager", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -256,7 +274,10 @@ void main() {
   });
 
   test("adding dispose callback to locked voyager shouldn't throw", () {
-    final one = Voyager(config: <String, dynamic>{});
+    final one = Voyager(
+      config: <String, dynamic>{},
+      path: "/path",
+    );
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -303,7 +324,7 @@ void main() {
       expect(find.text("Home Title"), findsOneWidget);
 
       final mockElement = tester.element<StatefulElement>(find.byKey(mockKey));
-      final _MockAppState mockElementState = mockElement.state;
+      final mockElementState = mockElement.state as _MockAppState;
 
       mockElementState.path = "/other/thing";
       // ignore: invalid_use_of_protected_member
@@ -320,7 +341,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
         const MaterialApp(home: VoyagerWidget(path: "/home", router: null)));
-    expect(tester.takeException(), isAssertionError);
+    expect(tester.takeException(), isA<TypeError>());
   });
 
   testWidgets(
@@ -345,85 +366,19 @@ void main() {
     });
   });
 
-  testWidgets('create HomeWidget via VoyagerStatelessWidget',
-      (WidgetTester tester) async {
-    await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
-      final plugins = [
-        WidgetPlugin({
-          "HomeWidget": (context) => MockHomeWidget(),
-          "OtherWidget": (context) => MockOtherWidget(),
-        })
-      ];
-
-      final router = await loadRouter(paths, plugins);
-
-      expect(router, isInstanceOf<voyager.Router>());
-
-      await tester.pumpWidget(MaterialApp(
-          home: VoyagerStatelessWidget(path: "/home", router: router)));
-
-      expect(find.text("Home Page"), findsOneWidget);
-      expect(find.text("Home Title"), findsOneWidget);
-    });
-  });
-
-  testWidgets('create HomeWidget via VoyagerStatelessWidget with cache',
-      (WidgetTester tester) async {
-    await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
-      final plugins = [
-        WidgetPlugin({
-          "HomeWidget": (context) => MockHomeWidget(),
-          "OtherWidget": (context) => MockOtherWidget(),
-        })
-      ];
-
-      final router = await loadRouter(paths, plugins);
-
-      expect(router, isInstanceOf<voyager.Router>());
-
-      await tester.pumpWidget(MaterialApp(
-          home: VoyagerStatelessWidget(
-              path: "/home", router: router, useCache: true)));
-
-      expect(find.text("Home Page"), findsOneWidget);
-      expect(find.text("Home Title"), findsOneWidget);
-    });
-  });
-
-  testWidgets(
-      'create HomeWidget via VoyagerStatelessWidget without widget builder',
-      (WidgetTester tester) async {
-    await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
-      final plugins = [_MockRouterPlugin()];
-
-      final router = await loadRouter(paths, plugins);
-
-      expect(router, isInstanceOf<voyager.Router>());
-
-      await tester.pumpWidget(MaterialApp(
-          home: VoyagerStatelessWidget(path: "/home", router: router)));
-
-      expect(tester.takeException(), isAssertionError);
-    });
-  });
-
   test('overriding existing path behavior', () async {
     final paths = loadPathsFromString(navigation_yml);
-    final plugins = [
-      WidgetPlugin({
-        "HomeWidget": (context) => MockHomeWidget(),
-        "OtherWidget": (context) => MockOtherWidget(),
-      })
-    ];
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final plugins = [WidgetPlugin(widgetMappings)];
 
     final router = await loadRouter(paths, plugins);
 
-    final homeVoyager = router.find("/home");
+    final homeVoyager = router.find("/home")!;
 
-    expect(homeVoyager[WidgetPlugin.KEY](null), isInstanceOf<MockHomeWidget>());
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
     expect(homeVoyager.type, "home");
     expect(homeVoyager["title"], "This is Home");
 
@@ -438,17 +393,17 @@ void main() {
     router.clearCache();
     router.registerPath(overridenPart.first);
 
-    final remoteHomeVoyager = router.find("/home");
+    final remoteHomeVoyager = router.find("/home")!;
 
-    expect(remoteHomeVoyager[WidgetPlugin.KEY](null),
-        isInstanceOf<MockOtherWidget>());
+    expect(remoteHomeVoyager[WidgetPlugin.KEY], widgetMappings["OtherWidget"]);
     expect(remoteHomeVoyager.type, "home");
     expect(remoteHomeVoyager["title"], "This is Remote Home");
   });
 }
 
 class _MockApp extends StatefulWidget {
-  const _MockApp(Key key, {this.path, this.router}) : super(key: key);
+  const _MockApp(Key key, {required this.path, required this.router})
+      : super(key: key);
   final String path;
   final voyager.Router router;
 
@@ -466,8 +421,8 @@ class _MockRouterPlugin extends RouterPlugin {
 }
 
 class _MockAppState extends State<_MockApp> {
-  String path;
-  voyager.Router router;
+  late String path;
+  late voyager.Router router;
 
   @override
   void initState() {
