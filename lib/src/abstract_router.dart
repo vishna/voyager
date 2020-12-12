@@ -11,17 +11,13 @@ abstract class AbstractRouter<O, P> {
 
   final _routes = <String, OutputBuilder<O, P>>{};
   final _wildcardRoutes = <String, OutputBuilder<O, P>>{};
-  final _cachedRoutes = <String, RouterParams>{};
+  final _cachedRoutes = <String, RouterParams<O, P>>{};
 
   /// Map a URL to an OutputBuilder
   ///
   /// @param format  The URL being mapped; for example, "users/:id" or "groups/:id/topics/:topic_id"
   /// @param options The OutputBuilder that creates an output if the given format is matched
   void registerBuilder(String format, OutputBuilder<O, P> builder) {
-    if (builder == null) {
-      throw ArgumentError("You need a non null builder for $format");
-    }
-
     if (VoyagerUtils.isWildcard(format)) {
       _wildcardRoutes[format] = builder;
     } else {
@@ -33,27 +29,24 @@ abstract class AbstractRouter<O, P> {
   ///
   /// @param url     The URL; for example, "users/16" or "groups/5/topics/20"
   /// @param extras  The {@link P} which contains the extra params to be assigned to the generated {@link O}
-  O outputFor(String url, {P extras}) {
+  O outputFor(String url, {P? extras}) {
     final params = paramsForUrl(url);
     final outputBuilder = params.outputBuilder;
-    if (outputBuilder != null) {
-      // make params copy
-      final openParams = Map<String, String>.from(params.openParams);
 
-      // add global params to path specific params
-      for (final entry in _globalParams.entries) {
-        if (!openParams.containsKey(entry.key)) {
-          // do not override locally set keys
-          openParams[entry.key] = entry.value.toString();
-        }
+    // make params copy
+    final openParams = Map<String, String>.from(params.openParams);
+
+    // add global params to path specific params
+    for (final entry in _globalParams.entries) {
+      if (!openParams.containsKey(entry.key)) {
+        // do not override locally set keys
+        openParams[entry.key] = entry.value.toString();
       }
-
-      final routeContext = AbstractRouteContext<P>(openParams, extras, url);
-
-      return outputBuilder.outputFor(routeContext);
     }
 
-    return null;
+    final routeContext = AbstractRouteContext<P>(openParams, extras, url);
+
+    return outputBuilder.outputFor(routeContext);
   }
 
   /// Takes a url (i.e. "/users/16/hello") and breaks it into a {@link RouterParams} instance where
@@ -66,7 +59,7 @@ abstract class AbstractRouter<O, P> {
     final urlPath = parsedUri.path.substring(1);
 
     if (_cachedRoutes[cleanedUrl] != null) {
-      return _cachedRoutes[cleanedUrl];
+      return _cachedRoutes[cleanedUrl]!;
     }
 
     final givenParts = urlPath.split("/");
@@ -88,11 +81,11 @@ abstract class AbstractRouter<O, P> {
     return routerParams;
   }
 
-  RouterParams<O, P> _checkRouteSet(
+  RouterParams<O, P>? _checkRouteSet(
       Iterable<MapEntry<String, OutputBuilder<O, P>>> routeSet,
       List<String> givenParts,
       bool isWildcard) {
-    RouterParams<O, P> routerParams;
+    RouterParams<O, P>? routerParams;
 
     for (final entry in routeSet) {
       final routerUrl = VoyagerUtils.cleanUrl(entry.key);
@@ -108,9 +101,10 @@ abstract class AbstractRouter<O, P> {
         continue;
       }
 
-      routerParams = RouterParams<O, P>();
-      routerParams.openParams = givenParams;
-      routerParams.outputBuilder = outputBuilder;
+      routerParams = RouterParams<O, P>(
+        openParams: givenParams,
+        outputBuilder: outputBuilder,
+      );
       break;
     }
 
@@ -144,7 +138,7 @@ class AbstractRouteContext<P> {
   const AbstractRouteContext(this._params, this._extras, this._url);
 
   final Map<String, String> _params;
-  final P _extras;
+  final P? _extras;
   final String _url;
 
   /// Returns the route parameters as specified by the configured route
@@ -153,7 +147,7 @@ class AbstractRouteContext<P> {
   }
 
   /// Returns the extras supplied with the route
-  P getExtras() {
+  P? getExtras() {
     return _extras;
   }
 
@@ -164,15 +158,16 @@ class AbstractRouteContext<P> {
 }
 
 class RouterParams<O, P> {
-  OutputBuilder<O, P> outputBuilder;
-  Map<String, String> openParams;
+  RouterParams({required this.outputBuilder, required this.openParams});
+  final OutputBuilder<O, P> outputBuilder;
+  final Map<String, String> openParams;
 }
 
 /// @param givenUrlSegments  An array representing the URL path attempting to be opened (i.e. ["users", "42"])
 /// @param routerUrlSegments An array representing a possible URL match for the router (i.e. ["users", ":id"])
 /// @param hasWildcard       Tells whether there is a :wildcard: param or not
 /// @return A map of URL parameters if it's a match (i.e. {"id" => "42"}) or null if there is no match
-Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
+Map<String, String>? _urlToParamsMap(List<String> givenUrlSegments,
     List<String> routerUrlSegments, bool hasWildcard) {
   final formatParams = <String, String>{};
   for (var routerIndex = 0, givenIndex = 0;
@@ -214,7 +209,7 @@ Map<String, String> _urlToParamsMap(List<String> givenUrlSegments,
       // we need to eat everything up till next recognizable path
       // e.g. :whatever:/:id should be forbidden thus the following check
       if (!VoyagerUtils.isNullOrBlank(nextRouterPart) &&
-          nextRouterPart[0] == ':') {
+          nextRouterPart![0] == ':') {
         throw StateError(
             "Wildcard parameter $routerPart cannot be directly followed by a parameter $nextRouterPart");
       }

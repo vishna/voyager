@@ -7,11 +7,11 @@ const String _VARIABLE_SUFFIX = "}";
 
 // ignore: avoid_classes_with_only_static_members
 class VoyagerUtils {
-  static bool isNullOrBlank(String it) {
+  static bool isNullOrBlank(String? it) {
     return it == null || it.trim().isEmpty;
   }
 
-  static String interpolate(String format, Map<String, dynamic> values) {
+  static String? interpolate(String format, Map<String, dynamic> values) {
     if (isNullOrBlank(format) || !format.contains(_VARIABLE_PREFIX))
       return format;
     var convFormat = format;
@@ -19,7 +19,7 @@ class VoyagerUtils {
     final keys = values.keys.iterator;
     final valueList = <String>[];
 
-    var currentPos = 0;
+    var currentPos = 1;
     while (keys.moveNext()) {
       final key = keys.current,
           formatKey = "$_VARIABLE_PREFIX$key$_VARIABLE_SUFFIX",
@@ -49,8 +49,8 @@ class VoyagerUtils {
   static void interpolateDynamic(dynamic param, RouterContext context) {
     if (param is List) {
       interpolateList(param, context);
-    } else if (param is Map) {
-      final Map<String, dynamic> map = param;
+    } else if (param is Map<String, dynamic>) {
+      final map = param;
       final keys = map.keys;
       for (final key in keys) {
         final dynamic value = map[key];

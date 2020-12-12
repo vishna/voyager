@@ -1,21 +1,19 @@
 name: voyager
 description: The widget router and basic dependency injection library for Flutter. Define navigation paths in YAML and power them up with custom plugins.
-version: 2.1.2
+version: 3.0.0-nullsafety
 homepage: https://github.com/vishna/voyager
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  yaml: ^2.1.16
-  sprintf: ^4.0.2
-  provider: '>=4.0.0 <4.5.0'
+  provider: ^5.0.0-nullsafety.1
+  sprintf: ^6.0.0-nullsafety
+  yaml: ^3.0.0-nullsafety.0
 
 dev_dependencies:
-  glob: ^1.1.7
   flutter_test:
     sdk: flutter
-
-flutter:
+  glob: ^2.0.0-nullsafety.0

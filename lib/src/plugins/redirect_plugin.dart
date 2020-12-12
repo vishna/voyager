@@ -30,6 +30,6 @@ class RedirectPlugin extends RouterPlugin {
     }
 
     final targetVoyager = context.router.find(targetUrl);
-    output.merge(targetVoyager);
+    output.merge(targetVoyager!);
   }
 }

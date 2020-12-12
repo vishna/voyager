@@ -9,6 +9,6 @@ class VoyagerArgument {
 }
 
 extension VoyagerArgumentExtension on BuildContext {
-  VoyagerArgument get voyagerArgument =>
-      Provider.of<VoyagerArgument>(this, listen: false);
+  VoyagerArgument? get voyagerArgument =>
+      Provider.of<VoyagerArgument?>(this, listen: false);
 }

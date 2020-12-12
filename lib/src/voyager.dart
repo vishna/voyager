@@ -10,11 +10,12 @@ import 'package:provider/provider.dart';
 /// Developer might choose to use `storage` to dynamically put any variables that should be available
 /// to anyone having access to that instance of `Voyager`
 class Voyager {
-  Voyager({this.path, this.parent, Map<String, dynamic> config})
+  Voyager(
+      {required this.path, this.parent, required Map<String, dynamic> config})
       : _config = Map<String, dynamic>.from(config);
   static const String KEY_TYPE = "type";
 
-  final Voyager parent;
+  final Voyager? parent;
   final Map<String, dynamic> _config;
   final _output = <String, dynamic>{};
   final storage = <String, dynamic>{};

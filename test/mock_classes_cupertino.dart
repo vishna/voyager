@@ -9,7 +9,7 @@ class MockCupertinoHomeWidget extends StatelessWidget {
         middle: const Text("Home Title"),
         trailing: CupertinoButton(
           onPressed: () {
-            Navigator.of(context).pushNamed("/other/thing");
+            Navigator.of(context)!.pushNamed("/other/thing");
           },
           child: const Text("Navigate"),
         ),
