@@ -87,7 +87,7 @@ Widget appOrSplash() {
       future: loadRouter(paths(), plugins()),
       builder: (BuildContext context, AsyncSnapshot<voyager.Router> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
-          final router = snapshot.data;
+          final router = snapshot.data!;
           return Provider<voyager.Router>.value(
               value: router,
               child: MaterialApp(
@@ -106,7 +106,7 @@ Widget makeMeFab(BuildContext context) {
   final voyager = context.voyager;
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context).pushNamed(voyager.target);
+      Navigator.of(context)!.pushNamed(voyager.target!);
     },
     tooltip: 'Navigate',
     child: voyager.icon,
@@ -128,15 +128,15 @@ class PageWidget extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(voyager.title),
+          title: Text(voyager.title!),
           actions: actions(context),
         ),
         body: Center(
-          child: Text(voyager.body, style: const TextStyle(fontSize: 24)),
+          child: Text(voyager.body!, style: const TextStyle(fontSize: 24)),
         ),
         floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
-                path: voyager.fabPath,
+                path: voyager.fabPath!,
               )
             : null);
   }
@@ -147,15 +147,14 @@ class ListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final voyager = context.voyager;
 
-    // ignore: avoid_as
-    final talks = (voyager.items)
+    final talks = voyager.items!
         .toList()
         .map((dynamic item) => Talk(item["city"], item["event"], item["date"]))
         .toList();
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(voyager.title),
+          title: Text(voyager.title!),
           actions: actions(context),
         ),
         body: ListView.builder(
@@ -170,7 +169,7 @@ class ListWidget extends StatelessWidget {
         ),
         floatingActionButton: voyager.fabPath != null
             ? VoyagerWidget(
-                path: voyager.fabPath,
+                path: voyager.fabPath!,
               )
             : null);
   }
@@ -192,7 +191,7 @@ class TalkWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Talk talk = context.voyagerArgument.value;
+    final Talk talk = context.voyagerArgument!.value;
     return Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Column(
@@ -219,7 +218,7 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-List<Widget> actions(BuildContext context) {
+List<Widget>? actions(BuildContext context) {
   final actions = context.voyager.actions;
   if (actions == null || actions.isEmpty) {
     return null;
@@ -229,7 +228,7 @@ List<Widget> actions(BuildContext context) {
     widgets.add(IconButton(
       icon: IconPlugin.fromHexValue(action["icon"]),
       onPressed: () {
-        Navigator.of(context).pushNamed(action["target"]);
+        Navigator.of(context)!.pushNamed(action["target"]);
       },
     ));
   });

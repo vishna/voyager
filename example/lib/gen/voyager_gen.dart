@@ -20,13 +20,13 @@ String pathObjectItem(String className) {
 const String typeObjectItem = "object_item";
 
 extension VoyagerData on Voyager {
-  String get title => this["title"];
-  String get body => this["body"];
-  String get fabPath => this["fabPath"];
-  String get target => this["target"];
-  Icon get icon => this["icon"];
-  List<dynamic> get actions => this["actions"];
-  List<dynamic> get items => this["items"];
+  String? get title => this["title"];
+  String? get body => this["body"];
+  String? get fabPath => this["fabPath"];
+  String? get target => this["target"];
+  Icon? get icon => this["icon"];
+  List<dynamic>? get actions => this["actions"];
+  List<dynamic>? get items => this["items"];
 }
 
 abstract class IconPluginStub extends RouterObjectPlugin<Icon> {
