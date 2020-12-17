@@ -6,11 +6,21 @@ const String _VARIABLE_PREFIX = "%{";
 const String _VARIABLE_SUFFIX = "}";
 
 // ignore: avoid_classes_with_only_static_members
+/// Common utils used throught Voyager package
 class VoyagerUtils {
+  /// checks if string is null or blank
   static bool isNullOrBlank(String? it) {
     return it == null || it.trim().isEmpty;
   }
 
+  /// interpolates value of the string, e.g.:
+  ///
+  /// ```dart
+  /// final helloWorldString = VoyagerUtils.interpolate("Hello %{myField}!", {"myField" : "world" })
+  /// print(helloWorldString);
+  /// ```
+  ///
+  /// Will evaluate to "Hello world!"
   static String? interpolate(String format, Map<String, dynamic> values) {
     if (isNullOrBlank(format) || !format.contains(_VARIABLE_PREFIX))
       return format;
@@ -46,7 +56,8 @@ class VoyagerUtils {
     }
   }
 
-  static void interpolateDynamic(dynamic param, RouterContext context) {
+  /// interpolates dynamic [param] with values from [context]
+  static void interpolateDynamic(dynamic param, VoyagerContext context) {
     if (param is List) {
       interpolateList(param, context);
     } else if (param is Map<String, dynamic>) {
@@ -64,7 +75,8 @@ class VoyagerUtils {
     }
   }
 
-  static void interpolateList(List array, RouterContext context) {
+  /// interpolates [array] with values from [context]
+  static void interpolateList(List array, VoyagerContext context) {
     final n = array.length;
     for (var i = 0; i < n; i++) {
       dynamic o = array[i];
@@ -78,14 +90,17 @@ class VoyagerUtils {
     }
   }
 
+  /// check if a dynamic [object] is a tuple
   static bool isTuple(dynamic object) {
     return object is Map && object.keys.length == 1;
   }
 
+  /// check if an [object] is a list or map
   static bool isListOrMap(Object object) {
     return object is Map || object is List;
   }
 
+  /// converts dynamic [object] to a tuple [MapEntry<String, dynamic>]
   static MapEntry<String, dynamic> tuple(dynamic object) {
     if (!isTuple(object)) {
       throw ArgumentError("$object is not a tuple");
@@ -93,10 +108,12 @@ class VoyagerUtils {
     return object.entries.first;
   }
 
+  /// makes a deep copy of [Map<String, dynamic>]
   static Map<String, dynamic> copyIt(Map<String, dynamic> config) {
     return json.decode(json.encode(config));
   }
 
+  /// sanitized [url] for Voyager processing
   static String cleanUrl(String url) {
     var outputUrl = url;
     if (outputUrl.startsWith("/")) {
@@ -108,14 +125,16 @@ class VoyagerUtils {
     return outputUrl;
   }
 
+  /// creates Uri based on [path]
   static Uri fromPath(String path) {
     final cleanedPath = VoyagerUtils.cleanUrl(path);
 
     return Uri.parse("http://tempuri.org/" + cleanedPath);
   }
 
-  static bool isWildcard(String format) {
-    final routerUrl = cleanUrl(format);
+  /// checks if given [path] is a :wildcard:
+  static bool isWildcard(String path) {
+    final routerUrl = cleanUrl(path);
     final routerParts = routerUrl.split("/");
 
     for (final routerPart in routerParts) {
@@ -135,6 +154,7 @@ class VoyagerUtils {
     return deobfuscate(className);
   }
 
+  /// registers deobfucation elements
   static String deobfuscate(String className) {
     return _obfuscationMap[className] ?? className;
   }

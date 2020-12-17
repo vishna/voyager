@@ -9,7 +9,7 @@ import 'mock_classes.dart';
 
 void main() {
   test('test redirect plugin', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -35,7 +35,7 @@ void main() {
     };
     final plugins = [
       WidgetPlugin(widgetMappings),
-      RedirectPlugin(),
+      const RedirectPlugin(),
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -58,7 +58,7 @@ void main() {
   });
 
   test('test widget plugin', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -80,7 +80,7 @@ void main() {
     };
     final plugins = [
       WidgetPlugin(widgetMappings),
-      RedirectPlugin(),
+      const RedirectPlugin(),
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -98,7 +98,7 @@ void main() {
   });
 
   test('test widget plugin builder', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -121,7 +121,7 @@ void main() {
           .add<MockHomeWidget>(homeBuilder)
           .add<MockOtherWidget>(otherBuilder)
           .build(),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -143,7 +143,7 @@ void main() {
   });
 
   test('test widget plugin builder + aliases', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -169,7 +169,7 @@ void main() {
         otherBuilder,
         aliases: ["OtherWidget", "OtherWidget2"],
       ).build(),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -218,7 +218,7 @@ void main() {
   });
 
   test('test widget plugin builder and custom function', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -241,7 +241,7 @@ void main() {
           .add<MockOtherWidget>(otherBuilder)
           .addMethod(mockFab, "FabWidget")
           .build(),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -260,7 +260,7 @@ void main() {
   });
 
   test('test adding widget plugin builders', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -286,7 +286,7 @@ void main() {
           .addBuilder(builderB)
           .addMethod(mockFab, "FabWidget")
           .build(),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -308,7 +308,7 @@ void main() {
     final voyager = Voyager(config: <String, dynamic>{}, path: "/mock/path");
     final mockPlugin = _MockPlugin();
     final mockContext =
-        RouterContext(path: "/mock/path", params: {}, router: Router());
+        VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
     mockPlugin.outputFor(mockContext, null, voyager);
     voyager.lock();
     expect(voyager["mock"], isInstanceOf<_MockObject>());
@@ -323,7 +323,7 @@ class _MockObject {
   bool disposed = false;
 }
 
-class _MockPlugin extends RouterObjectPlugin<_MockObject> {
+class _MockPlugin extends VoyagerObjectPlugin<_MockObject> {
   _MockPlugin() : super("mock");
 
   @override
@@ -333,7 +333,7 @@ class _MockPlugin extends RouterObjectPlugin<_MockObject> {
   }
 
   @override
-  _MockObject buildObject(RouterContext context, dynamic config) {
+  _MockObject buildObject(VoyagerContext context, dynamic config) {
     return _MockObject();
   }
 }

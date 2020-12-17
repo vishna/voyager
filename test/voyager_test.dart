@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Router;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' hide VoyagerRouter;
 import 'package:voyager/voyager.dart' as voyager;
 
 import 'mock_classes.dart';
@@ -15,7 +15,7 @@ void main() {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),
       "OtherWidget": (BuildContext context) => MockOtherWidget(),
     };
-    final paths = loadPathsFromString(navigation_yml);
+    final paths = loadPathsFromYamlString(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
 
     final router = await loadRouter(paths, plugins);
@@ -31,7 +31,7 @@ void main() {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),
       "OtherWidget": (BuildContext context) => MockOtherWidget(),
     };
-    final paths = loadPathsFromString(navigation_yml);
+    final paths = loadPathsFromYamlString(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
 
     final router =
@@ -62,7 +62,7 @@ void main() {
   test('create router programatically', () async {
     final homeClosure = (BuildContext buildContext) => MockHomeWidget();
     final otherClosure = (BuildContext buildContext) => MockOtherWidget();
-    final router = voyager.Router();
+    final router = voyager.VoyagerRouter();
     router.registerConfig('/home', (context, Voyager voyager) {
       voyager.type = "home";
       voyager[WidgetPlugin.KEY] = homeClosure;
@@ -96,7 +96,7 @@ void main() {
         (abstractContext, context) => CustomVoyager(
             abstractContext.url(), abstractContext.getExtras().parent);
 
-    final router = voyager.Router();
+    final router = voyager.VoyagerRouter();
     router.registerConfig<CustomVoyager>('/home', (context, voyager) {
       voyager.type = "home";
       voyager.widget = homeClosure;
@@ -125,7 +125,7 @@ void main() {
   testWidgets('create HomeWidget via VoyagerWidget',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
@@ -135,7 +135,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<voyager.VoyagerRouter>());
 
       await tester.pumpWidget(
           MaterialApp(home: VoyagerWidget(path: "/home", router: router)));
@@ -149,7 +149,7 @@ void main() {
       'create OtherWidget via VoyagerWidget & inject title through path parameter',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
@@ -159,7 +159,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<voyager.VoyagerRouter>());
 
       await tester.pumpWidget(MaterialApp(
           home: VoyagerWidget(path: "/other/foobar123", router: router)));
@@ -302,7 +302,7 @@ void main() {
   testWidgets('test VoyagerWidget didUpdateWidget',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
@@ -312,7 +312,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<voyager.VoyagerRouter>());
 
       const mockKey = Key("mockApp");
 
@@ -348,12 +348,12 @@ void main() {
       'create HomeWidget via VoyagerWidget without widget builder + keepAlive',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [_MockRouterPlugin()];
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<voyager.VoyagerRouter>());
 
       await tester.pumpWidget(MaterialApp(
           home: VoyagerWidget(
@@ -367,7 +367,7 @@ void main() {
   });
 
   test('overriding existing path behavior', () async {
-    final paths = loadPathsFromString(navigation_yml);
+    final paths = loadPathsFromYamlString(navigation_yml);
     final widgetMappings = {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),
       "OtherWidget": (BuildContext context) => MockOtherWidget(),
@@ -382,7 +382,7 @@ void main() {
     expect(homeVoyager.type, "home");
     expect(homeVoyager["title"], "This is Home");
 
-    final overridenPart = await loadPathsFromString('''
+    final overridenPart = await loadPathsFromYamlString('''
 '/home' :
   type: 'home'
   widget: OtherWidget
@@ -405,24 +405,24 @@ class _MockApp extends StatefulWidget {
   const _MockApp(Key key, {required this.path, required this.router})
       : super(key: key);
   final String path;
-  final voyager.Router router;
+  final voyager.VoyagerRouter router;
 
   @override
   State<StatefulWidget> createState() => _MockAppState();
 }
 
-class _MockRouterPlugin extends RouterPlugin {
+class _MockRouterPlugin extends VoyagerPlugin {
   _MockRouterPlugin() : super("widget");
 
   @override
-  void outputFor(RouterContext context, dynamic config, Voyager output) {
+  void outputFor(VoyagerContext context, dynamic config, Voyager output) {
     output["widget"] = Voyager.nothing;
   }
 }
 
 class _MockAppState extends State<_MockApp> {
   late String path;
-  late voyager.Router router;
+  late voyager.VoyagerRouter router;
 
   @override
   void initState() {

@@ -27,10 +27,10 @@ abstract class AbstractRouter<O, P> {
 
   /// Open a map'd URL set using {@link #map(String, Class)} or {@link #map(String, BundleBuilder)}
   ///
-  /// @param url     The URL; for example, "users/16" or "groups/5/topics/20"
-  /// @param extras  The {@link P} which contains the extra params to be assigned to the generated {@link O}
-  O outputFor(String url, {P? extras}) {
-    final params = paramsForUrl(url);
+  /// [path]    for example, "users/16" or "groups/5/topics/20"
+  /// [extras]  The {@link P} which contains the extra params to be assigned to the generated {@link O}
+  O outputFor(String path, {P? extras}) {
+    final params = paramsForUrl(path);
     final outputBuilder = params.outputBuilder;
 
     // make params copy
@@ -44,7 +44,7 @@ abstract class AbstractRouter<O, P> {
       }
     }
 
-    final routeContext = AbstractRouteContext<P>(openParams, extras, url);
+    final routeContext = AbstractRouteContext<P>(openParams, extras, path);
 
     return outputBuilder.outputFor(routeContext);
   }
@@ -111,11 +111,14 @@ abstract class AbstractRouter<O, P> {
     return routerParams;
   }
 
+  /// adds a global param accessible to anyone having
+  /// a hold of this router instance
   AbstractRouter globalParam(String key, dynamic object) {
     _globalParams[key] = object;
     return this;
   }
 
+  /// clears cache
   void clearCache() {
     _cachedRoutes.clear();
   }
@@ -123,18 +126,23 @@ abstract class AbstractRouter<O, P> {
 
 /// Thrown if a given route is not found.
 class RouteNotFoundException implements Exception {
+  /// default constructor
   const RouteNotFoundException(this.cause);
+
+  /// cause of the exception
   final String cause;
 }
 
 /// The class used when you want to map a function (given in `run`)
 /// to a Router URL.
 abstract class OutputBuilder<O, P> {
+  /// returns [O] based on the given input [AbstractRouteContext<P>]
   O outputFor(AbstractRouteContext<P> abstractContext);
 }
 
 /// The class supplied to custom callbacks to describe the route route
 class AbstractRouteContext<P> {
+  /// default constructor
   const AbstractRouteContext(this._params, this._extras, this._url);
 
   final Map<String, String> _params;
@@ -157,9 +165,16 @@ class AbstractRouteContext<P> {
   }
 }
 
+/// class containg broken down parameters and builder, a result of path
+/// lookup
 class RouterParams<O, P> {
+  /// default constructor
   RouterParams({required this.outputBuilder, required this.openParams});
+
+  /// output builder
   final OutputBuilder<O, P> outputBuilder;
+
+  /// open params
   final Map<String, String> openParams;
 }
 

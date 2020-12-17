@@ -10,50 +10,56 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:voyager/voyager.dart';
 import 'package:yaml/yaml.dart';
 
-List<RouterPath> loadPathsFromYamlSync(String yaml) {
+/// loads voyager paths from yaml string synchronously
+List<VoyagerPath> loadPathsFromYamlSync(String yaml) {
   final YamlMap routerMap = loadYaml(yaml);
-  final paths = <RouterPath>[];
+  final paths = <VoyagerPath>[];
 
   routerMap.keys.forEach((dynamic it) {
-    paths.add(RouterPath.fromYaml(path: it, config: routerMap[it]));
+    paths.add(VoyagerPath.fromYaml(path: it, config: routerMap[it]));
   });
 
   return paths;
 }
 
-List<RouterPath> loadPathsFromJsonSync(String jsonString) {
+/// loads voyager paths from json string synchronously
+List<VoyagerPath> loadPathsFromJsonSync(String jsonString) {
   final Map<String, dynamic> routerMap = json.decode(jsonString);
-  final paths = <RouterPath>[];
+  final paths = <VoyagerPath>[];
 
   routerMap.keys.forEach((it) {
-    paths.add(RouterPath.fromMap(path: it, config: routerMap[it]));
+    paths.add(VoyagerPath.fromMap(path: it, config: routerMap[it]));
   });
 
   return paths;
 }
 
-// e.g. "assets/navigation.yml"
-Future<List<RouterPath>> loadPathsFromAssets(String path,
+/// loads voyager paths from yaml file in assets asynchronously
+/// where [path] is e.g. "assets/navigation.yml"
+Future<List<VoyagerPath>> loadPathsFromAssets(String path,
     {AssetBundle? assetBundle}) async {
   assetBundle ??= rootBundle;
   final yaml = await assetBundle.loadString(path);
   return loadPathsFromYamlSync(yaml);
 }
 
-Future<List<RouterPath>> loadPathsFromString(String yaml) async {
+/// loads voyager paths from yaml string asynchronously
+Future<List<VoyagerPath>> loadPathsFromYamlString(String yaml) async {
   return compute(loadPathsFromYamlSync, yaml);
 }
 
-Future<List<RouterPath>> loadPathsFromJsonString(String json) async {
+/// loads voyager paths from yaml string asynchronously
+Future<List<VoyagerPath>> loadPathsFromJsonString(String json) async {
   return compute(loadPathsFromJsonSync, json);
 }
 
-Future<Router> loadRouter(
-    Future<List<RouterPath>> paths, List<RouterPlugin> plugins,
+/// given [paths] and [plugins] resolves you a router.
+Future<VoyagerRouter> loadRouter(
+    Future<List<VoyagerPath>> paths, List<VoyagerPlugin> plugins,
     {VoyagerFactory? voyagerFactory}) {
   final router = voyagerFactory != null
-      ? Router(voyagerFactory: voyagerFactory)
-      : Router();
+      ? VoyagerRouter(voyagerFactory: voyagerFactory)
+      : VoyagerRouter();
 
   plugins.forEach((plugin) {
     router.registerPlugin(plugin);
@@ -68,31 +74,41 @@ Future<Router> loadRouter(
   });
 }
 
-class Router extends AbstractRouter<Voyager, RouteParam> {
-  Router({this.voyagerFactory = _defaultFactory});
-  final _plugins = <String, RouterPlugin>{};
+/// contains navigation map and plugins, resolves requested paths to
+/// instances of [Voyager]
+class VoyagerRouter extends AbstractRouter<Voyager, VoyagerParam> {
+  /// default constructor
+  VoyagerRouter({this.voyagerFactory = _defaultFactory});
+  final _plugins = <String, VoyagerPlugin>{};
   final _globalEntities = <String, dynamic>{};
   final _cache = <String, Voyager>{};
+
+  /// voyager factory
   final VoyagerFactory voyagerFactory;
 
-  Router registerPlugin(RouterPlugin plugin) {
+  /// register a plugin
+  VoyagerRouter registerPlugin(VoyagerPlugin plugin) {
     _plugins[plugin.node] = plugin;
     return this;
   }
 
-  Router registerGlobalEntity(String key, dynamic value) {
+  /// register a global entity
+  VoyagerRouter registerGlobalEntity(String key, dynamic value) {
     _globalEntities[key] = value;
     return this;
   }
 
+  /// obtain a global entity by [key]
   dynamic getGlobalEntity(String key) {
     return _globalEntities[key];
   }
 
-  void registerPath(RouterPath path) {
-    registerBuilder(path.path, RouteBuilder(path: path, routerNG: this));
+  /// register a [VoyagerPath] mapping
+  void registerPath(VoyagerPath path) {
+    registerBuilder(path.path, VoyagerBuilder(path: path, router: this));
   }
 
+  /// register a [VoyagerConfig] mapping with a custom [ProgrammaticVoyagerFactory]
   void registerConfig<T extends Voyager>(
       String path, VoyagerConfig<T> voyagerConfig,
       [ProgrammaticVoyagerFactory<T>? voyagerFactory]) {
@@ -105,16 +121,18 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
             routerNG: this));
   }
 
-  Map<String, RouterPlugin> getPlugins() {
+  /// obtain registered plugins
+  Map<String, VoyagerPlugin> getPlugins() {
     return _plugins;
   }
 
-  Voyager? find(String routerPath,
-      {Voyager? parent, VoyagerArgument? argument}) {
-    return outputFor(routerPath,
-        extras: RouteParam(parent: parent, argument: argument));
+  /// lookup path
+  Voyager? find(String path, {Voyager? parent, VoyagerArgument? argument}) {
+    return outputFor(path,
+        extras: VoyagerParam(parent: parent, argument: argument));
   }
 
+  /// lookup path in cache
   Voyager? findCached(String routerPath) {
     var voyager = _cache[routerPath];
     if (voyager == null) {
@@ -126,10 +144,10 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
     return voyager;
   }
 
-  static const int materialRoute = 0;
-  static const int cupertinoRoute = 1;
-
-  RouteFactory generator({int routeType = materialRoute}) {
+  /// method's output should be passed to [MaterialApp.onGenerateRoute] or
+  /// [CupertinoApp.onGenerateRoute]
+  RouteFactory generator(
+      {VoyagerRouteType routeType = VoyagerRouteType.material}) {
     return (RouteSettings settings) {
       final path = settings.name!;
       final builder = (BuildContext context) {
@@ -141,7 +159,7 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
         // reference
         try {
           isWrappedWithRouter =
-              Provider.of<Router?>(context, listen: false) != null;
+              Provider.of<VoyagerRouter?>(context, listen: false) != null;
         } catch (_) {}
 
         dynamic argument;
@@ -160,49 +178,71 @@ class Router extends AbstractRouter<Voyager, RouteParam> {
       };
 
       switch (routeType) {
-        case materialRoute:
+        case VoyagerRouteType.material:
           return MaterialPageRoute<dynamic>(
               builder: builder, settings: settings);
-        case cupertinoRoute:
+        case VoyagerRouteType.cupertino:
           return CupertinoPageRoute<dynamic>(
               builder: builder, settings: settings);
-        default:
-          throw ArgumentError("routeType = $routeType not supported");
       }
     };
   }
 }
 
-class RouteParam {
-  RouteParam({this.parent, this.argument});
+/// voyager route type
+enum VoyagerRouteType {
+  /// use when using [CupertinoApp]
+  cupertino,
+
+  /// use when using [MaterialApp]
+  material
+}
+
+/// Mid value passed to [VoyagerBuilder] where it's
+/// used to construct final [Voyager] instance
+class VoyagerParam {
+  /// default constructor
+  VoyagerParam({this.parent, this.argument});
+
+  /// parent voyager (if this is e.g. a nested widget)
   final Voyager? parent;
+
+  /// argument coming from navigation or [VoyagerWidget]
   final VoyagerArgument? argument;
 }
 
-class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
-  RouteBuilder({required this.path, required this.routerNG});
-  final RouterPath path;
-  final Router routerNG;
+/// a builder that is registered at [VoyagerRouter]'s each path,
+/// this creates [Voyager] from the config that is hidden behind the [path]
+/// using all the plugins that are available in [VoyagerRouter]
+class VoyagerBuilder extends OutputBuilder<Voyager, VoyagerParam> {
+  /// default constructor
+  VoyagerBuilder({required this.path, required this.router});
+
+  /// path where this voyager builder is used
+  final VoyagerPath path;
+
+  /// router instance
+  final VoyagerRouter router;
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
     final allTheParams = Map<String, String>.from(abstractContext.getParams());
     final dynamic extras = abstractContext.getExtras();
     VoyagerArgument? argument;
-    if (extras is RouteParam) {
+    if (extras is VoyagerParam) {
       argument = extras.argument;
     }
 
-    final context = RouterContext(
+    final context = VoyagerContext(
         path: abstractContext.url(),
         params: allTheParams,
-        router: routerNG,
+        router: router,
         argument: argument);
 
     final config = VoyagerUtils.copyIt(path.config);
     VoyagerUtils.interpolateDynamic(config, context);
 
-    final output = routerNG.voyagerFactory(abstractContext, config);
+    final output = router.voyagerFactory(abstractContext, config);
 
     config.keys.forEach((String key) {
       if (key == Voyager.KEY_TYPE) {
@@ -211,7 +251,7 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
             "Provided type value must be String but is $type instead!");
         output[Voyager.KEY_TYPE] = type;
       } else {
-        final plugin = routerNG._plugins[key];
+        final plugin = router._plugins[key];
         if (plugin != null) {
           plugin.outputFor(context, config[key], output);
         }
@@ -225,7 +265,7 @@ class RouteBuilder extends OutputBuilder<Voyager, RouteParam> {
 }
 
 class _ProgrammaticRouteBuilder<T extends Voyager>
-    extends OutputBuilder<Voyager, RouteParam> {
+    extends OutputBuilder<Voyager, VoyagerParam> {
   _ProgrammaticRouteBuilder(
       {required this.path,
       this.voyagerFactory,
@@ -234,13 +274,13 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
   final String path;
   final ProgrammaticVoyagerFactory<T>? voyagerFactory;
   final VoyagerConfig<T> voyagerConfig;
-  final Router routerNG;
+  final VoyagerRouter routerNG;
 
   @override
   Voyager outputFor(AbstractRouteContext abstractContext) {
     final allTheParams = Map<String, String>.from(abstractContext.getParams());
 
-    final context = RouterContext(
+    final context = VoyagerContext(
         path: abstractContext.url(), params: allTheParams, router: routerNG);
 
     final newInstance = voyagerFactory != null
@@ -256,6 +296,7 @@ class _ProgrammaticRouteBuilder<T extends Voyager>
   }
 }
 
+/// alias for creating programatic voyager instances
 typedef VoyagerFactory<T extends Voyager> = T Function(
     AbstractRouteContext abstractContext, Map<String, dynamic> config);
 
@@ -268,11 +309,11 @@ Voyager _defaultFactory(
 
 /// allows programmatic path specification
 typedef VoyagerConfig<T extends Voyager> = void Function(
-    RouterContext context, T voyager);
+    VoyagerContext context, T voyager);
 
 /// creates voyager instance, can be used to supply Voyager subclasses
 typedef ProgrammaticVoyagerFactory<T extends Voyager> = T Function(
-    AbstractRouteContext abstractContext, RouterContext context);
+    AbstractRouteContext abstractContext, VoyagerContext context);
 
 final ProgrammaticVoyagerFactory _defaultProgrammaticFactory =
     (abstractContext, context) => Voyager(
