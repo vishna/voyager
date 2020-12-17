@@ -19,7 +19,7 @@ class MockHomeWidget extends StatelessWidget {
 Widget mockFab(BuildContext context) {
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context)!.pushNamed("/other/thing");
+      Navigator.of(context).pushNamed("/other/thing");
     },
     tooltip: 'Navigate',
     child: const Icon(Icons.add),
@@ -69,7 +69,7 @@ class MockHomeWidgetArgument1 extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)!.pushNamed("/other/thing", arguments: "hello");
+          Navigator.of(context).pushNamed("/other/thing", arguments: "hello");
         },
         tooltip: 'Navigate',
         child: const Icon(Icons.add),
@@ -90,7 +90,7 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)!
+          Navigator.of(context)
               .pushNamed("/other/thing", arguments: VoyagerArgument("hello"));
         },
         tooltip: 'Navigate',

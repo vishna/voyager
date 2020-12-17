@@ -4,6 +4,7 @@ import 'package:voyager/voyager.dart' hide VoyagerRouter;
 import 'package:voyager/voyager.dart' as voyager;
 import 'package:provider/provider.dart';
 
+/// navigation map
 String requirements() {
   return '''
 ---
@@ -65,11 +66,13 @@ List<VoyagerPlugin> plugins() => [
       IconPlugin()
     ];
 
+/// icon plugin
 class IconPlugin extends IconPluginStub {
   @override
   Icon buildObject(VoyagerContext context, dynamic config) =>
       fromHexValue(config.toString());
 
+  /// helper method converting hex value to an icon instance
   static Icon fromHexValue(String hexValue) {
     return Icon(
         IconData(int.parse(hexValue, radix: 16), fontFamily: 'MaterialIcons'));
@@ -79,10 +82,10 @@ class IconPlugin extends IconPluginStub {
 void main() {
   _setupVoyagerObfuscation();
   // wrapped with a builder, otherwise hot reload doesn't quite click
-  runApp(Builder(builder: (builder) => appOrSplash()));
+  runApp(Builder(builder: (builder) => _appOrSplash()));
 }
 
-Widget appOrSplash() {
+Widget _appOrSplash() {
   return FutureBuilder(
       future: loadRouter(paths(), plugins()),
       builder: (BuildContext context,
@@ -103,17 +106,19 @@ Widget appOrSplash() {
       });
 }
 
+/// creates a floating action button
 Widget makeMeFab(BuildContext context) {
   final voyager = context.voyager;
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context)!.pushNamed(voyager.target!);
+      Navigator.of(context).pushNamed(voyager.target!);
     },
     tooltip: 'Navigate',
     child: voyager.icon,
   );
 }
 
+/// theme data
 ThemeData themeData() {
   return ThemeData(
       brightness: Brightness.dark,
@@ -122,6 +127,7 @@ ThemeData themeData() {
       accentColor: const Color(0xfffcc934));
 }
 
+///page widget
 class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -143,6 +149,7 @@ class PageWidget extends StatelessWidget {
   }
 }
 
+/// list widget
 class ListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -181,13 +188,22 @@ class ListWidget extends StatelessWidget {
       pathObjectItem(VoyagerUtils.deobfuscate(item.runtimeType.toString()));
 }
 
+/// object representing conference
 class Talk {
+  /// default constructor
   const Talk(this.city, this.event, this.date);
+
+  /// city where the talk took place
   final String city;
+
+  /// event during which the talk took place
   final String event;
+
+  /// date when the talk took place
   final String date;
 }
 
+/// talk widget
 class TalkWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -210,6 +226,7 @@ class TalkWidget extends StatelessWidget {
   }
 }
 
+/// splash screen
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -219,6 +236,7 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
+/// actions
 List<Widget>? actions(BuildContext context) {
   final actions = context.voyager.actions;
   if (actions == null || actions.isEmpty) {
@@ -229,7 +247,7 @@ List<Widget>? actions(BuildContext context) {
     widgets.add(IconButton(
       icon: IconPlugin.fromHexValue(action["icon"]),
       onPressed: () {
-        Navigator.of(context)!.pushNamed(action["target"]);
+        Navigator.of(context).pushNamed(action["target"]);
       },
     ));
   });
