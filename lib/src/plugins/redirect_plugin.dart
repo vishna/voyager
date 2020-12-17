@@ -1,11 +1,15 @@
 import 'package:voyager/voyager.dart';
 
-class RedirectPlugin extends RouterPlugin {
-  RedirectPlugin() : super(KEY);
+/// redirect plugin
+class RedirectPlugin extends VoyagerPlugin {
+  /// default constructor
+  const RedirectPlugin() : super(KEY);
+
+  /// plugin node name
   static const KEY = "redirect";
 
   @override
-  void outputFor(RouterContext context, dynamic config, Voyager output) {
+  void outputFor(VoyagerContext context, dynamic config, Voyager output) {
     if (!(config is String)) {
       return;
     }

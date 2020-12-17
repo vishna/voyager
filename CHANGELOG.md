@@ -5,6 +5,16 @@
 - migration to null-safety
 - all Voyager classes are now prefixed with `Voyager`. This is due to introduction of Router in Navigator 2.0 API
 
+```
+RouterContext -> VoyagerContext
+RouterPath -> VoyagerPath
+Router -> VoyagerRouter
+RouteBuilder -> VoyagerBuilder
+RouterPlugin -> VoyagerPlugin
+RouterObjectPlugin -> VoyagerObjectPlugin
+loadPathsFromString -> loadPathsFromYamlString
+```
+
 ## 2.1.2
 
 - pass settings instance in routed pages - thx [@i5o](https://github.com/i5o)

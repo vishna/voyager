@@ -4,7 +4,7 @@ import 'package:yaml/yaml.dart';
 
 void main() {
   test("load router path from normal map", () async {
-    final routerPath = RouterPath.fromMap(
+    final routerPath = VoyagerPath.fromMap(
         path: "/home",
         config: <String, String>{
           "type": "home",
@@ -28,7 +28,7 @@ title: Home Title
 
     final YamlMap configMap = loadYaml(configYaml);
 
-    final routerPath = RouterPath.fromYaml(path: "/home", config: configMap);
+    final routerPath = VoyagerPath.fromYaml(path: "/home", config: configMap);
 
     expect(routerPath.path, "/home");
     expect(routerPath.config["type"], "home");

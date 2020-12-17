@@ -6,6 +6,7 @@ import 'package:voyager/voyager.dart';
 /// when embedding the widget in things like `TabBarView`. Most of the time you don't want this. Retains [Voyager]
 /// unless path or router changes
 class VoyagerWidget extends StatefulWidget {
+  /// default constructor
   const VoyagerWidget(
       {required this.path,
       this.keepAlive = false,
@@ -13,9 +14,17 @@ class VoyagerWidget extends StatefulWidget {
       this.argument,
       Key? key})
       : super(key: key);
+
+  /// this widget's path
   final String path;
+
+  /// whether or not this widget should be kept alive
   final bool keepAlive;
-  final Router? router;
+
+  /// instance or router, pass if it's not exposed via provider
+  final VoyagerRouter? router;
+
+  /// argument, if any
   final VoyagerArgument? argument;
 
   @override
@@ -29,7 +38,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
   late String _path;
   Voyager? _voyager;
   final bool keepAlive;
-  Router? _lastRouter;
+  VoyagerRouter? _lastRouter;
 
   @override
   void initState() {
@@ -44,9 +53,9 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     }
 
     var hasRouterProvider = false;
-    Router router;
+    VoyagerRouter router;
     try {
-      router = Provider.of<Router>(context, listen: false);
+      router = Provider.of<VoyagerRouter>(context, listen: false);
       hasRouterProvider = true;
     } catch (t) {
       router = widget.router!;
@@ -75,7 +84,7 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     return MultiProvider(
       providers: [
         Provider<Voyager>.value(value: _voyager!),
-        if (!hasRouterProvider) Provider<Router>.value(value: router),
+        if (!hasRouterProvider) Provider<VoyagerRouter>.value(value: router),
         Provider<VoyagerArgument?>.value(value: widget.argument)
       ],
       child: Builder(builder: builder!),

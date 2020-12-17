@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voyager/src/router.dart';
+import 'package:voyager/src/voyager_router.dart';
 import 'disk_asset_bundle.dart';
 
 // ignore_for_file: avoid_as

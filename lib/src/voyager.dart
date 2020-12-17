@@ -10,19 +10,28 @@ import 'package:provider/provider.dart';
 /// Developer might choose to use `storage` to dynamically put any variables that should be available
 /// to anyone having access to that instance of `Voyager`
 class Voyager {
+  /// default constructor
   Voyager(
       {required this.path, this.parent, required Map<String, dynamic> config})
       : _config = Map<String, dynamic>.from(config);
+
+  /// special node, type
   static const String KEY_TYPE = "type";
 
+  /// parent voyager instance
   final Voyager? parent;
   final Map<String, dynamic> _config;
   final _output = <String, dynamic>{};
+
+  /// allows storing arbitrary items within this voyager instance
   final storage = <String, dynamic>{};
-  final _onDispose = <OnDispose>[];
+  final _onDispose = <VoidCallback>[];
+
+  /// path of this voyager
   final String path;
   bool _locked = false;
 
+  /// merges other [Voyager] instance into this one
   void merge(Voyager other) {
     if (_locked) {
       throw FlutterError("Voyager is in lockdown.");
@@ -31,6 +40,7 @@ class Voyager {
     _config.addAll(other._config);
   }
 
+  /// access field resolved by [VoyagerPlugin]
   dynamic operator [](String key) {
     final dynamic value = _output[key];
     if (value == nothing) {
@@ -43,6 +53,7 @@ class Voyager {
     return _config[key];
   }
 
+  /// set field when accessing it from [VoyagerPlugin]
   operator []=(String key, dynamic value) {
     if (_locked) {
       throw FlutterError("Voyager is in lockdown.");
@@ -50,10 +61,12 @@ class Voyager {
     _output[key] = value;
   }
 
-  void onDispose(OnDispose callback) {
+  /// register dispose callback
+  void onDispose(VoidCallback callback) {
     _onDispose.add(callback);
   }
 
+  /// dispose this voyager instance
   void dispose() {
     if (!_locked) {
       throw FlutterError("Can't dispose resources before Voyager is locked");
@@ -64,24 +77,30 @@ class Voyager {
     _config.clear();
   }
 
+  /// lock this voyager instance
   void lock() {
     _locked = true;
   }
 
+  /// Voyager's type
   String get type => this[KEY_TYPE];
+
+  /// set voyager's type (works only )
   set type(String value) {
     this[KEY_TYPE] = value;
   }
 
-  static final Nothing nothing = Nothing._private();
+  /// nothing
+  static final VoyagerNothing nothing = VoyagerNothing._private();
 }
 
-class Nothing {
-  Nothing._private();
+/// nothingness, void, empty space
+class VoyagerNothing {
+  VoyagerNothing._private();
 }
 
+/// Voyager default extension on build context
 extension VoyagerContextExtension on BuildContext {
+  /// obtain a [Voyager] instance from the current [BuildContext]
   Voyager get voyager => Provider.of<Voyager>(this, listen: false);
 }
-
-typedef OnDispose = void Function();

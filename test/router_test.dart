@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart' hide Router;
-import 'package:flutter/material.dart' hide Router;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:voyager/voyager.dart' hide Router;
-import 'package:voyager/voyager.dart' as voyager;
+import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
 import 'mock_classes_cupertino.dart';
@@ -19,7 +18,7 @@ class MyMockedEntity {
 
 void main() {
   test('using global entity', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -46,7 +45,7 @@ void main() {
   });
 
   test('getting plugins', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -63,7 +62,7 @@ void main() {
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -75,7 +74,7 @@ void main() {
   });
 
   test('voyager caching', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -92,7 +91,7 @@ void main() {
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -106,7 +105,7 @@ void main() {
   });
 
   test('non string value of type', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -123,7 +122,7 @@ void main() {
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -137,7 +136,7 @@ void main() {
 
   testWidgets('test material navigation', (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidget(),
@@ -147,14 +146,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
-      await tester.pumpWidget(Provider<voyager.Router>.value(
+      await tester.pumpWidget(Provider<VoyagerRouter>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: voyager.Router.materialRoute))));
+                  router.generator(routeType: VoyagerRouteType.material))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -168,7 +167,7 @@ void main() {
 
   testWidgets('test cupertino navigation', (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockCupertinoHomeWidget(),
@@ -178,14 +177,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
-      await tester.pumpWidget(Provider<voyager.Router>.value(
+      await tester.pumpWidget(Provider<VoyagerRouter>.value(
           value: router,
           child: CupertinoApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: voyager.Router.cupertinoRoute))));
+                  router.generator(routeType: VoyagerRouteType.cupertino))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -198,34 +197,10 @@ void main() {
     });
   });
 
-  testWidgets('test 9000 navigation', (WidgetTester tester) async {
-    await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
-      final plugins = [
-        WidgetPlugin({
-          "HomeWidget": (context) => MockHomeWidget(),
-          "OtherWidget": (context) => MockOtherWidget(),
-        })
-      ];
-
-      final router = await loadRouter(paths, plugins);
-
-      expect(router, isInstanceOf<voyager.Router>());
-
-      final generator = router.generator(routeType: 9000);
-      try {
-        generator(const RouteSettings(name: "/other/thing"));
-      } catch (e) {
-        expect(e, isInstanceOf<ArgumentError>());
-        expect((e as ArgumentError).message, "routeType = 9000 not supported");
-      }
-    });
-  });
-
   testWidgets('test material navigation with argument 1',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidgetArgument1(),
@@ -235,15 +210,15 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       await tester.pumpWidget(
-        Provider<voyager.Router>.value(
+        Provider<VoyagerRouter>.value(
           value: router,
           child: MaterialApp(
             home: const VoyagerWidget(path: "/home"),
             onGenerateRoute:
-                router.generator(routeType: voyager.Router.materialRoute),
+                router.generator(routeType: VoyagerRouteType.material),
           ),
         ),
       );
@@ -261,7 +236,7 @@ void main() {
   testWidgets('test material navigation with argument 2',
       (WidgetTester tester) async {
     await tester.runAsync(() async {
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidgetArgument2(),
@@ -271,15 +246,15 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       await tester.pumpWidget(
-        Provider<voyager.Router>.value(
+        Provider<VoyagerRouter>.value(
           value: router,
           child: MaterialApp(
             home: const VoyagerWidget(path: "/home"),
             onGenerateRoute:
-                router.generator(routeType: voyager.Router.materialRoute),
+                router.generator(routeType: VoyagerRouteType.material),
           ),
         ),
       );
@@ -299,7 +274,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.runAsync(() async {
       final argumentInContext = _MockArgumentInContext();
-      final paths = loadPathsFromString(navigation_yml);
+      final paths = loadPathsFromYamlString(navigation_yml);
       final plugins = [
         WidgetPlugin({
           "HomeWidget": (context) => MockHomeWidgetArgument2(),
@@ -310,14 +285,14 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.Router>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
-      await tester.pumpWidget(Provider<voyager.Router>.value(
+      await tester.pumpWidget(Provider<VoyagerRouter>.value(
           value: router,
           child: MaterialApp(
               home: const VoyagerWidget(path: "/home"),
               onGenerateRoute:
-                  router.generator(routeType: voyager.Router.materialRoute))));
+                  router.generator(routeType: VoyagerRouteType.material))));
 
       expect(find.text("Home Page"), findsOneWidget);
       expect(find.text("Home Title"), findsOneWidget);
@@ -332,7 +307,7 @@ void main() {
 
   test('loadPathsFromString loads paths from a yaml defined in a string',
       () async {
-    final paths = await loadPathsFromString(navigation_yml);
+    final paths = await loadPathsFromYamlString(navigation_yml);
     expect(paths.length, 2);
 
     expect(paths.map((it) => it.path),
@@ -367,13 +342,13 @@ void main() {
   });
 }
 
-class _MockArgumentInContext extends RouterObjectPlugin<String> {
+class _MockArgumentInContext extends VoyagerObjectPlugin<String> {
   _MockArgumentInContext() : super("title");
 
   bool hasEncounteredVoyagerArgument = false;
 
   @override
-  String buildObject(RouterContext context, dynamic config) {
+  String buildObject(VoyagerContext context, dynamic config) {
     if (context.argument != null &&
         context.argument?.value != null &&
         context.argument?.value == "hello") {

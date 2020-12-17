@@ -1,6 +1,6 @@
 import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
-import 'package:voyager/voyager.dart' hide Router;
+import 'package:voyager/voyager.dart' hide VoyagerRouter;
 import 'package:voyager/voyager.dart' as voyager;
 import 'package:provider/provider.dart';
 
@@ -49,12 +49,12 @@ String requirements() {
 ''';
 }
 
-Future<List<RouterPath>> paths() {
-  return loadPathsFromString(requirements());
+Future<List<VoyagerPath>> paths() {
+  return loadPathsFromYamlString(requirements());
 }
 
 /// plugins that are mentioned in requirements
-List<RouterPlugin> plugins() => [
+List<VoyagerPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
       WidgetPluginBuilder()
           .add<PageWidget>((context) => PageWidget())
@@ -67,7 +67,7 @@ List<RouterPlugin> plugins() => [
 
 class IconPlugin extends IconPluginStub {
   @override
-  Icon buildObject(RouterContext context, dynamic config) =>
+  Icon buildObject(VoyagerContext context, dynamic config) =>
       fromHexValue(config.toString());
 
   static Icon fromHexValue(String hexValue) {
@@ -85,10 +85,11 @@ void main() {
 Widget appOrSplash() {
   return FutureBuilder(
       future: loadRouter(paths(), plugins()),
-      builder: (BuildContext context, AsyncSnapshot<voyager.Router> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<voyager.VoyagerRouter> snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final router = snapshot.data!;
-          return Provider<voyager.Router>.value(
+          return Provider<voyager.VoyagerRouter>.value(
               value: router,
               child: MaterialApp(
                 title: "Voyager Demo",

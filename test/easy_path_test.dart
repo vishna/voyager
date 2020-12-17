@@ -6,7 +6,7 @@ import 'mock_classes.dart';
 
 void main() {
   test('easy path home', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'

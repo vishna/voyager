@@ -29,6 +29,6 @@ extension VoyagerData on Voyager {
   List<dynamic>? get items => this["items"];
 }
 
-abstract class IconPluginStub extends RouterObjectPlugin<Icon> {
+abstract class IconPluginStub extends VoyagerObjectPlugin<Icon> {
   IconPluginStub() : super("icon");
 }

@@ -17,10 +17,10 @@ void main() {
   });
 
   test('interpolate dynamic list or map', () {
-    final context = RouterContext(
+    final context = VoyagerContext(
       params: {"foo": "Hello"},
       path: "/mock/path",
-      router: Router(),
+      router: VoyagerRouter(),
     );
 
     final list = [

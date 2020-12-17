@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voyager/src/router.dart';
+import 'package:voyager/src/voyager_router.dart';
 import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
@@ -9,7 +9,7 @@ import 'mock_classes.dart';
 
 void main() {
   test('test wildcard parameter', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'
@@ -29,7 +29,7 @@ void main() {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),
       "OtherWidget": (BuildContext context) => MockOtherWidget(),
     };
-    final plugins = [WidgetPlugin(widgetMappings), RedirectPlugin()];
+    final plugins = [WidgetPlugin(widgetMappings), const RedirectPlugin()];
 
     final router = await loadRouter(paths, plugins);
 
@@ -43,7 +43,7 @@ void main() {
   });
 
   test('forbidden wildcard parameter', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/other/:whatever:/:id' :
   type: 'whatever_faulty'
@@ -55,7 +55,7 @@ void main() {
         "HomeWidget": (context) => MockHomeWidget(),
         "OtherWidget": (context) => MockOtherWidget(),
       }),
-      RedirectPlugin()
+      const RedirectPlugin()
     ];
 
     final router = await loadRouter(paths, plugins);
@@ -70,7 +70,7 @@ void main() {
   });
 
   test('multi param or wildcard', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/position/:lat/:lon' :
   type: 'other'
@@ -99,7 +99,7 @@ void main() {
   });
 
   test('get same location twice, clear cache', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/position/:lat/:lon' :
   type: 'other'
@@ -125,7 +125,7 @@ void main() {
   });
 
   test('global param', () async {
-    final paths = loadPathsFromString('''
+    final paths = loadPathsFromYamlString('''
 ---
 '/position/:lat/:lon' :
   type: 'other'
