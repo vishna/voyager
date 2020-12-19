@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart' hide Router;
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voyager/voyager.dart' hide VoyagerRouter;
-import 'package:voyager/voyager.dart' as voyager;
+import 'package:provider/provider.dart';
+import 'package:voyager/voyager.dart';
 
 import 'mock_classes.dart';
 import 'navigation_json.dart';
@@ -62,7 +62,7 @@ void main() {
   test('create router programatically', () async {
     final homeClosure = (BuildContext buildContext) => MockHomeWidget();
     final otherClosure = (BuildContext buildContext) => MockOtherWidget();
-    final router = voyager.VoyagerRouter();
+    final router = VoyagerRouter();
     router.registerConfig('/home', (context, Voyager voyager) {
       voyager.type = "home";
       voyager[WidgetPlugin.KEY] = homeClosure;
@@ -96,7 +96,7 @@ void main() {
         (abstractContext, context) => CustomVoyager(
             abstractContext.url(), abstractContext.getExtras().parent);
 
-    final router = voyager.VoyagerRouter();
+    final router = VoyagerRouter();
     router.registerConfig<CustomVoyager>('/home', (context, voyager) {
       voyager.type = "home";
       voyager.widget = homeClosure;
@@ -135,7 +135,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.VoyagerRouter>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       await tester.pumpWidget(
           MaterialApp(home: VoyagerWidget(path: "/home", router: router)));
@@ -159,7 +159,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.VoyagerRouter>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       await tester.pumpWidget(MaterialApp(
           home: VoyagerWidget(path: "/other/foobar123", router: router)));
@@ -312,7 +312,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.VoyagerRouter>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       const mockKey = Key("mockApp");
 
@@ -341,7 +341,7 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
         const MaterialApp(home: VoyagerWidget(path: "/home", router: null)));
-    expect(tester.takeException(), isA<TypeError>());
+    expect(tester.takeException(), isA<ProviderNotFoundException>());
   });
 
   testWidgets(
@@ -353,7 +353,7 @@ void main() {
 
       final router = await loadRouter(paths, plugins);
 
-      expect(router, isInstanceOf<voyager.VoyagerRouter>());
+      expect(router, isInstanceOf<VoyagerRouter>());
 
       await tester.pumpWidget(MaterialApp(
           home: VoyagerWidget(
@@ -399,13 +399,52 @@ void main() {
     expect(remoteHomeVoyager.type, "home");
     expect(remoteHomeVoyager["title"], "This is Remote Home");
   });
+
+  test('VoyagerRouter.from', () async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+
+    final router = VoyagerRouter.from(paths, plugins);
+
+    final homeVoyager = router.find("/home")!;
+
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
+    expect(homeVoyager.type, "home");
+  });
+
+  test('VoyagerRouter.from + defaultProgrammaticFactory', () async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+
+    final router = VoyagerRouter.from(paths, plugins,
+        voyagerFactory: _defaultProgrammaticFactory);
+
+    final homeVoyager = router.find("/home")!;
+
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
+    expect(homeVoyager.type, "home");
+  });
 }
+
+final VoyagerFactory _defaultProgrammaticFactory = (abstractContext, context) =>
+    Voyager(
+        path: abstractContext.url(),
+        parent: abstractContext.getExtras().parent,
+        config: <String, dynamic>{});
 
 class _MockApp extends StatefulWidget {
   const _MockApp(Key key, {required this.path, required this.router})
       : super(key: key);
   final String path;
-  final voyager.VoyagerRouter router;
+  final VoyagerRouter router;
 
   @override
   State<StatefulWidget> createState() => _MockAppState();
@@ -422,7 +461,7 @@ class _MockRouterPlugin extends VoyagerPlugin {
 
 class _MockAppState extends State<_MockApp> {
   late String path;
-  late voyager.VoyagerRouter router;
+  late VoyagerRouter router;
 
   @override
   void initState() {
