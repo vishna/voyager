@@ -79,6 +79,20 @@ Future<VoyagerRouter> loadRouter(
 class VoyagerRouter extends AbstractRouter<Voyager, VoyagerParam> {
   /// default constructor
   VoyagerRouter({this.voyagerFactory = _defaultFactory});
+
+  /// synchronous [VoyagerRouter factory]
+  factory VoyagerRouter.from(
+      List<VoyagerPath> paths, List<VoyagerPlugin> plugins,
+      {VoyagerFactory? voyagerFactory}) {
+    final router = voyagerFactory != null
+        ? VoyagerRouter(voyagerFactory: voyagerFactory)
+        : VoyagerRouter();
+
+    plugins.forEach(router.registerPlugin);
+    paths.forEach(router.registerPath);
+
+    return router;
+  }
   final _plugins = <String, VoyagerPlugin>{};
   final _globalEntities = <String, dynamic>{};
   final _cache = <String, Voyager>{};

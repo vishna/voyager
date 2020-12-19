@@ -34,7 +34,6 @@ You should ensure that you add the router as a dependency in your flutter projec
 ```yaml
 dependencies:
  voyager: ^latest_release
- provider: ^3.0.0+1 # if you don't have it yet
 ```
 
 You can also reference the git repo directly if you want:
@@ -46,12 +45,6 @@ dependencies:
 ```
 
 Then in the code, make sure you import voyager package:
-
-```dart
-/// prevent name clash with upcoming Flutter's Router class using hide
-import 'package:voyager/voyager.dart' hide Router;
-import 'package:voyager/voyager.dart' as voyager;
-```
 
 ### Navigation Spec
 
@@ -76,7 +69,7 @@ You can either put this in assets as a yaml file or use triple quotes `'''` and 
 Your router requires **paths** and **plugins** as constructor parameters. Getting **paths** is quite straightforwad and basically means parsing that YAML file we just defined.
 
 ```dart
-final paths = loadPathsFromString('''
+final paths = loadPathsFromYamlString('''
 ---
 '/home' :
   type: 'home'

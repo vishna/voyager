@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' hide Router;
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
 
@@ -35,15 +35,13 @@ class VoyagerWidget extends StatefulWidget {
 class _VoyagerWidgetState extends State<VoyagerWidget>
     with AutomaticKeepAliveClientMixin<VoyagerWidget> {
   _VoyagerWidgetState({required this.keepAlive});
-  late String _path;
+
   Voyager? _voyager;
   final bool keepAlive;
-  VoyagerRouter? _lastRouter;
 
   @override
   void initState() {
     super.initState();
-    _path = widget.path;
   }
 
   @override
@@ -52,26 +50,24 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
       super.build(context); // this must be called
     }
 
-    var hasRouterProvider = false;
     VoyagerRouter router;
-    try {
-      router = Provider.of<VoyagerRouter>(context, listen: false);
-      hasRouterProvider = true;
-    } catch (t) {
+
+    if (widget.router != null) {
       router = widget.router!;
+    } else {
+      router = Provider.of<VoyagerRouter>(context, listen: false);
     }
 
-    Voyager? parentVoyager;
-    try {
-      parentVoyager = context.voyager;
-    } catch (t) {
-      parentVoyager = null;
-    }
+    if (_voyager == null) {
+      Voyager? parentVoyager;
+      try {
+        parentVoyager = context.voyager;
+      } catch (t) {
+        parentVoyager = null;
+      }
 
-    if (_voyager == null || _lastRouter != router) {
-      _lastRouter = router;
-      _voyager =
-          router.find(_path, parent: parentVoyager, argument: widget.argument);
+      _voyager = router.find(widget.path,
+          parent: parentVoyager, argument: widget.argument);
     }
 
     assert(_voyager != null, "voyager instance should not be null");
@@ -84,7 +80,6 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
     return MultiProvider(
       providers: [
         Provider<Voyager>.value(value: _voyager!),
-        if (!hasRouterProvider) Provider<VoyagerRouter>.value(value: router),
         Provider<VoyagerArgument?>.value(value: widget.argument)
       ],
       child: Builder(builder: builder!),
@@ -94,9 +89,8 @@ class _VoyagerWidgetState extends State<VoyagerWidget>
   @override
   void didUpdateWidget(VoyagerWidget oldWidget) {
     if (oldWidget.path != widget.path || oldWidget.router != widget.router) {
-      _path = widget.path;
+      _voyager?.dispose();
       _voyager = null;
-      _lastRouter = null;
     }
     super.didUpdateWidget(oldWidget);
   }

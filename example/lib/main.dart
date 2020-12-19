@@ -1,10 +1,9 @@
 import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
-import 'package:voyager/voyager.dart' hide VoyagerRouter;
-import 'package:voyager/voyager.dart' as voyager;
 import 'package:provider/provider.dart';
+import 'package:voyager/voyager.dart';
 
-/// navigation map
+/// navigation map, a yaml file, can be provided as a tripple quoted string
 String requirements() {
   return '''
 ---
@@ -50,8 +49,9 @@ String requirements() {
 ''';
 }
 
-Future<List<VoyagerPath>> paths() {
-  return loadPathsFromYamlString(requirements());
+/// list of [VoyagerPath] (a YAML above but parsed to objects)
+List<VoyagerPath> paths() {
+  return loadPathsFromYamlSync(requirements());
 }
 
 /// plugins that are mentioned in requirements
@@ -79,31 +79,64 @@ class IconPlugin extends IconPluginStub {
   }
 }
 
-void main() {
-  _setupVoyagerObfuscation();
-  // wrapped with a builder, otherwise hot reload doesn't quite click
-  runApp(Builder(builder: (builder) => _appOrSplash()));
+/// a model class that exposes [VoyagerStack] instance to entire widget tree using [Provider]
+class MyStack extends ChangeNotifier {
+  /// default constructor
+  MyStack(
+      {VoyagerStack value = const VoyagerStack<dynamic>([
+        VoyagerPage(pathHome),
+      ])})
+      : _value = value;
+
+  VoyagerStack _value;
+
+  /// the current stack
+  VoyagerStack get value => _value;
+
+  /// push new stack state
+  set value(VoyagerStack newValue) {
+    _value = newValue;
+    notifyListeners();
+  }
+
+  /// remove last item
+  void pop() {
+    value = value.removeLast();
+  }
+
+  /// add a new page on top
+  void add(VoyagerPage information) {
+    final newValue = value.mutate((items) {
+      items.add(information);
+    });
+    value = newValue;
+  }
 }
 
-Widget _appOrSplash() {
-  return FutureBuilder(
-      future: loadRouter(paths(), plugins()),
-      builder: (BuildContext context,
-          AsyncSnapshot<voyager.VoyagerRouter> snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          final router = snapshot.data!;
-          return Provider<voyager.VoyagerRouter>.value(
-              value: router,
-              child: MaterialApp(
-                title: "Voyager Demo",
-                home: VoyagerWidget(path: pathHome, router: router),
-                theme: themeData(),
-                onGenerateRoute: router.generator(),
-              ));
-        } else {
-          return SplashScreen();
-        }
-      });
+void main() {
+  _setupVoyagerObfuscation();
+
+  /// loading router
+  final router = VoyagerRouter.from(paths(), plugins());
+  runApp(ChangeNotifierProvider<MyStack>(
+    create: (context) => MyStack(),
+    child: Builder(builder: (context) {
+      final stack = Provider.of<MyStack>(context);
+      return VoyagerStackApp(
+        router: router,
+        stack: stack.value,
+        onBackPressed: () {
+          stack.pop();
+        },
+        createApp: (context, parser, delegate) => MaterialApp.router(
+          title: "Voyager Demo",
+          routeInformationParser: parser,
+          routerDelegate: delegate,
+          theme: themeData(),
+        ),
+      );
+    }),
+  ));
 }
 
 /// creates a floating action button
@@ -111,7 +144,8 @@ Widget makeMeFab(BuildContext context) {
   final voyager = context.voyager;
   return FloatingActionButton(
     onPressed: () {
-      Navigator.of(context).pushNamed(voyager.target!);
+      Provider.of<MyStack>(context, listen: false)
+          .add(VoyagerPage(voyager.target!));
     },
     tooltip: 'Navigate',
     child: voyager.icon,
@@ -170,8 +204,8 @@ class ListWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final talk = talks[index];
             return VoyagerWidget(
-                key: ValueKey(idMapper(talk)),
-                path: objectMapper(talk),
+                key: ValueKey(_idMapper(talk)),
+                path: _objectMapper(talk),
                 argument: VoyagerArgument(talk));
           },
         ),
@@ -183,8 +217,8 @@ class ListWidget extends StatelessWidget {
   }
 
   // ignore: avoid_as
-  static String idMapper(dynamic item) => (item as Talk).city;
-  static String objectMapper(dynamic item) =>
+  static String _idMapper(dynamic item) => (item as Talk).city;
+  static String _objectMapper(dynamic item) =>
       pathObjectItem(VoyagerUtils.deobfuscate(item.runtimeType.toString()));
 }
 
@@ -226,16 +260,6 @@ class TalkWidget extends StatelessWidget {
   }
 }
 
-/// splash screen
-class SplashScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-        child: Text("Loading",
-            style: TextStyle(fontSize: 24), textDirection: TextDirection.ltr));
-  }
-}
-
 /// actions
 List<Widget>? actions(BuildContext context) {
   final actions = context.voyager.actions;
@@ -247,7 +271,8 @@ List<Widget>? actions(BuildContext context) {
     widgets.add(IconButton(
       icon: IconPlugin.fromHexValue(action["icon"]),
       onPressed: () {
-        Navigator.of(context).pushNamed(action["target"]);
+        Provider.of<MyStack>(context, listen: false)
+            .add(VoyagerPage(action["target"]));
       },
     ));
   });
