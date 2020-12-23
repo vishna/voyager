@@ -146,27 +146,4 @@ class VoyagerUtils {
     }
     return false;
   }
-
-  /// Necessary to obtain generic [Type]
-  /// https://github.com/dart-lang/sdk/issues/11923
-  static String stringTypeOf<T>() {
-    final className = T.toString();
-    return deobfuscate(className);
-  }
-
-  /// registers deobfucation elements
-  static String deobfuscate(String className) {
-    return _obfuscationMap[className] ?? className;
-  }
-
-  /// If you're targeting WEB use this method to register class symbols used by navigation map.
-  /// dart2js is obfuscating class names thus making it impossible to resolve them during runtime
-  /// in the release mode
-  static void addObfuscationMap(Map<Type, String> map) {
-    map.forEach((key, value) {
-      _obfuscationMap[key.toString()] = value;
-    });
-  }
-
-  static final _obfuscationMap = <String, String>{};
 }
