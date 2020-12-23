@@ -118,8 +118,8 @@ void main() {
     final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
       WidgetPluginBuilder()
-          .add<MockHomeWidget>(homeBuilder)
-          .add<MockOtherWidget>(otherBuilder)
+          .add("MockHomeWidget", homeBuilder)
+          .add("MockOtherWidget", otherBuilder)
           .build(),
       const RedirectPlugin()
     ];
@@ -162,10 +162,12 @@ void main() {
     final homeBuilder = (BuildContext context) => MockHomeWidget();
     final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
-      WidgetPluginBuilder().add<MockHomeWidget>(
+      WidgetPluginBuilder().add(
+        "MockHomeWidget",
         homeBuilder,
         aliases: ["HomeWidget"],
-      ).add<MockOtherWidget>(
+      ).add(
+        "MockOtherWidget",
         otherBuilder,
         aliases: ["OtherWidget", "OtherWidget2"],
       ).build(),
@@ -189,30 +191,15 @@ void main() {
 
   test('widget plugin duplicate alias', () async {
     expect(() {
-      WidgetPluginBuilder().add<MockHomeWidget>((context) => MockHomeWidget(),
+      WidgetPluginBuilder().add("MockHomeWidget", (context) => MockHomeWidget(),
           aliases: [
             "HomeWidget"
-          ]).add<MockOtherWidget>((context) => MockOtherWidget(),
+          ]).add("MockOtherWidget", (context) => MockOtherWidget(),
           aliases: ["HomeWidget", "OtherWidget2"]).build();
     }, throwsA(predicate((Error e) {
       expect(e, isInstanceOf<AssertionError>());
       expect((e as AssertionError).message,
           "Alias HomeWidget for MockOtherWidget is already used.");
-      return true;
-    })));
-  });
-
-  test('widget plugin unspefied class type', () async {
-    expect(() {
-      WidgetPluginBuilder()
-          .add<MockHomeWidget>((context) => MockHomeWidget())
-          .add<MockOtherWidget>((context) => MockOtherWidget())
-          .add(mockFab)
-          .build();
-    }, throwsA(predicate((Error e) {
-      expect(e, isInstanceOf<ArgumentError>());
-      expect((e as ArgumentError).message,
-          "Use addMethod if you can't provide Widget class as T parameter");
       return true;
     })));
   });
@@ -237,9 +224,9 @@ void main() {
     final otherBuilder = (BuildContext context) => MockOtherWidget();
     final plugins = [
       WidgetPluginBuilder()
-          .add<MockHomeWidget>(homeBuilder)
-          .add<MockOtherWidget>(otherBuilder)
-          .addMethod(mockFab, "FabWidget")
+          .add("MockHomeWidget", homeBuilder)
+          .add("MockOtherWidget", otherBuilder)
+          .add("FabWidget", mockFab)
           .build(),
       const RedirectPlugin()
     ];
@@ -276,15 +263,16 @@ void main() {
   widget: FabWidget
 ''');
     final builderAClosure = (BuildContext context) => MockHomeWidget();
-    final builderA = WidgetPluginBuilder().add<MockHomeWidget>(builderAClosure);
+    final builderA =
+        WidgetPluginBuilder().add("MockHomeWidget", builderAClosure);
     final builderBClosure = (BuildContext context) => MockOtherWidget();
     final builderB =
-        WidgetPluginBuilder().add<MockOtherWidget>(builderBClosure);
+        WidgetPluginBuilder().add("MockOtherWidget", builderBClosure);
     final plugins = [
       WidgetPluginBuilder()
           .addBuilder(builderA)
           .addBuilder(builderB)
-          .addMethod(mockFab, "FabWidget")
+          .add("FabWidget", mockFab)
           .build(),
       const RedirectPlugin()
     ];

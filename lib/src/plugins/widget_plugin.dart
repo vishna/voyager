@@ -34,19 +34,7 @@ class WidgetPluginBuilder {
   WidgetPlugin build() => WidgetPlugin(_builders);
 
   /// adds a widget mapping to list of widget mappings
-  WidgetPluginBuilder add<T extends Widget>(WidgetBuilder builder,
-      {List<String>? aliases}) {
-    final type = VoyagerUtils.stringTypeOf<T>();
-    if (type == "Widget") {
-      /// method used without specifying T
-      throw ArgumentError(
-          "Use addMethod if you can't provide Widget class as T parameter");
-    }
-    return addMethod(builder, type, aliases: aliases);
-  }
-
-  /// adds a widget mapping to list of widget mappings
-  WidgetPluginBuilder addMethod(WidgetBuilder builder, String type,
+  WidgetPluginBuilder add(String type, WidgetBuilder builder,
       {List<String>? aliases}) {
     assert(!VoyagerUtils.isNullOrBlank(type),
         "Widget type might not be null or blank");

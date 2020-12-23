@@ -58,10 +58,10 @@ List<VoyagerPath> paths() {
 List<VoyagerPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
       WidgetPluginBuilder()
-          .add<PageWidget>((context) => PageWidget())
-          .add<ListWidget>((context) => ListWidget())
-          .add<TalkWidget>((context) => TalkWidget())
-          .addMethod(makeMeFab, "FabWidget")
+          .add("PageWidget", (context) => PageWidget())
+          .add("ListWidget", (context) => ListWidget())
+          .add("TalkWidget", (context) => TalkWidget())
+          .add("FabWidget", makeMeFab)
           .build(),
       IconPlugin()
     ];
@@ -114,10 +114,10 @@ class MyStack extends ChangeNotifier {
 }
 
 void main() {
-  _setupVoyagerObfuscation();
-
-  /// loading router
+  /// initalize router router
   final router = VoyagerRouter.from(paths(), plugins());
+
+  /// run the app
   runApp(ChangeNotifierProvider<MyStack>(
     create: (context) => MyStack(),
     child: Builder(builder: (context) {
@@ -219,7 +219,7 @@ class ListWidget extends StatelessWidget {
   // ignore: avoid_as
   static String _idMapper(dynamic item) => (item as Talk).city;
   static String _objectMapper(dynamic item) =>
-      pathObjectItem(VoyagerUtils.deobfuscate(item.runtimeType.toString()));
+      pathObjectItem(item.runtimeType.toString());
 }
 
 /// object representing conference
@@ -277,14 +277,4 @@ List<Widget>? actions(BuildContext context) {
     ));
   });
   return widgets;
-}
-
-/// web release obfuscates class names, sadly we need to do this
-void _setupVoyagerObfuscation() {
-  VoyagerUtils.addObfuscationMap({
-    PageWidget: "PageWidget",
-    ListWidget: "ListWidget",
-    TalkWidget: "TalkWidget",
-    Talk: "Talk",
-  });
 }

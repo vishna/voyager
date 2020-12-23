@@ -13,6 +13,8 @@ RouteBuilder -> VoyagerBuilder
 RouterPlugin -> VoyagerPlugin
 RouterObjectPlugin -> VoyagerObjectPlugin
 loadPathsFromString -> loadPathsFromYamlString
+
+WidgetBuilder.addMethod -> WidgetBuilder.add
 ```
 
 ## 2.1.2
