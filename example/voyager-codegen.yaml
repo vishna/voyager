@@ -2,7 +2,8 @@
 ## Describes sources and targets for the voyager-codegen tool
 - name: Voyager # base name for generated Voyager extension class, e.g. VoyagerData
   source: lib/main.dart
-  target: lib/gen/voyager_gen.dart
+  target: lib/main.voyager.dart
+  widgetPlugin: true
   definitions:
     icon:
       type: string
@@ -33,7 +34,7 @@
     widget:
       input:
         type: string
-        enum: [PageWidget, FabWidget, ListWidget, "%{className}Widget"]
+        enum: [PageWidget, makeMeFab, ListWidget, TalkWidget]
     body:
       output: String
       input:

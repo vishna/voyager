@@ -1,7 +1,9 @@
-import 'package:example/gen/voyager_gen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
+
+/// voyager generated code
+part 'main.voyager.dart';
 
 /// navigation map, a yaml file, can be provided as a tripple quoted string
 String requirements() {
@@ -23,7 +25,7 @@ String requirements() {
   title: "This is %{title}"
 '/fab' :
   type: fab
-  widget: FabWidget
+  widget: makeMeFab
   target: /other/thing
   icon: e88f # check icons.dart for reference
 '/talks' :
@@ -43,9 +45,9 @@ String requirements() {
     - city: "San Francisco"
       event: Droidcon
       date: November 25-26, 2019
-'/_object/:className':
-  type: object_item
-  widget: "%{className}Widget"
+'/_object/Talk':
+  type: talk_item
+  widget: "TalkWidget"
 ''';
 }
 
@@ -57,12 +59,7 @@ List<VoyagerPath> paths() {
 /// plugins that are mentioned in requirements
 List<VoyagerPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
-      WidgetPluginBuilder()
-          .add("PageWidget", (context) => PageWidget())
-          .add("ListWidget", (context) => ListWidget())
-          .add("TalkWidget", (context) => TalkWidget())
-          .add("FabWidget", makeMeFab)
-          .build(),
+      generatedVoyagerWidgetPlugin(),
       IconPlugin()
     ];
 
@@ -204,9 +201,9 @@ class ListWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final talk = talks[index];
             return VoyagerWidget(
-                key: ValueKey(_idMapper(talk)),
-                path: _objectMapper(talk),
-                argument: VoyagerArgument(talk));
+              path: pathTalkItem,
+              argument: VoyagerArgument(talk),
+            );
           },
         ),
         floatingActionButton: voyager.fabPath != null
@@ -215,11 +212,6 @@ class ListWidget extends StatelessWidget {
               )
             : null);
   }
-
-  // ignore: avoid_as
-  static String _idMapper(dynamic item) => (item as Talk).city;
-  static String _objectMapper(dynamic item) =>
-      pathObjectItem(item.runtimeType.toString());
 }
 
 /// object representing conference

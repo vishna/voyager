@@ -1,7 +1,6 @@
 /// Generated file, DO NOT EDIT
 // ignore_for_file: public_member_api_docs
-import 'package:flutter/widgets.dart';
-import 'package:voyager/voyager.dart';
+part of 'main.dart';
 
 const String pathHome = "/home";
 const String typeHome = "home";
@@ -14,11 +13,8 @@ const String pathFab = "/fab";
 const String typeFab = "fab";
 const String pathTalks = "/talks";
 const String typeTalks = "talks";
-String pathObjectItem(String className) {
-  return "/_object/$className";
-}
-
-const String typeObjectItem = "object_item";
+const String pathTalkItem = "/_object/Talk";
+const String typeTalkItem = "talk_item";
 
 extension VoyagerData on Voyager {
   String? get title => this["title"];
@@ -33,3 +29,19 @@ extension VoyagerData on Voyager {
 abstract class IconPluginStub extends VoyagerObjectPlugin<Icon> {
   IconPluginStub() : super("icon");
 }
+
+final generatedVoyagerWidgetMappings = <String, WidgetBuilder>{
+  "PageWidget": (context) => PageWidget(),
+  "makeMeFab": makeMeFab,
+  "ListWidget": (context) => ListWidget(),
+  "TalkWidget": (context) => TalkWidget()
+};
+
+WidgetPluginBuilder generatedVoyagerWidgetPluginBuilder() {
+  final builder = WidgetPluginBuilder();
+  generatedVoyagerWidgetMappings.forEach(builder.add);
+  return builder;
+}
+
+WidgetPlugin generatedVoyagerWidgetPlugin() =>
+    generatedVoyagerWidgetPluginBuilder().build();
