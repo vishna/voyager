@@ -21,7 +21,7 @@ void main() {
     await tester.pumpWidget(VoyagerStackApp(
         onBackPressed: () {},
         router: router,
-        stack: const VoyagerStack<dynamic>([VoyagerPage("/home")]),
+        stack: const VoyagerStack([VoyagerPage("/home")]),
         createApp: (context, parser, delegate) => MaterialApp.router(
             routeInformationParser: parser, routerDelegate: delegate)));
 
@@ -40,15 +40,14 @@ void main() {
     final router = VoyagerRouter.from(paths, plugins);
 
     await tester.pumpWidget(_FakeApp(
-        router: router,
-        stack: const VoyagerStack<dynamic>([VoyagerPage("/home")])));
+        router: router, stack: const VoyagerStack([VoyagerPage("/home")])));
 
     expect(find.text("Home Page"), findsOneWidget);
 
     final state = tester.state<_FakeAppState>(find.byType(_FakeApp));
 
     state.setState(() {
-      state.stack = const VoyagerStack<dynamic>([VoyagerPage("/other/thing")]);
+      state.stack = const VoyagerStack([VoyagerPage("/other/thing")]);
     });
     await tester.pumpAndSettle();
 
@@ -65,8 +64,7 @@ void main() {
     final router = VoyagerRouter.from(paths, plugins);
 
     await tester.pumpWidget(_FakeApp(
-        router: router,
-        stack: const VoyagerStack<dynamic>([VoyagerPage("/home")])));
+        router: router, stack: const VoyagerStack([VoyagerPage("/home")])));
 
     expect(find.text("Home Page"), findsOneWidget);
 
@@ -142,7 +140,7 @@ void main() {
 
     await tester.pumpWidget(_FakeApp(
         router: router,
-        stack: const VoyagerStack<dynamic>(
+        stack: const VoyagerStack(
             [VoyagerPage("/home"), VoyagerPage("/other/thing")])));
 
     expect(find.text("Other Page"), findsOneWidget);
@@ -184,21 +182,21 @@ void main() {
             routeInformationParser: parser,
           );
         },
-        stack: const VoyagerStack<String>(
+        stack: const VoyagerStack(
           [
-            VoyagerStack<int>(
+            VoyagerStack(
               [
-                VoyagerStack<bool>(
+                VoyagerStack(
                   [
                     VoyagerPage("/home"),
                   ],
-                  scope: VoyagerStackScope(true),
+                  scope: true,
                 )
               ],
-              scope: VoyagerStackScope(42),
+              scope: 42,
             ),
           ],
-          scope: VoyagerStackScope("meaning of life is"),
+          scope: "meaning of life is",
         ),
         onBackPressed: () {}));
 
@@ -235,8 +233,8 @@ void main() {
     final paths = loadPathsFromYamlSync(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
     final router = VoyagerRouter.from(paths, plugins);
-    const stack = VoyagerStack<dynamic>(
-        [VoyagerPage("/home"), VoyagerPage("/other/thing")]);
+    const stack =
+        VoyagerStack([VoyagerPage("/home"), VoyagerPage("/other/thing")]);
 
     await tester.pumpWidget(VoyagerStackApp(
         router: router,
@@ -284,10 +282,18 @@ void main() {
     final paths = loadPathsFromYamlSync(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
     final router = VoyagerRouter.from(paths, plugins);
-    final delegate = VoyagerDelegate(router, initialStackPages: const [
-      VoyagerPage("/home"),
-      VoyagerPage("/other/thing")
-    ]);
+    final delegate = VoyagerDelegate(
+      router,
+      initialStack: const VoyagerStack(
+        [
+          VoyagerPage("/home"),
+          VoyagerPage("/other/thing"),
+        ],
+      ),
+      onInitialPage: (page) {
+        // ignore
+      },
+    );
 
     await tester.pumpWidget(
       MaterialApp.router(
@@ -335,12 +341,13 @@ void main() {
     final paths = loadPathsFromYamlSync(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
     final router = VoyagerRouter.from(paths, plugins);
-    final delegate = VoyagerDelegate(router,
-        initialStackPages: const [
-          VoyagerPage("/home"),
-          VoyagerPage("/other/thing")
-        ],
-        ignoreInitialPath: false);
+    final delegate = VoyagerDelegate(
+      router,
+      initialStack: const VoyagerStack([
+        VoyagerPage("/home"),
+        VoyagerPage("/other/thing"),
+      ]),
+    );
 
     await tester.pumpWidget(
       MaterialApp.router(
@@ -381,12 +388,11 @@ void main() {
     final paths = loadPathsFromYamlSync(navigation_yml);
     final plugins = [WidgetPlugin(widgetMappings)];
     final router = VoyagerRouter.from(paths, plugins);
-    const stack = VoyagerStack<dynamic>(
-        [VoyagerPage("/home"), VoyagerPage("/other/thing")]);
+    const stack =
+        VoyagerStack([VoyagerPage("/home"), VoyagerPage("/other/thing")]);
 
     await tester.pumpWidget(VoyagerStackApp(
       router: router,
-      ignoreInitialPath: false,
       onNewPage: (page) {
         wasNewPageCalled = true;
       },
@@ -420,6 +426,7 @@ class _FakeAppState extends State<_FakeApp> {
     return VoyagerStackApp(
         onBackPressed: () {},
         onNewPage: (page) {},
+        onInitialPage: (page) {},
         router: router ?? widget.router,
         stack: stack ?? widget.stack,
         routeType: routeType ?? VoyagerRouteType.material,

@@ -1,8 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
+
+// ignore_for_file: avoid_as
 
 /// wrap [VoyagerWidget] with a [Page]
 typedef VoyagerPageBuilder = Page<dynamic> Function(
@@ -19,7 +22,7 @@ class VoyagerStackApp extends StatefulWidget {
     required this.stack,
     required this.onBackPressed,
     this.onNewPage,
-    this.ignoreInitialPath = true,
+    this.onInitialPage,
     this.routeType = VoyagerRouteType.material,
   }) : super(key: key);
 
@@ -32,14 +35,14 @@ class VoyagerStackApp extends StatefulWidget {
   /// handle back event
   final VoidCallback onBackPressed;
 
-  /// triggered when new page event happens on system level (e.g. initial path)
-  final void Function(VoyagerPage page)? onNewPage;
+  /// triggered when new page event happens on system level
+  final void Function(VoyagerStackItem page)? onNewPage;
+
+  /// triggered when initial page event happens on system level
+  final void Function(VoyagerStackItem page)? onInitialPage;
 
   /// route type (material or cupertino)
   final VoyagerRouteType routeType;
-
-  /// initial path
-  final bool ignoreInitialPath;
 
   /// pass [parser] and [delegate] to [MaterialApp.router] or [CupertinoApp.router]
   final Widget Function(
@@ -64,7 +67,7 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
       onBackPressed: widget.onBackPressed,
       onNewPage: widget.onNewPage,
       routeType: widget.routeType,
-      ignoreInitialPath: widget.ignoreInitialPath,
+      onInitialPage: widget.onInitialPage,
     );
     delegate.stack = widget.stack;
     parser = const VoyagerInformationParser();
@@ -87,6 +90,9 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
     if (oldWidget.onNewPage != widget.onNewPage) {
       delegate.onNewPage = widget.onNewPage;
     }
+    if (oldWidget.onInitialPage != widget.onInitialPage) {
+      delegate.onInitialPage = widget.onInitialPage;
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -103,26 +109,34 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
 
 /// Voyager's implementation of navigation parser. Essentially translates
 /// [RouteInformation] to/from [VoyagerPage]
-class VoyagerInformationParser extends RouteInformationParser<VoyagerPage> {
+class VoyagerInformationParser
+    extends RouteInformationParser<VoyagerStackItem> {
   /// default constructor
   const VoyagerInformationParser();
-  //final VoyagerRouter _router;
 
   @override
-  Future<VoyagerPage> parseRouteInformation(
+  Future<VoyagerStackItem> parseRouteInformation(
       RouteInformation routeInformation) async {
+    if (routeInformation.state != null) {
+      return VoyagerAdapter.fromJson(
+          routeInformation.state as Map<String, dynamic>);
+    }
     return VoyagerPage(routeInformation.location!);
   }
 
   @override
-  RouteInformation restoreRouteInformation(VoyagerPage configuration) {
-    return RouteInformation(location: configuration.path);
+  RouteInformation restoreRouteInformation(VoyagerStackItem configuration) {
+    final paths = configuration.toPathList();
+
+    return RouteInformation(
+        location: paths.isNotEmpty ? paths.last : null,
+        state: VoyagerAdapter.toJson(configuration));
   }
 }
 
 /// an outcome of parsing [RouteInformation]
 @immutable
-class VoyagerPage implements VoyagerStackItem {
+class VoyagerPage extends Equatable implements VoyagerStackItem {
   /// default constructor
   const VoyagerPage(this.path, {this.argument});
 
@@ -133,7 +147,19 @@ class VoyagerPage implements VoyagerStackItem {
   final VoyagerArgument? argument;
 
   @override
-  List<Page> toList(VoyagerRouter router, VoyagerPageBuilder pageBuilder) {
+  List<Page> toList(VoyagerRouter router, VoyagerPageBuilder pageBuilder,
+      {List<Object>? scopes}) {
+    var innerPageBuilder = pageBuilder;
+    if (scopes != null && scopes.isNotEmpty) {
+      innerPageBuilder = (widget, key) {
+        final widgetWithScope = Provider<VoyagerScope>.value(
+          value: VoyagerScope(scopes),
+          child: widget,
+        );
+        return pageBuilder(widgetWithScope, key);
+      };
+    }
+
     final widget = VoyagerWidget(
       path: path,
       router: router,
@@ -142,27 +168,48 @@ class VoyagerPage implements VoyagerStackItem {
 
     final key = ValueKey(path);
 
-    return [pageBuilder(widget, key)];
+    return [innerPageBuilder(widget, key)];
   }
 
   @override
   List<String> toPathList() => [path];
+
+  /// [VoyagerPage] serialization adapter
+  static final adapter = VoyagerAdapter<VoyagerPage>(serialize: (dynamic page) {
+    return <String, dynamic>{
+      "path": page.path,
+      "argument": VoyagerAdapter.toJson(page.argument?.value)
+    };
+  }, deserialize: (json) {
+    final String path = json["path"];
+    final dynamic? argumentValue =
+        VoyagerAdapter.fromJson(json["argument"] as Map<String, dynamic>?);
+    return VoyagerPage(path,
+        argument:
+            argumentValue != null ? VoyagerArgument(argumentValue) : null);
+  });
+
+  @override
+  List<Object?> get props => [path, argument?.value];
+
+  @override
+  bool? get stringify => true;
 }
 
 /// Voyager delegate for the Navigator 2.0 [Router]
-class VoyagerDelegate extends RouterDelegate<VoyagerPage>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<VoyagerPage> {
+class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<VoyagerStackItem> {
   /// default constructor
   VoyagerDelegate(this._voyagerRouter,
-      {List<VoyagerPage>? initialStackPages,
+      {VoyagerStack? initialStack,
       this.onBackPressed,
       this.onNewPage,
-      this.ignoreInitialPath = true,
+      this.onInitialPage,
       VoyagerRouteType routeType = VoyagerRouteType.material,
       GlobalKey<NavigatorState>? navigatorKey})
       : navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>(),
         _routeType = routeType,
-        _stack = VoyagerStack<dynamic>(initialStackPages ?? []);
+        _stack = initialStack ?? const VoyagerStack([]);
 
   /// global navigator key used by this delegate
   @override
@@ -175,19 +222,23 @@ class VoyagerDelegate extends RouterDelegate<VoyagerPage>
   VoidCallback? onBackPressed;
 
   /// pass this to intecept [setNewRoutePath]
-  void Function(VoyagerPage page)? onNewPage;
+  void Function(VoyagerStackItem page)? onNewPage;
+
+  /// pass this to intecept [setInitialRoutePath]
+  /// Kind of WORKAROUND for initialPath
+  /// https://github.com/flutter/flutter/issues/71106
+  void Function(VoyagerStackItem page)? onInitialPage;
 
   VoyagerStack _stack;
 
   /// returns an immutable instance of current navigation stack
   VoyagerStack get stack => _stack;
 
-  /// WORKAROUND for initialPath
-  /// https://github.com/flutter/flutter/issues/71106
-  final bool ignoreInitialPath;
-
   /// sets new navigation stack for this delegate
   set stack(VoyagerStack value) {
+    if (value == _stack) {
+      return;
+    }
     _stack = value;
     notifyListeners();
   }
@@ -234,14 +285,16 @@ class VoyagerDelegate extends RouterDelegate<VoyagerPage>
   }
 
   @override
-  Future<void> setInitialRoutePath(VoyagerPage configuration) async {
-    if (!ignoreInitialPath) {
-      await super.setInitialRoutePath(configuration);
+  Future<void> setInitialRoutePath(VoyagerStackItem configuration) async {
+    if (onInitialPage != null) {
+      onInitialPage!(configuration);
+      return;
     }
+    await super.setInitialRoutePath(configuration);
   }
 
   @override
-  Future<void> setNewRoutePath(VoyagerPage configuration) async {
+  Future<void> setNewRoutePath(VoyagerStackItem configuration) async {
     if (onNewPage != null) {
       onNewPage!(configuration);
       return;
@@ -250,6 +303,9 @@ class VoyagerDelegate extends RouterDelegate<VoyagerPage>
       stackInfo.add(configuration);
     });
   }
+
+  @override
+  VoyagerStackItem? get currentConfiguration => _stack;
 }
 
 Page<dynamic> _defaultMaterial(Widget widget, ValueKey key) {
@@ -270,7 +326,8 @@ Page<dynamic> _defaultCupertino(Widget widget, ValueKey key) {
 abstract class VoyagerStackItem {
   /// converts the state to a list that can be used by e.g. [Navigator]
   List<Page<dynamic>> toList(
-      VoyagerRouter router, VoyagerPageBuilder pageBuilder);
+      VoyagerRouter router, VoyagerPageBuilder pageBuilder,
+      {List<Object>? scopes});
 
   /// converts the stack to a list of paths
   List<String> toPathList();
@@ -278,18 +335,17 @@ abstract class VoyagerStackItem {
 
 /// respresents the state of navigation
 @immutable
-class VoyagerStack<T> implements VoyagerStackItem {
+class VoyagerStack extends Equatable implements VoyagerStackItem {
   /// default constructor
-  const VoyagerStack(this._items, {VoyagerStackScope<T>? scope})
-      : _scope = scope;
+  const VoyagerStack(this._items, {Object? scope}) : _scope = scope;
   final List<VoyagerStackItem> _items;
-  final VoyagerStackScope<T>? _scope;
+  final Object? _scope;
 
   /// creates a new copy of [VoyagerStack] with applied [mutation]
-  VoyagerStack<T> mutate(void Function(List<VoyagerStackItem> items) mutation) {
+  VoyagerStack mutate(void Function(List<VoyagerStackItem> items) mutation) {
     final _newItems = List<VoyagerStackItem>.from(_items);
     mutation(_newItems);
-    return VoyagerStack<T>(_newItems, scope: _scope);
+    return VoyagerStack(_newItems, scope: _scope);
   }
 
   /// whether or not this stack is empty
@@ -297,14 +353,15 @@ class VoyagerStack<T> implements VoyagerStackItem {
 
   /// should be called whenever this stack is removed
   void onRemove() {
-    if (_scope != null && _scope!.onRemove != null) {
-      _scope!.onRemove!(_scope!.value);
+    final s = _scope;
+    if (s is VoyagerScopeRemovable) {
+      s.onScopeRemoved();
     }
   }
 
   /// removes last item of the stack and if it's an instance of [VoyagerStack]
   /// calls a [VoyagerStackScope.onRemove] if it's registered
-  VoyagerStack<T> removeLast() {
+  VoyagerStack removeLast() {
     if (_items.isEmpty) {
       return this;
     }
@@ -329,20 +386,15 @@ class VoyagerStack<T> implements VoyagerStackItem {
   /// converts the state to a list that can be used by e.g. [Navigator]
   @override
   List<Page<dynamic>> toList(
-      VoyagerRouter router, VoyagerPageBuilder pageBuilder) {
+      VoyagerRouter router, VoyagerPageBuilder pageBuilder,
+      {List<Object>? scopes}) {
     final pages = <Page<dynamic>>[];
-    var innerPageBuilder = pageBuilder;
     if (_scope != null) {
-      innerPageBuilder = (widget, key) {
-        final widgetWithScope = Provider<VoyagerStackScope<T>>.value(
-          value: _scope!,
-          child: widget,
-        );
-        return pageBuilder(widgetWithScope, key);
-      };
+      scopes = List<Object>.from(scopes ?? <Object>[]);
+      scopes.add(_scope!);
     }
     for (final item in _items) {
-      pages.addAll(item.toList(router, innerPageBuilder));
+      pages.addAll(item.toList(router, pageBuilder, scopes: scopes));
     }
     return pages;
   }
@@ -355,23 +407,52 @@ class VoyagerStack<T> implements VoyagerStackItem {
     }
     return paths;
   }
+
+  /// [VoyagerStack] serialization adapter
+  static final adapter =
+      VoyagerAdapter<VoyagerStack>(serialize: (dynamic stack) {
+    return <String, dynamic>{
+      "items":
+          stack._items.map((dynamic it) => VoyagerAdapter.toJson(it)).toList(),
+      "scope": VoyagerAdapter.toJson(stack._scope)
+    };
+  }, deserialize: (json) {
+    final dynamic? scope =
+        VoyagerAdapter.fromJson(json["scope"] as Map<String, dynamic>?);
+    final itemsJson = json['items'] as List<dynamic>;
+    final items = itemsJson
+        .map<dynamic>((dynamic it) => VoyagerAdapter.fromJson(it))
+        .toList()
+        .cast<VoyagerStackItem>();
+    return VoyagerStack(items, scope: scope);
+  });
+
+  @override
+  List<Object?> get props => [_items, _scope];
+
+  @override
+  bool? get stringify => true;
 }
 
 /// a [VoyagerStack] can expose a scope to all its items
-class VoyagerStackScope<T> {
+class VoyagerScope {
   /// default constructor
-  const VoyagerStackScope(this.value, {this.onRemove});
+  const VoyagerScope(this.values);
 
   /// scope value
-  final T value;
-
-  /// callback for when value is removed from stack
-  final void Function(T value)? onRemove;
+  final List<dynamic> values;
 }
 
-/// VoyagerDelegate extension on build context
+/// [VoyagerStack] extension on build context
 extension VoyagerStackScopeContextExtension on BuildContext {
   /// obtain a [T] value via [VoyagerStackScope] provided in the given [BuildContext]
-  T voyagerScope<T>() =>
-      Provider.of<VoyagerStackScope<T>>(this, listen: false).value;
+  T voyagerScope<T>() => Provider.of<VoyagerScope>(this, listen: false)
+      .values
+      .firstWhere((dynamic it) => it is T);
+}
+
+/// use this interface to free up scope if necessary
+abstract class VoyagerScopeRemovable {
+  /// on scope removed callback
+  void onScopeRemoved();
 }
