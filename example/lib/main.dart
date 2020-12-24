@@ -79,11 +79,12 @@ class IconPlugin extends IconPluginStub {
 /// a model class that exposes [VoyagerStack] instance to entire widget tree using [Provider]
 class MyStack extends ChangeNotifier {
   /// default constructor
-  MyStack(
-      {VoyagerStack value = const VoyagerStack<dynamic>([
-        VoyagerPage(pathHome),
-      ])})
-      : _value = value;
+  MyStack({VoyagerStack value = initialValue}) : _value = value;
+
+  /// initial value
+  static const initialValue = VoyagerStack([
+    VoyagerPage(pathHome),
+  ]);
 
   VoyagerStack _value;
 
@@ -125,8 +126,31 @@ void main() {
         onBackPressed: () {
           stack.pop();
         },
+        onInitialPage: (page) {
+          if (page is VoyagerPage) {
+            // if initial page is '/' we'll just use default initial stack state
+            if (page.path == '/' || page.path == pathHome) {
+              // sidenote: we don't have mapping to '/' in navigation_map
+              stack.value = MyStack.initialValue;
+            } else {
+              // if initial page is something else, we'll add the page on top of the initial stack
+              stack.value = MyStack.initialValue.mutate((items) {
+                items.add(page);
+              });
+            }
+          }
+        },
+        onNewPage: (page) {
+          if (page is VoyagerStack) {
+            // stack overwrite - this happens if e.g. you're going back
+            stack.value = page;
+          } else if (page is VoyagerPage) {
+            // this happens by some other system event, e.g. you don't handle onInitialPage
+            stack.add(page);
+          }
+        },
         createApp: (context, parser, delegate) => MaterialApp.router(
-          title: "Voyager Demo",
+          title: "Voyager Demo -> ${stack.value.toPathList().last}",
           routeInformationParser: parser,
           routerDelegate: delegate,
           theme: themeData(),

@@ -3,37 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:voyager/voyager.dart';
 
 void main() {
-  test('VoyagerStack type check', () {
-    const a = VoyagerStack<dynamic>([]);
-    const b = VoyagerStack<int>([]);
-    const c = VoyagerStack<String>([]);
-
-    expect(a is VoyagerStack, true);
-    expect(b is VoyagerStack, true);
-    expect(c is VoyagerStack, true);
-
-    expect(a is VoyagerStack<dynamic>, true);
-    expect(b is VoyagerStack<dynamic>, true);
-    expect(c is VoyagerStack<dynamic>, true);
-
-    expect(a is VoyagerStack<String>, false);
-    expect(b is VoyagerStack<String>, false);
-    expect(c is VoyagerStack<String>, true);
-
-    expect(a is VoyagerStack<int>, false);
-    expect(b is VoyagerStack<int>, true);
-    expect(c is VoyagerStack<int>, false);
-  });
-
   test('VoyagerStack.toPathList()', () {
-    const stack1 = VoyagerStack<dynamic>([
+    const stack1 = VoyagerStack([
       VoyagerPage("/home"),
       VoyagerPage("/settings"),
-      VoyagerStack<int>(
+      VoyagerStack(
         [
           VoyagerPage("/omg"),
           VoyagerPage("/counter"),
-          VoyagerStack<String>(
+          VoyagerStack(
             [
               VoyagerPage("/words"),
               VoyagerPage("/matter"),
@@ -57,25 +35,24 @@ void main() {
 
   test('VoyagerStack.removeLast', () {
     var stringCallbackCalled = false;
-    final stringCallback = (String value) {
-      expect(value, "boo");
+    final stringCallback = () {
       stringCallbackCalled = true;
     };
-    final stack1 = VoyagerStack<dynamic>([
+    final stack1 = VoyagerStack([
       const VoyagerPage("/home"),
       const VoyagerPage("/settings"),
-      VoyagerStack<int>(
+      VoyagerStack(
         [
           const VoyagerPage("/omg"),
           const VoyagerPage("/counter"),
-          VoyagerStack<String>(
+          VoyagerStack(
             const [
               VoyagerPage("/words"),
               VoyagerPage("/matter"),
             ],
-            scope: VoyagerStackScope(
+            scope: _MockString(
               "boo",
-              onRemove: stringCallback,
+              stringCallback,
             ),
           ),
         ],
@@ -142,6 +119,83 @@ void main() {
     final inputReparsed = parser.restoreRouteInformation(voyagerPage);
 
     expect(input.location, inputReparsed.location);
-    expect(input.state, inputReparsed.state);
+    expect(VoyagerAdapter.toJson(voyagerPage), inputReparsed.state);
   });
+
+  test('VoyagerStack serialization', () {
+    const stack1 = VoyagerStack(
+      [
+        VoyagerPage("/home", argument: VoyagerArgument("true")),
+        VoyagerPage("/settings"),
+        VoyagerStack([
+          VoyagerPage("/omg"),
+          VoyagerPage("/counter"),
+          VoyagerStack(
+            [
+              VoyagerPage("/words"),
+              VoyagerPage("/matter"),
+            ],
+          ),
+        ], scope: "What is up?"),
+        VoyagerPage("/that/last/thing"),
+      ],
+      scope: 13,
+    );
+
+    final VoyagerStack stack1DeepCopy =
+        VoyagerAdapter.fromJson(VoyagerAdapter.toJson(stack1));
+
+    expect(stack1, stack1DeepCopy);
+  });
+
+  test('VoyagerStack deserialization via VoyagerInformationParser', () async {
+    const stack1 = VoyagerStack(
+      [
+        VoyagerPage("/home", argument: VoyagerArgument("true")),
+        VoyagerPage("/settings"),
+        VoyagerStack([
+          VoyagerPage("/omg"),
+          VoyagerPage("/counter"),
+          VoyagerStack(
+            [
+              VoyagerPage("/words"),
+              VoyagerPage("/matter"),
+            ],
+          ),
+        ], scope: "What is up?"),
+        VoyagerPage("/that/last/thing"),
+      ],
+      scope: 13,
+    );
+
+    final stack1Serialized = VoyagerAdapter.toJson(stack1);
+
+    const parser = VoyagerInformationParser();
+    final stack2Parsed = await parser.parseRouteInformation(
+        RouteInformation(location: "/", state: stack1Serialized));
+
+    expect(stack1, stack2Parsed);
+  });
+
+  test('VoyagerStack.toString', () {
+    const stack = VoyagerStack(
+      [
+        VoyagerPage("/lucky", argument: VoyagerArgument("number")),
+      ],
+      scope: 13,
+    );
+
+    expect(stack.toString(), "VoyagerStack([VoyagerPage(/lucky, number)], 13)");
+  });
+}
+
+class _MockString implements VoyagerScopeRemovable {
+  _MockString(this.value, this.onRemove);
+  final String value;
+  final VoidCallback onRemove;
+
+  @override
+  void onScopeRemoved() {
+    onRemove.call();
+  }
 }

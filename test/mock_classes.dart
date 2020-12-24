@@ -90,8 +90,8 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
-              .pushNamed("/other/thing", arguments: VoyagerArgument("hello"));
+          Navigator.of(context).pushNamed("/other/thing",
+              arguments: const VoyagerArgument("hello"));
         },
         tooltip: 'Navigate',
         child: const Icon(Icons.add),
