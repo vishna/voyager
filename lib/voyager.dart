@@ -13,4 +13,5 @@ export 'src/voyager_path.dart';
 export 'src/voyager_plugin.dart';
 export 'src/voyager_router.dart';
 export 'src/voyager_stack.dart';
+export 'src/voyager_stack_app.dart';
 export 'src/voyager_widget.dart';

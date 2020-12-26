@@ -11,140 +11,20 @@ import 'package:voyager/voyager.dart';
 typedef VoyagerPageBuilder = Page<dynamic> Function(
     Widget widget, ValueKey key);
 
-/// Provides declarative API on top of Navigator 2.0
-/// and Voyager library
-class VoyagerStackApp extends StatefulWidget {
-  /// default constructor
-  const VoyagerStackApp({
-    Key? key,
-    required this.router,
-    required this.createApp,
-    required this.stack,
-    required this.onBackPressed,
-    this.onNewPage,
-    this.onInitialPage,
-    this.routeType = VoyagerRouteType.material,
-  }) : super(key: key);
-
-  /// router instance
-  final VoyagerRouter router;
-
-  /// declarative stack
-  final VoyagerStack stack;
-
-  /// handle back event
-  final VoidCallback onBackPressed;
-
-  /// triggered when new page event happens on system level
-  final void Function(VoyagerStackItem page)? onNewPage;
-
-  /// triggered when initial page event happens on system level
-  final void Function(VoyagerStackItem page)? onInitialPage;
-
-  /// route type (material or cupertino)
-  final VoyagerRouteType routeType;
-
-  /// pass [parser] and [delegate] to [MaterialApp.router] or [CupertinoApp.router]
-  final Widget Function(
-    BuildContext context,
-    VoyagerInformationParser parser,
-    VoyagerDelegate delegate,
-  ) createApp;
-
-  @override
-  _VoyagerStackAppState createState() => _VoyagerStackAppState();
-}
-
-class _VoyagerStackAppState extends State<VoyagerStackApp> {
-  late VoyagerDelegate delegate;
-  late VoyagerInformationParser parser;
-
-  @override
-  void initState() {
-    super.initState();
-    delegate = VoyagerDelegate(
-      widget.router,
-      onBackPressed: widget.onBackPressed,
-      onNewPage: widget.onNewPage,
-      routeType: widget.routeType,
-      onInitialPage: widget.onInitialPage,
-    );
-    delegate.stack = widget.stack;
-    parser = const VoyagerInformationParser();
-  }
-
-  @override
-  void didUpdateWidget(VoyagerStackApp oldWidget) {
-    if (oldWidget.stack != widget.stack) {
-      delegate.stack = widget.stack;
-    }
-    if (oldWidget.onBackPressed != widget.onBackPressed) {
-      delegate.onBackPressed = widget.onBackPressed;
-    }
-    if (oldWidget.router != widget.router) {
-      delegate.router = widget.router;
-    }
-    if (oldWidget.routeType != widget.routeType) {
-      delegate.routeType = widget.routeType;
-    }
-    if (oldWidget.onNewPage != widget.onNewPage) {
-      delegate.onNewPage = widget.onNewPage;
-    }
-    if (oldWidget.onInitialPage != widget.onInitialPage) {
-      delegate.onInitialPage = widget.onInitialPage;
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Provider<VoyagerRouter>.value(
-      value: widget.router,
-      child: Builder(builder: (context) {
-        return widget.createApp(context, parser, delegate);
-      }),
-    );
-  }
-}
-
-/// Voyager's implementation of navigation parser. Essentially translates
-/// [RouteInformation] to/from [VoyagerPage]
-class VoyagerInformationParser
-    extends RouteInformationParser<VoyagerStackItem> {
-  /// default constructor
-  const VoyagerInformationParser();
-
-  @override
-  Future<VoyagerStackItem> parseRouteInformation(
-      RouteInformation routeInformation) async {
-    if (routeInformation.state != null) {
-      return VoyagerAdapter.fromJson(
-          routeInformation.state as Map<String, dynamic>);
-    }
-    return VoyagerPage(routeInformation.location!);
-  }
-
-  @override
-  RouteInformation restoreRouteInformation(VoyagerStackItem configuration) {
-    final paths = configuration.toPathList();
-
-    return RouteInformation(
-        location: paths.isNotEmpty ? paths.last : null,
-        state: VoyagerAdapter.toJson(configuration));
-  }
-}
-
 /// an outcome of parsing [RouteInformation]
 @immutable
 class VoyagerPage extends Equatable implements VoyagerStackItem {
   /// default constructor
-  const VoyagerPage(this.path, {this.argument});
+  const VoyagerPage(this.path, {this.argument, this.id = ""});
 
   /// path representing this page
   final String path;
 
   /// page argument
   final VoyagerArgument? argument;
+
+  /// extra id (e.g. if you want to have duplicate entries on the stack)
+  final String id;
 
   @override
   List<Page> toList(VoyagerRouter router, VoyagerPageBuilder pageBuilder,
@@ -166,7 +46,7 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
       argument: argument,
     );
 
-    final key = ValueKey(path);
+    final key = ValueKey("$id#$path");
 
     return [innerPageBuilder(widget, key)];
   }
@@ -178,13 +58,16 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
   static final adapter = VoyagerAdapter<VoyagerPage>(serialize: (dynamic page) {
     return <String, dynamic>{
       "path": page.path,
-      "argument": VoyagerAdapter.toJson(page.argument?.value)
+      "argument": VoyagerAdapter.toJson(page.argument?.value),
+      "id": page.id,
     };
   }, deserialize: (json) {
     final String path = json["path"];
+    final String id = json["id"];
     final dynamic? argumentValue =
         VoyagerAdapter.fromJson(json["argument"] as Map<String, dynamic>?);
     return VoyagerPage(path,
+        id: id,
         argument:
             argumentValue != null ? VoyagerArgument(argumentValue) : null);
   });
@@ -280,6 +163,21 @@ class VoyagerStack extends Equatable implements VoyagerStackItem {
       paths.addAll(item.toPathList());
     }
     return paths;
+  }
+
+  /// check if this stack contains the given page
+  /// (match by [VoyagerPage.path] and [VoyagerPage.id])
+  bool contains(VoyagerPage page) {
+    for (final item in _items) {
+      if (item is VoyagerStack && item.contains(page)) {
+        return true;
+      } else if (item is VoyagerPage &&
+          page.id == item.id &&
+          page.path == item.path) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// [VoyagerStack] serialization adapter
