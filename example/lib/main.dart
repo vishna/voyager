@@ -48,6 +48,11 @@ String requirements() {
 '/_object/Talk':
   type: talk_item
   widget: "TalkWidget"
+'/:notfound:':
+  type: not_found
+  title: "Not Found"
+  widget: "PageWidget"
+  body: "Path /%{notfound} not found. Sorry!"
 ''';
 }
 
