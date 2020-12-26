@@ -128,3 +128,31 @@ Page<dynamic> _defaultCupertino(Widget widget, ValueKey key) {
     child: widget,
   );
 }
+
+/// Voyager's implementation of navigation parser. Essentially translates
+/// [RouteInformation] to/from [VoyagerPage]
+class VoyagerInformationParser
+    extends RouteInformationParser<VoyagerStackItem> {
+  /// default constructor
+  const VoyagerInformationParser();
+
+  @override
+  Future<VoyagerStackItem> parseRouteInformation(
+      RouteInformation routeInformation) async {
+    if (routeInformation.state != null) {
+      return VoyagerAdapter.fromJson(
+          // ignore: avoid_as
+          routeInformation.state as Map<String, dynamic>);
+    }
+    return VoyagerPage(routeInformation.location!);
+  }
+
+  @override
+  RouteInformation restoreRouteInformation(VoyagerStackItem configuration) {
+    final paths = configuration.toPathList();
+
+    return RouteInformation(
+        location: paths.isNotEmpty ? paths.last : null,
+        state: VoyagerAdapter.toJson(configuration));
+  }
+}

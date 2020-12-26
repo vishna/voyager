@@ -104,6 +104,11 @@ class MyStack extends ChangeNotifier {
 
   /// add a new page on top
   void add(VoyagerPage information) {
+    if (value.contains(information)) {
+      // in case page is already present in the stack, we need to give it unique id
+      information = VoyagerPage(information.path, id: information.id + "_");
+      return;
+    }
     final newValue = value.mutate((items) {
       items.add(information);
     });

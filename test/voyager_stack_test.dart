@@ -187,6 +187,32 @@ void main() {
 
     expect(stack.toString(), "VoyagerStack([VoyagerPage(/lucky, number)], 13)");
   });
+
+  test('VoyagerStack.contains', () {
+    const stack = VoyagerStack([
+      VoyagerPage("/home"),
+      VoyagerPage("/settings"),
+      VoyagerStack(
+        [
+          VoyagerPage("/omg"),
+          VoyagerPage("/counter"),
+          VoyagerStack(
+            [
+              VoyagerPage("/words"),
+              VoyagerPage("/matter"),
+            ],
+          )
+        ],
+      ),
+      VoyagerPage("/that/last/thing"),
+    ]);
+
+    expect(stack.contains(const VoyagerPage("/home")), true);
+    expect(stack.contains(const VoyagerPage("/home", id: "")), true);
+    expect(stack.contains(const VoyagerPage("/home", id: "boo")), false);
+    expect(stack.contains(const VoyagerPage("/matter")), true);
+    expect(stack.contains(const VoyagerPage("/matters")), false);
+  });
 }
 
 class _MockString implements VoyagerScopeRemovable {
