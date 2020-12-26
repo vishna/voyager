@@ -8,6 +8,7 @@ export 'src/voyager.dart';
 export 'src/voyager_adapter.dart';
 export 'src/voyager_argument.dart';
 export 'src/voyager_context.dart';
+export 'src/voyager_delegate.dart';
 export 'src/voyager_path.dart';
 export 'src/voyager_plugin.dart';
 export 'src/voyager_router.dart';
