@@ -15,6 +15,11 @@ const String pathTalks = "/talks";
 const String typeTalks = "talks";
 const String pathTalkItem = "/_object/Talk";
 const String typeTalkItem = "talk_item";
+String pathNotFound(String notfound) {
+  return "/$notfound";
+}
+
+const String typeNotFound = "not_found";
 
 extension VoyagerData on Voyager {
   String? get title => this["title"];
