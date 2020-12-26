@@ -15,6 +15,8 @@ const String pathTalks = "/talks";
 const String typeTalks = "talks";
 const String pathTalkItem = "/_object/Talk";
 const String typeTalkItem = "talk_item";
+const String path = "/stay/safe";
+const String type = "";
 String pathNotFound(String notfound) {
   return "/$notfound";
 }

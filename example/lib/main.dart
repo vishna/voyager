@@ -48,6 +48,8 @@ String requirements() {
 '/_object/Talk':
   type: talk_item
   widget: "TalkWidget"
+'/stay/safe':
+  redirect: '/home'
 '/:notfound:':
   type: not_found
   title: "Not Found"
@@ -65,6 +67,7 @@ List<VoyagerPath> paths() {
 List<VoyagerPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
       generatedVoyagerWidgetPlugin(),
+      const RedirectPlugin(),
       IconPlugin()
     ];
 
