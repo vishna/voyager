@@ -31,10 +31,6 @@
       output: String
       input:
         type: string
-    widget:
-      input:
-        type: string
-        enum: [PageWidget, makeMeFab, ListWidget, TalkWidget]
     body:
       output: String
       input:
