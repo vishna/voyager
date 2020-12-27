@@ -1,8 +1,11 @@
 ## 3.0.0-nullsafety
 
-### BREAKING CHANGE
+### MAJOR UPDATE (a.k.a. BREAKING CHANGE)
 
 - migration to null-safety
+- support for Navigator 2.0 API
+- code generation for WidgetPlugin/PagePlugin
+- remove code generation for tests
 - all Voyager classes are now prefixed with `Voyager`. This is due to introduction of Router in Navigator 2.0 API
 
 ```
@@ -15,6 +18,7 @@ RouterObjectPlugin -> VoyagerObjectPlugin
 loadPathsFromString -> loadPathsFromYamlString
 
 WidgetBuilder.addMethod -> WidgetBuilder.add
+Voyager.store is gone
 ```
 
 ## 2.1.2

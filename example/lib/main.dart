@@ -74,11 +74,6 @@ List<VoyagerPlugin> plugins() => [
       IconPlugin(),
     ];
 
-/// sliding transition
-Page<dynamic> slideFromTop(Widget widget, VoyagerPage page) {
-  return SlideFromTopPage(widget, page);
-}
-
 /// icon plugin
 class IconPlugin extends IconPluginStub {
   @override
