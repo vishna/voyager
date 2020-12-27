@@ -69,11 +69,10 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
-      pages: _stack.toList(
-          _voyagerRouter,
-          _routeType == VoyagerRouteType.material
-              ? _defaultMaterial
-              : _defaultCupertino),
+      pages: _stack.asPages(_voyagerRouter,
+          defaultPageBuilder: _routeType == VoyagerRouteType.material
+              ? PagePlugin.defaultMaterial
+              : PagePlugin.defaultCupertino),
       onPopPage: (route, dynamic result) {
         if (!route.didPop(result)) {
           return false;
@@ -113,20 +112,6 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
 
   @override
   VoyagerStackItem? get currentConfiguration => _stack;
-}
-
-Page<dynamic> _defaultMaterial(Widget widget, ValueKey key) {
-  return MaterialPage<dynamic>(
-    key: key,
-    child: widget,
-  );
-}
-
-Page<dynamic> _defaultCupertino(Widget widget, ValueKey key) {
-  return CupertinoPage<dynamic>(
-    key: key,
-    child: widget,
-  );
 }
 
 /// Voyager's implementation of navigation parser. Essentially translates

@@ -4,6 +4,7 @@
   source: lib/main.dart
   target: lib/main.voyager.dart
   widgetPlugin: true
+  pagePlugin: true
   definitions:
     icon:
       type: string

@@ -305,6 +305,38 @@ void main() {
     voyager.dispose();
     expect(mock.disposed, true);
   });
+
+  test("page plugin API", () {
+    final pagePluginBuilder = PagePluginBuilder()
+        .add("foo", PagePlugin.defaultCupertino)
+        .add("bar", PagePlugin.defaultMaterial);
+    final pagePlugin =
+        PagePluginBuilder().addBuilder(pagePluginBuilder).build();
+
+    final output = Voyager(config: <String, dynamic>{}, path: "/mock/path");
+    final context =
+        VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
+    const config = "foo";
+    expect(output[PagePlugin.KEY], null);
+    pagePlugin.outputFor(context, config, output);
+    expect(output[PagePlugin.KEY], PagePlugin.defaultCupertino);
+  });
+
+  test("page plugin API - crash", () {
+    final pagePluginBuilder = PagePluginBuilder()
+        .add("foo", PagePlugin.defaultCupertino)
+        .add("bar", PagePlugin.defaultMaterial);
+    final pagePlugin =
+        PagePluginBuilder().addBuilder(pagePluginBuilder).build();
+
+    final output = Voyager(config: <String, dynamic>{}, path: "/mock/path");
+    final context =
+        VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
+    const config = "foo2";
+    expect(output[PagePlugin.KEY], null);
+    expect(() => pagePlugin.outputFor(context, config, output),
+        throwsAssertionError);
+  });
 }
 
 class _MockObject {

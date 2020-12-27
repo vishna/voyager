@@ -7,9 +7,9 @@ import 'package:voyager/voyager.dart';
 
 // ignore_for_file: avoid_as
 
-/// wrap [VoyagerWidget] with a [Page]
+/// allows wrapping [VoyagerWidget] with a [Page]
 typedef VoyagerPageBuilder = Page<dynamic> Function(
-    Widget widget, ValueKey key);
+    Widget widget, VoyagerPage page);
 
 /// an outcome of parsing [RouteInformation]
 @immutable
@@ -26,17 +26,31 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
   /// extra id (e.g. if you want to have duplicate entries on the stack)
   final String id;
 
+  /// a key for the corrensponding [Page<dynamic>]
+  ValueKey<String> get key => ValueKey<String>("$id#$path");
+
   @override
-  List<Page> toList(VoyagerRouter router, VoyagerPageBuilder pageBuilder,
-      {List<Object>? scopes}) {
-    var innerPageBuilder = pageBuilder;
+  List<Page> asPages(VoyagerRouter router,
+      {List<Object>? scopes, required VoyagerPageBuilder defaultPageBuilder}) {
+    /// in case router has custom page plugin, we need to look up if the current
+    /// page needs a custom page builder
+    if (router.getPlugins()[PagePlugin.KEY] != null) {
+      final cachedVoyager = router.findCached(path);
+      if (cachedVoyager != null) {
+        defaultPageBuilder =
+            cachedVoyager[PagePlugin.KEY] as VoyagerPageBuilder? ??
+                defaultPageBuilder;
+      }
+    }
+    var innerPageBuilder = defaultPageBuilder;
+
     if (scopes != null && scopes.isNotEmpty) {
       innerPageBuilder = (widget, key) {
         final widgetWithScope = Provider<VoyagerScope>.value(
           value: VoyagerScope(scopes),
           child: widget,
         );
-        return pageBuilder(widgetWithScope, key);
+        return defaultPageBuilder(widgetWithScope, key);
       };
     }
 
@@ -46,9 +60,7 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
       argument: argument,
     );
 
-    final key = ValueKey("$id#$path");
-
-    return [innerPageBuilder(widget, key)];
+    return [innerPageBuilder(widget, this)];
   }
 
   @override
@@ -82,9 +94,8 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
 /// voyager stack basic building bloc
 abstract class VoyagerStackItem {
   /// converts the state to a list that can be used by e.g. [Navigator]
-  List<Page<dynamic>> toList(
-      VoyagerRouter router, VoyagerPageBuilder pageBuilder,
-      {List<Object>? scopes});
+  List<Page<dynamic>> asPages(VoyagerRouter router,
+      {List<Object>? scopes, required VoyagerPageBuilder defaultPageBuilder});
 
   /// converts the stack to a list of paths
   List<String> toPathList();
@@ -142,16 +153,16 @@ class VoyagerStack extends Equatable implements VoyagerStackItem {
 
   /// converts the state to a list that can be used by e.g. [Navigator]
   @override
-  List<Page<dynamic>> toList(
-      VoyagerRouter router, VoyagerPageBuilder pageBuilder,
-      {List<Object>? scopes}) {
+  List<Page<dynamic>> asPages(VoyagerRouter router,
+      {List<Object>? scopes, required VoyagerPageBuilder defaultPageBuilder}) {
     final pages = <Page<dynamic>>[];
     if (_scope != null) {
       scopes = List<Object>.from(scopes ?? <Object>[]);
       scopes.add(_scope!);
     }
     for (final item in _items) {
-      pages.addAll(item.toList(router, pageBuilder, scopes: scopes));
+      pages.addAll(item.asPages(router,
+          defaultPageBuilder: defaultPageBuilder, scopes: scopes));
     }
     return pages;
   }
