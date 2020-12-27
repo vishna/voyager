@@ -5,27 +5,42 @@
 
 > Navigate and prosper 🖖
 
-Router, requirements & dependency injection library for Flutter.
+Voyager is a Widget router for Flutter with a dynamic navigation map and [Provider](https://pub.dev/packages/provider) based DI elements.
 
 ## Features
 
-If your app is a list of screens with respective paths then this library is for you.
-
-- YAML/JSON based Navigation Spec
-    - support for query parameters
-    - support for global parameters
-    - path subsections
-    - parameters interpolation in subsections
-    - logicless
-    - deliverable over the air (think Firebase remote config)
-    - code generator for paths/tests/plugins
+- Support for [Navigator 1.0/2.0 APIs](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade)
+- YAML/JSON based Navigation Map
+    - support for query parameters (`?param=value`)
+    - path subsections (`/user/:id`)
+    - parameters interpolation in subsections (`Selected %{id}`)
+    - serializable (can be delivered using e.g. Firebase remote config)
+    - [code generator](https://github.com/vishna/voyager-codegen) for paths & plugins
     - schema validation (draft v7)
 - Highly customizable plugin architecture.
-- VoyagerWidget to embed your `path` at any point
-- Provider to inject any data coming with the `path`
-- Works with Flutter Web
+- `VoyagerWidget` to embed your `path` mapping in any place
 
 ## Getting started
+
+Check the example app [on github](https://github.com/vishna/voyager/blob/master/example/lib/main.dart) or see it in [the browser](https://voyager.codemagic.app/).
+
+- [Add Voyager Dependency](#add-voyager-dependency)
+- [Define Navigation Map](#define-navigation-map)
+- [Instantiate Router](#instantiate-router)
+- [Choose Your API](#choose-your-api)
+    - [Voyager Widget](#voyager-widget)
+    - [Navigator 1.0](#navigator-10)
+    - [Navigator 2.0](#navigator-20)
+- [Predefined Plugins](#predefined-plugins)
+    - [Widget Plugin](#widget-plugin)
+    - [Page Plugin (a.k.a. transitions)](#page-plugin-aka-transitions)
+    - [Redirect Plugin](#redirect-plugin)
+- [Writing Custom Plugins](#writing-custom-plugins)
+- [Dependency Injection](#dependency-injection)
+- [Code Generation](#code-generation)
+    - [Schema Validation](#schema-validation)
+
+### Add Voyager Dependency
 
 To use this plugin, add `voyager` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/packages-and-plugins/using-packages).
 
@@ -36,19 +51,15 @@ dependencies:
  voyager: ^latest_release
 ```
 
-You can also reference the git repo directly if you want:
-
-```yaml
-dependencies:
- voyager:
-   git: git://github.com/vishna/voyager.git
-```
-
 Then in the code, make sure you import voyager package:
 
-### Navigation Spec
+```dart
+import 'package:voyager/voyager.dart';
+```
 
-It’s best to start with describing what paths your app will have and what subsections will they be made of.
+### Define Navigation Map
+
+In an example below there are two paths defined - `/home` and `/other/:title`. These paths route to `HomeWidget` and `OtherWidget` respectively. A map can carry extra information along the way - e.g. `title` will later be accessible in the routed widget.
 
 ```yaml
 ---
@@ -56,61 +67,162 @@ It’s best to start with describing what paths your app will have and what subs
   type: 'home'
   widget: HomeWidget
   title: "This is Home"
-'/other/:title' :
+'/other/:thing' :
   type: 'other'
   widget: OtherWidget
-  title: "This is %{title}"
+  title: "This is %{thing}"
 ```
 
-You can either put this in assets as a yaml file or use triple quotes `'''` and keep it in your code as a string. The String approach while a bit uglier allows for faster reloads while updating assets requires project rebuild.
+The second path has `:thing` section parameter. This can be used to interpolate value of title dynamically at runtime, using `%{key}` notation.
 
-### Creating Router Instance
-
-Your router requires **paths** and **plugins** as constructor parameters. Getting **paths** is quite straightforwad and basically means parsing that YAML file we just defined.
-
+Load paths using method of your choosing:
 ```dart
-final paths = loadPathsFromYamlString('''
----
-'/home' :
-  type: 'home'
-  widget: HomeWidget
-  title: "This is Home"
-'/other/:title' :
-  type: 'other'
-  widget: OtherWidget
-  title: "This is %{title}"
-''');
+final List<VoyagerPath> paths = loadPathsFromYamlSync(yaml_string);
 ```
 
-or if the file is in the assets folder, you can:
+### Define Plugins
 
-```dart
-final paths = loadPathsFromAssets("assets/navigation.yml");
-```
-
-__NOTE__: JSON support is available as of version `0.2.3`, please check [voyager_test.dart](https://github.com/vishna/voyager/blob/master/test/voyager_test.dart) for reference.
-
-The other important ingredient of voyager router are plugins. You need to tell router what kind of plugins you plan to use and those depend on what you have written in the navigation file. In our example we use 2 `widget` and `title`. This library comes with predefined plugins for `widget` and in the next paragraph you can read how to create your own plugin for `title`.
+You need to tell router what kind of plugins you plan to use. Those depend on what you have written in the navigation file. In our example we need to provide mappings for `widget` and `title`.
 
 ```dart
 final plugins = [
   WidgetPluginBuilder() /// provide widget builders for expressions used in YAML
-    .add<HomeWidget>((context) => HomeWidget())
-    .add<OtherWidget>((context) => OtherWidget())
+    .add("HomeWidget", (context) => HomeWidget())
+    .add("OtherWidget", (context) => OtherWidget())
     .build(),
   TitlePlugin() /// custom plugin
 ];
 ```
 
-Now you're all set for getting your router instance:
+We omit `type` which is a field used for annotation purposes (code generation).
+
+### Instantiate Router
+
+Pass **paths** and **plugins** as constructor parameters to obtain `VoyagerRouter`.
+
 
 ```dart
-Future<voyager.Router> router = loadRouter(paths, plugins)
+final router = VoyagerRouter.from(paths, plugins);
 ```
 
-### Custom Plugins
+### Choose Your API
 
-You can define as many plugins as you want. Here's how you could handle the `title` nodes from the example navigation yaml.
+Voyager offers different kind of APIs. Here's a quick overview what these are good for.
+
+#### Voyager Widget
+
+This is the most atomic use case. Simply embed your widget anywhere you want:
+
+```dart
+VoyagerWidget(path: "/home", router: router);
+```
+
+If `Provider<VoyagerRouter>` is available in the widget tree, you can omit the router parameter.
+
+#### Navigator 1.0
+
+Simple, imperative navigation model. Following snippet illustrates intergration with MaterialApp and opening `initialPath`:
+
+```dart
+final initalPath = "/my/fancy/super/path"
+
+Provider<VoyagerRouter>.value(
+  value: router,
+  child: MaterialApp(
+    home: VoyagerWidget(path: initalPath),
+    onGenerateRoute: router.generator()
+  )
+)
+```
+
+Navigation stack is handled via system, e.g. following will push a new page:
+
+```dart
+Navigator.of(context).pushNamed("/path/to/go");
+```
+
+**Sidenote:** You can try using `MaterialApp.initalRoute` but please [read this first](https://docs.flutter.io/flutter/material/MaterialApp/initialRoute.html) if you find `MaterialApp.initalRoute` is not working for you... that's because it's probably working as intended ¯\\\_(ツ)_/¯
+
+#### Navigator 2.0
+
+Navigator 2.0 gives you a full control over the navigation stack. This comes with a price of [fairly complex API](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade). Voyager builds on top of this API and introduces `VoyagerStack` to hopefully make declarative navigation easier.
+
+```dart
+VoyagerStackApp(
+  router: router,
+  stack: VoyagerStack[
+    VoyagerPage("/my/fancy/super/path"),
+  ],
+  createApp: (context, parser, delegate) => MaterialApp.router(
+    routeInformationParser: parser,
+    routerDelegate: delegate,
+    theme: themeData(),
+  ),
+);
+```
+
+> With Navigator 2.0, you own the navigation stack.
+
+If you wish to navigate to the other path, you'll need to update the stack the declarative way, e.g.:
+
+```dart
+  // ...
+  stack: VoyagerStack[
+    VoyagerPage("/my/fancy/super/path"),
+    VoyagerPage("/path/to/go"),
+  ],
+  // ...
+```
+
+Under the hood, `VoyagerStack` uses `.asPages(VoyagerRouter)` method that resolves the given stack to a `List<Page<dynamic>>` instance which then is used with `Navigator`. It's possible to use `Navigator` and `VoyagerStack` directly without `VoyagerStackApp` wrapper. Additionally `VoyagerInformationParser` and `VoyagerDelegate` are easily instantiable in case you need to use them directly.
+
+### Predefined Plugins
+
+Voyager comes with a few predefined plugins that are ready to setup and use:
+
+#### Widget Plugin
+
+This is a mandatory plugin that enables widget resolution. It converts a string value from navigation map e.g. "HomeWidget" into a usable Flutter widget:
+
+```dart
+WidgetPlugin({
+  "HomeWidget": (context) => HomeWidget()
+});
+```
+
+You can enable [code generation](#code-generation) to avoid writing these mappings manually. Check the example app.
+
+#### Page Plugin (a.k.a. transitions)
+
+This plugin works only when using Voyager in Navigation 2.0 API. It enables specifying custom `Page<dynamic>` appearance to be used for the given path, e.g.:
+
+```dart
+PagePlugin({
+  "slideFromTop": slideFromTop
+});
+```
+
+Check [slide_from_top_page.dart](https://github.com/vishna/voyager/blob/master/example/lib/slide_from_top_page.dart) for a custom page implementation details
+
+[Code generation](#code-generation) to avoid writing these mappings manually. Check the example app.
+
+#### Redirect Plugin
+
+Allows registering aliases for already defined paths:
+
+```yaml
+---
+'/home' :
+  type: 'home'
+  widget: HomeWidget
+  title: "This is Home"
+'/start' :
+  redirect: '/home'
+```
+
+### Writing Custom Plugins
+
+You can define as many router plugins as you want. Here's how you could handle the `title` node from the example navigation yaml.
 
 ```dart
 class TitlePlugin extends RouterPlugin {
@@ -124,52 +236,19 @@ class TitlePlugin extends RouterPlugin {
 }
 ```
 
-__NOTE__: Above plugin is redundant, Voyager will repackage the primitive types from configuration and you don't need to do anything 😎 __Use plugins to resolve primitive types to custom types__ , e.g. take a look at [IconPlugin](https://github.com/vishna/voyager/blob/master/example/lib/main.dart#L42) from the example app.
+__Sidenote__: Above plugin is redundant. Voyager repackages the primitive types from configuration by default. __Use plugins to resolve primitive types to custom types__ , e.g. take a look at [IconPlugin](https://github.com/vishna/voyager/blob/master/example/lib/main.dart#L83) from the example app.
 
-### Router's Default Output: Voyager
+### Dependency Injection
 
-`Voyager` instance is the composite output of all the relevant plugins that are nested under the path being resolved. Observe:
-
-```dart
-Voyager voyager = router.find("/home")
-print(voyager["title"]); /// originates from the title plugin, prints: "This is home"
-print(voyager["type"]); /// automatically inherited from the YAML map
-print(voyager.type); /// strong typed type
-assert(voyager["widget"] is WidgetBuilder); /// originates from the widget plugin
-```
-
-**NOTE:** Any attempt to modify voyager keys will fail unless done from plugin's `outputFor` method. If you want to add some values to Voyager later on, use `Voyager.storage` public map.
-
-**NOTE:** Planning on using Voyager with Flutter web? Keep in mind that class names in `release` mode are getting obfuscated by `dart2js`. Currently the workaround for this is to provide obfuscation map yourself before registering any plugins:
-
-```dart
-VoyagerUtils.addObfuscationMap({
-  HomeWidget: "HomeWidget",
-  OtherWidget: "OtherWidget"
-});
-```
-
-Failure to provide obfuscation map might result in grey screen of death.
-
-### Embed any screen path with VoyagerWidget
-
-If your path uses `widget` plugin you can try using `VoyagerWidget` and embed any path you want like this:
-
-```dart
-VoyagerWidget(path: "/home", router: router);
-```
-
-**RECOMMENDED:** Provide router at the top of your widget tree and omit passing router parameter.
-
-### Inject your information via Provider
-
-If you use `VoyagerWidget` to create screens for your paths, you can obtain `Voyager` anywhere from `BuildContext` using extension getter (that is using [Provider](https://pub.dev/packages/provider) underneath):
+If you use `VoyagerWidget` to e.g. resolve to `OtherWidget`, you can obtain `Voyager` anywhere from `BuildContext` using extension getter:
 
 ```dart
 final voyager = context.voyager;
 ```
 
-Now going back to our mystery `OtherWidget` class from the example navigation spec, that widget could be implemented something like this:
+`Voyager` is a key/value map, a composite output of the plugins setup for the given path.
+
+Now going back to our mystery `OtherWidget` class from the example navigation map, that widget's implementation could look something like this:
 
 ```dart
 class OtherWidget extends StatelessWidget {
@@ -190,142 +269,74 @@ class OtherWidget extends StatelessWidget {
 }
 ```
 
-### Integrating with MaterialApp
-
-Defining inital path & handling navigation
-
-```dart
-final initalPath = "/my/fancy/super/path"
-
-Provider<voyager.Router>.value(
-  value: router,
-  child: MaterialApp(
-    home: VoyagerWidget(path: initalPath),
-    onGenerateRoute: router.generator()
-  )
-)
-```
-
-Make sure you wrap your app with router provider.
-
-**NOTE:** You can use `MaterialApp.initalRoute` but please [read this first](https://docs.flutter.io/flutter/material/MaterialApp/initialRoute.html) if you find `MaterialApp.initalRoute` is not working for you. TL;DR: It's working as intended ¯\\\_(ツ)_/¯
-
-### Navigation
-
-Having `BuildContext` and `Material.onGenerateRoute` set up, you can simply:
-
-```dart
-Navigator.of(context).pushNamed("/path/to/go");
-```
-
-If you need to push new screen from elsewhere you probably should set [navigatorKey](https://docs.flutter.io/flutter/material/MaterialApp/navigatorKey.html) to your `MaterialApp`
-
-### Custom Transitions
-
-The article ["Create Custom Router Transition in Flutter using PageRouteBuilder"](https://medium.com/@agungsurya/create-custom-router-transition-in-flutter-using-pageroutebuilder-73a1a9c4a171) by *Agung Surya* explains in detail how to create custom reusable transtions.
-
-Essentially you need to extend a `PageRouteBuilder` class and pass it a widget you want to be transitioning to. In our case that widget is a `VoyagerWidget`.
-
-In the aforementioned artile, the author created `SlideRightRoute` transition. We can combine that transition with any path from our navigation spec by using code below:
-
-```dart
-Navigator.push(
-  context,
-  SlideRightRoute(widget: VoyagerWidget.fromPath(context, "/path/to/go")),
-);
-```
-
-### Adding global values
-
-If you want to expose some global parameters to specs interpolation, you can do so by doing the following:
-
-```dart
-router.registerGlobalParam("isTablet", false);
-```
-
-**NOTE**: Because we interpolate String here, only primitve types are allowed.
-
-If you want to make some global entities available via router instance, you can do so by doing the following:
-
-```dart
-router.registerGlobalEntity("database", someDatabase);
-```
-
-### Sample App
-
-![voyager_edited](https://user-images.githubusercontent.com/121164/60385202-eb91b200-9a86-11e9-8fb0-6923f43522ca.gif)
-
-Check out full example [here](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
-
 ### Code generation
 
-__IMPORTANT__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
+Using code generation enables you to use some of the following features:
 
-Voyager supports generating dart code based on the configuration yaml file. Simply run the following command and wait for the script to set it up for you.
+- Strong typed paths
+    - `"/other/:thing"` becomes `pathOther("thing")`
+- [WidgetPlugin](#widget-plugin) generation
+    - skip manual mapping, simply add `generatedVoyagerWidgetPlugin()` to list of plugins
+- [PathPlugin](#path-plugin) generation
+    - skip manual mapping, simply add `generatedVoyagerPathPlugin()` to list of plugins
+- [Schema validation](#schema-validation) & strong typed Voyager fields
 
-```
-flutter packages pub run voyager:codegen
-```
+__Important__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
 
-This should create a `voyager-codegen.yaml` file in a root of your project, like so:
-
-```yaml
-- name: Voyager # base name for generated classes, e.g. VoyagerData, VoyagerTests etc.
-  source: assets/navigation.yaml
-  target: lib/gen/voyager_gen.dart
-```
-
-Whenever you edit the `voyager-codegen.yaml` or `source` file the code generation logic will pick it up (as long as `pub run` is running) and generate new dart souces to the target location.
-
-__CODE FORMATTING__: If you want to have Flutter's default code formatting, make sure you have dart-sdk in you PATH, it's included with flutter sdk, so you can e.g.:
-
-```
-export PATH="$PATH:/path/to/flutter/bin/cache/dart-sdk/bin"
-```
-
-Proper formatting relies on `dartfmt` command being available.
-
-__NOTE 1__: For code generator implementation details please check the source code at [vishna/voyager-codegen](https://github.com/vishna/voyager-codegen).
-
-__NOTE 2__: Should you want run code generation only once (and not watch files continously) you can supply additional `--run-once` flag to pub run command:
+Voyager supports generating dart code based on the navigation map yaml (json support [coming soon](https://github.com/vishna/voyager-codegen/issues/7)) file. Simply run the following command and wait for the script to set it up for you.
 
 ```
 flutter packages pub run voyager:codegen --run-once
 ```
 
-This can be useful if running in a CI/CD context.
+This should create a `voyager-codegen.yaml` file in the root of your project:
 
-__NOTE 3__: You might want to add `.jarCache/` to your `.gitignore` to avoid checking in binary jars to your repo.
-
-__NOTE 4__: If you're a Windows user make sure you have `wget` installed.
-
-#### Strong Typed Paths
-
-Typing navigation paths by hand is error prone, for this very reason **it is recommended** to use code generator for the paths, so rather than typing:
-
-```dart
-Navigator.of(context).pushNamed("/other/thingy");
+```yaml
+- name: Voyager # base name for generated classes
+  source: assets/navigation.yaml
+  target: lib/navigation.voyager.dart
+  widgetPlugin: true
+  pagePlugin: true
 ```
 
-you can rely on your IDE's autocompletion and do this:
+Then you need to create `lib/navigation.dart` that will look something like this:
 
 ```dart
-Navigator.of(context).pushNamed(pathOther("thingy"));
+import 'package:voyager/voyager.dart';
+
+part 'navigation.voyager.dart';
 ```
 
-#### Schema Validation & Strong Typed Outputs
+Now if you run again:
 
-Add your validation in `voyager-codegen.yaml`, for instance to cover `IconPlugin` you can now do this:
+```
+flutter packages pub run voyager:codegen --run-once
+```
+
+This should regenerate contents of `lib/navigation.voyager.dart`. If compiler complains about unresolved symbols, make sure you add necessary imports to `lib/navigation.dart`
+
+__Dart Code Formatting__: If you want to have Flutter's default code formatting for the generated code, make sure you have dart-sdk in you PATH. Dart SDK is included with the flutter sdk, so you can e.g.:
+
+```
+export PATH="$PATH:/path/to/flutter/bin/cache/dart-sdk/bin"
+```
+
+__File Watching__: If you omit `--run-once` flag, the code generator will keep watching files and generating code in a loop.
+
+You might want to add `.jarCache/` to your `.gitignore` to avoid checking in binary jars to your repo.
+
+#### Schema Validation
+
+Add your validation in `voyager-codegen.yaml`, for instance to cover `IconPlugin` you could do this:
 
 ```yaml
 - name: Voyager
   source: lib/main.dart
-  target: lib/gen/voyager_gen.dart
+  target: lib/navigation.voyager.dart
   schema:
     icon:
-      pluginStub: true # add if you want to generate aplugin stub
+      pluginStub: true # add if you want to generate a plugin stub
       output: Icon # associated Dart class produced by the plugin
-      import: "package:flutter/widgets.dart" # Dart import for the output class, if necessary
       input: # write schema for your the icon node (JSON Schema draft-07 layout)
         type: string
         pattern: "^[a-fA-F0-9]{4}$"
@@ -337,7 +348,7 @@ Now whenever you run `voyager:codegen` you'll get an extra message stating all i
 ✅ Schema validated properly
 ```
 
-...or an error specific to your router configuration map, e.g.:
+...or an error specific to your router navigation map, e.g.:
 
 ```
 🚨 /fab@icon: #/icon: string [e88fd] does not match pattern ^[a-fA-F0-9]{4}$
@@ -360,69 +371,3 @@ class IconPlugin extends IconPluginStub {
 }
 ```
 
-#### Automated Widget Tests (Experimental Feautre)
-
-![Screenshot 2019-07-31 at 15 19 15](https://user-images.githubusercontent.com/121164/62217336-c1475300-b3aa-11e9-8ffb-a0ebb815fd6d.png)
-
-If you want to try this feature out, your `voyager-codegen.yaml` should look something like that:
-
-```yaml
-- name: Voyager
-  source: assets/navigation.yaml
-  target: lib/gen/voyager_gen.dart
-  testTarget: test/gen/voyager_test_scenarios.dart
-```
-
-`testTarget` points to where the generated test code should go.
-
-Say your regular test file is located in the `test` directory, this is how you could integrate with the generated code:
-
-```dart
-import 'gen/voyager_test_scenarios.dart';
-
-/// override abstract base class with all the scenarios to test
-class TestScenarios extends VoyagerTestScenarios {
-
-  /// default wrapper for all the widgets
-  MyVoyagerScenarios() : super((widget) => MaterialApp(home: widget));
-
-  @override
-  /// example scenario implementation for the `/home` path
-  List<VoyagerTestHomeScenario> homeScenarios() {
-    return [
-      VoyagerTestHomeScenario.write((tester) async {
-        expect(find.text("Home Page"), findsOneWidget);
-      })
-    ];
-  }
-
-  /// etc...
-}
-
-void main() {
-  /// finally invoke tests, you need to suply `router` as `Future<Router>`
-  voyagerAutomatedTests("voyager auto tests", router, TestScenarios());
-}
-```
-
-Full code available at [example/test/widget_test.dart](https://github.com/vishna/voyager/blob/master/example/test/widget_test.dart).
-
-`voyagerAutomatedTests` comes with a positional argument `forceTests` set to `true` by default. This will assert every widget has **at least one scenario** written for it, otherwise your tests will fail. Set it to `false` to disable this behaviour.
-
-The scenario code is by default being executed within WidgetTester's `runAsync` meaning you should be able to perform real asynchronous methods.
-
-The router is loaded every time the scenario is running - if this is something you don't need consider using e.g. [AsyncMemoizer](https://api.flutter.dev/flutter/package-async_async/AsyncMemoizer-class.html)
-
-### More Resources
-
-- [library tests](https://github.com/vishna/voyager/blob/master/test)
-- [sample app](https://github.com/vishna/voyager/blob/master/example/lib/main.dart)
-- [bloc plugin](https://pub.dev/packages/voyager_bloc)
-- [object to widget routing](https://pub.dev/packages/voyager_list)
-
-### Acknowledgments
-
-- [fluro](https://github.com/theyakka/fluro) As their repo says: *"The brightest, hippest, coolest router for Flutter."* Probably the most know flutter router out there.
-- [angel-route](https://github.com/angel-dart/route) *"A powerful, isomorphic routing library for Dart."* Voyager internally was depending on this library till version `0.2.3`. It was a server oriented library and too big dependency for this project - voyager is now using [abstract_router.dart](https://github.com/vishna/voyager/blob/master/lib/src/abstract_router.dart) which is < 300 LOC.
-- [eyeem/router](https://github.com/eyeem/router) Protoplast of the voyager library, written in Java, for Android.
-- [NASA Voyager 2 Interstellar Poster](https://voyager.jpl.nasa.gov/downloads/posters/pdf/Voyager2_Interstellar_gold.pdf) Beautiful artwork I found on NASA page also a base content for the banner - changed colors to flutter ones, cropped the poster, added flutter antenna.

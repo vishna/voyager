@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:voyager/voyager.dart';
 
+/// sliding transition
+Page<dynamic> slideFromTop(Widget widget, VoyagerPage page) {
+  return SlideFromTopPage(widget, page);
+}
+
 /// slide from top page animation
 class SlideFromTopPage extends Page<dynamic> {
   /// default constructor
