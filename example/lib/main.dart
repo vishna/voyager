@@ -1,3 +1,4 @@
+import 'package:example/slide_from_top_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
@@ -31,6 +32,7 @@ String requirements() {
 '/talks' :
   type: 'talks'
   widget: ListWidget
+  page: slideFromTop
   title: "Voyager Talks"
   items:
     - city: "Berlin"
@@ -67,9 +69,15 @@ List<VoyagerPath> paths() {
 List<VoyagerPlugin> plugins() => [
       /// provide widget builders for expressions used in YAML
       generatedVoyagerWidgetPlugin(),
+      generatedVoyagerPagePlugin(),
       const RedirectPlugin(),
-      IconPlugin()
+      IconPlugin(),
     ];
+
+/// sliding transition
+Page<dynamic> slideFromTop(Widget widget, VoyagerPage page) {
+  return SlideFromTopPage(widget, page);
+}
 
 /// icon plugin
 class IconPlugin extends IconPluginStub {
@@ -125,7 +133,7 @@ class MyStack extends ChangeNotifier {
 }
 
 void main() {
-  /// initalize router router
+  /// initalize router
   final router = VoyagerRouter.from(paths(), plugins());
 
   /// run the app

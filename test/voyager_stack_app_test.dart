@@ -405,6 +405,41 @@ void main() {
     expect(find.text("Other Page"), findsOneWidget);
     expect(wasNewPageCalled, true);
   });
+
+  testWidgets("VoyagerStackApp - Home Page, Declarative Way with custom page",
+      (tester) async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync('''
+---
+'/home' :
+  type: 'home'
+  page: 'yolo'
+  widget: HomeWidget
+  title: "This is Home"
+  fab: /other/thing
+'/other/:title' :
+  type: 'other'
+  widget: OtherWidget
+  title: "This is %{title}"
+''');
+    final plugins = [
+      WidgetPlugin(widgetMappings),
+      const PagePlugin({"yolo": PagePlugin.defaultMaterial})
+    ];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    await tester.pumpWidget(VoyagerStackApp(
+        onBackPressed: () {},
+        router: router,
+        stack: const VoyagerStack([VoyagerPage("/home")]),
+        createApp: (context, parser, delegate) => MaterialApp.router(
+            routeInformationParser: parser, routerDelegate: delegate)));
+
+    expect(find.text("Home Page"), findsOneWidget);
+  });
 }
 
 class _FakeApp extends StatefulWidget {

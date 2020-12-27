@@ -52,3 +52,16 @@ WidgetPluginBuilder generatedVoyagerWidgetPluginBuilder() {
 
 WidgetPlugin generatedVoyagerWidgetPlugin() =>
     generatedVoyagerWidgetPluginBuilder().build();
+
+final generatedVoyagerPageMappings = <String, VoyagerPageBuilder>{
+  "slideFromTop": slideFromTop
+};
+
+PagePluginBuilder generatedVoyagerPagePluginBuilder() {
+  final builder = PagePluginBuilder();
+  generatedVoyagerPageMappings.forEach(builder.add);
+  return builder;
+}
+
+PagePlugin generatedVoyagerPagePlugin() =>
+    generatedVoyagerPagePluginBuilder().build();
