@@ -15,6 +15,7 @@ class VoyagerStackApp extends StatefulWidget {
     this.onNewPage,
     this.onInitialPage,
     this.routeType = VoyagerRouteType.material,
+    this.transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
   }) : super(key: key);
 
   /// router instance
@@ -34,6 +35,9 @@ class VoyagerStackApp extends StatefulWidget {
 
   /// route type (material or cupertino)
   final VoyagerRouteType routeType;
+
+  /// transition delegate
+  final TransitionDelegate transitionDelegate;
 
   /// pass [parser] and [delegate] to [MaterialApp.router] or [CupertinoApp.router]
   final Widget Function(
@@ -61,6 +65,7 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
       onInitialPage: widget.onInitialPage,
     );
     delegate.stack = widget.stack;
+    delegate.transitionDelegate = widget.transitionDelegate;
     parser = const VoyagerInformationParser();
   }
 
@@ -83,6 +88,9 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
     }
     if (oldWidget.onInitialPage != widget.onInitialPage) {
       delegate.onInitialPage = widget.onInitialPage;
+    }
+    if (oldWidget.transitionDelegate != widget.transitionDelegate) {
+      delegate.transitionDelegate = widget.transitionDelegate;
     }
     super.didUpdateWidget(oldWidget);
   }
