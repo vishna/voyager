@@ -14,7 +14,7 @@ class VoyagerStackApp extends StatefulWidget {
     required this.onBackPressed,
     this.onNewPage,
     this.onInitialPage,
-    this.routeType = VoyagerRouteType.material,
+    this.defaultPageBuilder = PagePlugin.defaultMaterial,
     this.transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
   }) : super(key: key);
 
@@ -33,8 +33,8 @@ class VoyagerStackApp extends StatefulWidget {
   /// triggered when initial page event happens on system level
   final void Function(VoyagerStackItem page)? onInitialPage;
 
-  /// route type (material or cupertino)
-  final VoyagerRouteType routeType;
+  /// default page builder (e.g. material or cupertino)
+  final VoyagerPageBuilder defaultPageBuilder;
 
   /// transition delegate
   final TransitionDelegate transitionDelegate;
@@ -61,7 +61,7 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
       widget.router,
       onBackPressed: widget.onBackPressed,
       onNewPage: widget.onNewPage,
-      routeType: widget.routeType,
+      defaultPageBuilder: widget.defaultPageBuilder,
       onInitialPage: widget.onInitialPage,
     );
     delegate.stack = widget.stack;
@@ -80,8 +80,8 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
     if (oldWidget.router != widget.router) {
       delegate.router = widget.router;
     }
-    if (oldWidget.routeType != widget.routeType) {
-      delegate.routeType = widget.routeType;
+    if (oldWidget.defaultPageBuilder != widget.defaultPageBuilder) {
+      delegate.defaultPageBuilder = widget.defaultPageBuilder;
     }
     if (oldWidget.onNewPage != widget.onNewPage) {
       delegate.onNewPage = widget.onNewPage;

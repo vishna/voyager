@@ -12,17 +12,17 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
       this.onBackPressed,
       this.onNewPage,
       this.onInitialPage,
-      VoyagerRouteType routeType = VoyagerRouteType.material,
+      VoyagerPageBuilder defaultPageBuilder = PagePlugin.defaultMaterial,
       GlobalKey<NavigatorState>? navigatorKey})
       : navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>(),
-        _routeType = routeType,
+        _defaultPageBuilder = defaultPageBuilder,
         _stack = initialStack ?? const VoyagerStack([]);
 
   /// global navigator key used by this delegate
   @override
   final GlobalKey<NavigatorState> navigatorKey;
   VoyagerRouter _voyagerRouter;
-  VoyagerRouteType _routeType;
+  VoyagerPageBuilder _defaultPageBuilder;
 
   /// if you want to handle back press manually, provide a callback here,
   /// otherwise [VoyagerStack.removeLast] method is used
@@ -69,11 +69,11 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
   }
 
   /// returns current default routeType for this delegate
-  VoyagerRouteType get routeType => _routeType;
+  VoyagerPageBuilder get defaultPageBuilder => _defaultPageBuilder;
 
   /// update router instance for this delegate
-  set routeType(VoyagerRouteType value) {
-    _routeType = value;
+  set defaultPageBuilder(VoyagerPageBuilder value) {
+    _defaultPageBuilder = value;
     notifyListeners();
   }
 
@@ -83,9 +83,7 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
       key: navigatorKey,
       transitionDelegate: _transitionDelegate,
       pages: _stack.asPages(_voyagerRouter,
-          defaultPageBuilder: _routeType == VoyagerRouteType.material
-              ? PagePlugin.defaultMaterial
-              : PagePlugin.defaultCupertino),
+          defaultPageBuilder: _defaultPageBuilder),
       onPopPage: (route, dynamic result) {
         if (!route.didPop(result)) {
           return false;

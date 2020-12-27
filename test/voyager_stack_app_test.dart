@@ -94,10 +94,10 @@ void main() {
 
   testWidgets("VoyagerStackApp - switch from Material to Cupertino",
       (tester) async {
-    var routeType = VoyagerRouteType.material;
+    var defaultPageBuilder = PagePlugin.defaultMaterial;
     final widgetMappings = {
       "HomeWidget": (BuildContext context) {
-        if (routeType == VoyagerRouteType.cupertino) {
+        if (defaultPageBuilder == PagePlugin.defaultCupertino) {
           return const CupertinoPageScaffold(
             child: Center(
               child: Text("Home Page"),
@@ -115,7 +115,7 @@ void main() {
         );
       },
       "OtherWidget": (BuildContext context) {
-        if (routeType == VoyagerRouteType.cupertino) {
+        if (defaultPageBuilder == PagePlugin.defaultCupertino) {
           return const CupertinoPageScaffold(
             child: Center(
               child: Text("This is Cupertino"),
@@ -146,9 +146,9 @@ void main() {
     expect(find.text("Other Page"), findsOneWidget);
 
     final state = tester.state<_FakeAppState>(find.byType(_FakeApp));
-    routeType = VoyagerRouteType.cupertino;
+    defaultPageBuilder = PagePlugin.defaultCupertino;
     state.setState(() {
-      state.routeType = routeType;
+      state.defaultPageBuilder = defaultPageBuilder;
     });
     await tester.pumpAndSettle();
 
@@ -512,7 +512,7 @@ class _FakeApp extends StatefulWidget {
 class _FakeAppState extends State<_FakeApp> {
   VoyagerRouter? router;
   VoyagerStack? stack;
-  VoyagerRouteType? routeType;
+  VoyagerPageBuilder? defaultPageBuilder;
   TransitionDelegate<dynamic>? transitionDelegate;
 
   @override
@@ -523,11 +523,11 @@ class _FakeAppState extends State<_FakeApp> {
         onInitialPage: (page) {},
         router: router ?? widget.router,
         stack: stack ?? widget.stack,
-        routeType: routeType ?? VoyagerRouteType.material,
+        defaultPageBuilder: defaultPageBuilder ?? PagePlugin.defaultMaterial,
         transitionDelegate:
             transitionDelegate ?? const DefaultTransitionDelegate<dynamic>(),
         createApp: (context, parser, delegate) {
-          if (delegate.routeType == VoyagerRouteType.cupertino) {
+          if (delegate.defaultPageBuilder == PagePlugin.defaultCupertino) {
             return CupertinoApp.router(
               routeInformationParser: parser,
               routerDelegate: delegate,
