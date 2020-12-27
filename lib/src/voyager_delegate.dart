@@ -36,6 +36,18 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
   /// https://github.com/flutter/flutter/issues/71106
   void Function(VoyagerStackItem page)? onInitialPage;
 
+  TransitionDelegate _transitionDelegate =
+      const DefaultTransitionDelegate<dynamic>();
+
+  /// set transition delegate
+  set transitionDelegate(TransitionDelegate value) {
+    if (value == _transitionDelegate) {
+      return;
+    }
+    _transitionDelegate = value;
+    notifyListeners();
+  }
+
   VoyagerStack _stack;
 
   /// returns an immutable instance of current navigation stack
@@ -69,6 +81,7 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
+      transitionDelegate: _transitionDelegate,
       pages: _stack.asPages(_voyagerRouter,
           defaultPageBuilder: _routeType == VoyagerRouteType.material
               ? PagePlugin.defaultMaterial

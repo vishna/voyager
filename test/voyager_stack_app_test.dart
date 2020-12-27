@@ -440,6 +440,64 @@ void main() {
 
     expect(find.text("Home Page"), findsOneWidget);
   });
+
+  testWidgets("VoyagerStackApp - change transition delegate", (tester) async {
+    var wasCalled = false;
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Home Title"),
+          ),
+          body: const Center(
+            child: Text("Home Page"),
+          ),
+          floatingActionButton: mockFab(context),
+        );
+      },
+      "OtherWidget": (BuildContext context) {
+        final String title = context.voyager["title"];
+
+        return Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+            ),
+            body: const Center(
+              child: Text("Other Page"),
+            ));
+      },
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    await tester.pumpWidget(_FakeApp(
+        router: router,
+        stack: const VoyagerStack(
+            [VoyagerPage("/home"), VoyagerPage("/other/thing")])));
+
+    expect(find.text("Other Page"), findsOneWidget);
+    expect(wasCalled, false);
+
+    final state = tester.state<_FakeAppState>(find.byType(_FakeApp));
+
+    state.setState(() {
+      state.transitionDelegate = _NoAnimationTransitionDelegate()
+        ..callback = () => wasCalled = true;
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text("Other Page"), findsOneWidget);
+    expect(wasCalled, false);
+
+    state.setState(() {
+      state.stack = const VoyagerStack([VoyagerPage("/home")]);
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text("Home Page"), findsOneWidget);
+    expect(wasCalled, true);
+  });
 }
 
 class _FakeApp extends StatefulWidget {
@@ -455,6 +513,7 @@ class _FakeAppState extends State<_FakeApp> {
   VoyagerRouter? router;
   VoyagerStack? stack;
   VoyagerRouteType? routeType;
+  TransitionDelegate<dynamic>? transitionDelegate;
 
   @override
   Widget build(BuildContext context) {
@@ -465,6 +524,8 @@ class _FakeAppState extends State<_FakeApp> {
         router: router ?? widget.router,
         stack: stack ?? widget.stack,
         routeType: routeType ?? VoyagerRouteType.material,
+        transitionDelegate:
+            transitionDelegate ?? const DefaultTransitionDelegate<dynamic>(),
         createApp: (context, parser, delegate) {
           if (delegate.routeType == VoyagerRouteType.cupertino) {
             return CupertinoApp.router(
@@ -476,5 +537,42 @@ class _FakeAppState extends State<_FakeApp> {
                 routeInformationParser: parser, routerDelegate: delegate);
           }
         });
+  }
+}
+
+class _NoAnimationTransitionDelegate extends TransitionDelegate<dynamic> {
+  VoidCallback? callback;
+  @override
+  Iterable<RouteTransitionRecord> resolve({
+    required List<RouteTransitionRecord> newPageRouteHistory,
+    required Map<RouteTransitionRecord?, RouteTransitionRecord>
+        locationToExitingPageRoute,
+    required Map<RouteTransitionRecord?, List<RouteTransitionRecord>>
+        pageRouteToPagelessRoutes,
+  }) {
+    final results = <RouteTransitionRecord>[];
+
+    for (final pageRoute in newPageRouteHistory) {
+      if (pageRoute.isWaitingForEnteringDecision) {
+        pageRoute.markForAdd();
+      }
+      results.add(pageRoute);
+    }
+
+    for (final exitingPageRoute in locationToExitingPageRoute.values) {
+      if (exitingPageRoute.isWaitingForExitingDecision) {
+        exitingPageRoute.markForRemove();
+        final pagelessRoutes = pageRouteToPagelessRoutes[exitingPageRoute];
+        if (pagelessRoutes != null) {
+          for (final pagelessRoute in pagelessRoutes) {
+            pagelessRoute.markForRemove();
+          }
+        }
+      }
+
+      results.add(exitingPageRoute);
+    }
+    callback?.call();
+    return results;
   }
 }
