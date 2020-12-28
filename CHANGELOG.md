@@ -1,4 +1,4 @@
-## 3.0.0-nullsafety
+## 3.0.0-nullsafety.1
 
 ### MAJOR UPDATE (a.k.a. BREAKING CHANGE)
 
