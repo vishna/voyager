@@ -84,5 +84,6 @@ class VoyagerAdapter<T> {
     _wasInitialized = true;
     register(VoyagerPage.adapter);
     register(VoyagerStack.adapter);
+    register(VoyagerArgument.adapter);
   }
 }
