@@ -100,6 +100,28 @@ class MockHomeWidgetArgument2 extends StatelessWidget {
   }
 }
 
+class MockHomeWidgetArgument3 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Home Title"),
+      ),
+      body: Center(
+        child: Text("argument = ${context.voyagerArgument}"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed("/other/thing",
+              arguments: const VoyagerArgument("hello"));
+        },
+        tooltip: 'Navigate',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
 class CustomVoyager extends Voyager {
   CustomVoyager(String path, Voyager? parent)
       : super(path: path, parent: parent, config: <String, dynamic>{});

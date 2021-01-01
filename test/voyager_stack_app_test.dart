@@ -28,6 +28,57 @@ void main() {
     expect(find.text("Home Page"), findsOneWidget);
   });
 
+  testWidgets("VoyagerStackApp - Home Page, Declarative Way + Argument",
+      (tester) async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidgetArgument3(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    await tester.pumpWidget(VoyagerStackApp(
+        onBackPressed: () {},
+        router: router,
+        stack: const VoyagerStack(
+          [
+            VoyagerPage("/home", argument: "hello"),
+          ],
+        ),
+        createApp: (context, parser, delegate) => MaterialApp.router(
+            routeInformationParser: parser, routerDelegate: delegate)));
+
+    expect(find.text("argument = hello"), findsOneWidget);
+  });
+
+  testWidgets("VoyagerStackApp - Home Page, Declarative Way + Argument Wrapped",
+      (tester) async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidgetArgument3(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    await tester.pumpWidget(VoyagerStackApp(
+        onBackPressed: () {},
+        router: router,
+        stack: const VoyagerStack(
+          [
+            VoyagerPage(
+              "/home",
+              argument: VoyagerArgument("hello"),
+            ),
+          ],
+        ),
+        createApp: (context, parser, delegate) => MaterialApp.router(
+            routeInformationParser: parser, routerDelegate: delegate)));
+
+    expect(find.text("argument = hello"), findsOneWidget);
+  });
+
   testWidgets(
       "VoyagerStackApp - Home Page, Declarative Way & then update to the OtherPage",
       (tester) async {

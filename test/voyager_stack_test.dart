@@ -125,6 +125,32 @@ void main() {
   test('VoyagerStack serialization', () {
     const stack1 = VoyagerStack(
       [
+        VoyagerPage("/home", argument: "true"),
+        VoyagerPage("/settings"),
+        VoyagerStack([
+          VoyagerPage("/omg"),
+          VoyagerPage("/counter"),
+          VoyagerStack(
+            [
+              VoyagerPage("/words"),
+              VoyagerPage("/matter"),
+            ],
+          ),
+        ], scope: "What is up?"),
+        VoyagerPage("/that/last/thing"),
+      ],
+      scope: 13,
+    );
+
+    final VoyagerStack stack1DeepCopy =
+        VoyagerAdapter.fromJson(VoyagerAdapter.toJson(stack1));
+
+    expect(stack1, stack1DeepCopy);
+  });
+
+  test('VoyagerStack serialization 2', () {
+    const stack1 = VoyagerStack(
+      [
         VoyagerPage("/home", argument: VoyagerArgument("true")),
         VoyagerPage("/settings"),
         VoyagerStack([
@@ -151,7 +177,7 @@ void main() {
   test('VoyagerStack deserialization via VoyagerInformationParser', () async {
     const stack1 = VoyagerStack(
       [
-        VoyagerPage("/home", argument: VoyagerArgument("true")),
+        VoyagerPage("/home", argument: "true"),
         VoyagerPage("/settings"),
         VoyagerStack([
           VoyagerPage("/omg"),
@@ -180,7 +206,7 @@ void main() {
   test('VoyagerStack.toString', () {
     const stack = VoyagerStack(
       [
-        VoyagerPage("/lucky", argument: VoyagerArgument("number")),
+        VoyagerPage("/lucky", argument: "number"),
       ],
       scope: 13,
     );

@@ -21,7 +21,7 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
   final String path;
 
   /// page argument
-  final VoyagerArgument? argument;
+  final Object? argument;
 
   /// extra id (e.g. if you want to have duplicate entries on the stack)
   final String id;
@@ -54,10 +54,18 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
       };
     }
 
+    VoyagerArgument? _argument;
+
+    if (argument != null) {
+      _argument = argument is VoyagerArgument
+          ? argument as VoyagerArgument
+          : VoyagerArgument(argument);
+    }
+
     final widget = VoyagerWidget(
       path: path,
       router: router,
-      argument: argument,
+      argument: _argument,
     );
 
     return [innerPageBuilder(widget, this)];
@@ -70,7 +78,7 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
   static final adapter = VoyagerAdapter<VoyagerPage>(serialize: (dynamic page) {
     return <String, dynamic>{
       "path": page.path,
-      "argument": VoyagerAdapter.toJson(page.argument?.value),
+      "argument": VoyagerAdapter.toJson(page.argument),
       "id": page.id,
     };
   }, deserialize: (json) {
@@ -78,14 +86,11 @@ class VoyagerPage extends Equatable implements VoyagerStackItem {
     final String id = json["id"];
     final dynamic? argumentValue =
         VoyagerAdapter.fromJson(json["argument"] as Map<String, dynamic>?);
-    return VoyagerPage(path,
-        id: id,
-        argument:
-            argumentValue != null ? VoyagerArgument(argumentValue) : null);
+    return VoyagerPage(path, id: id, argument: argumentValue);
   });
 
   @override
-  List<Object?> get props => [path, argument?.value];
+  List<Object?> get props => [path, argument];
 
   @override
   bool? get stringify => true;
@@ -154,7 +159,8 @@ class VoyagerStack extends Equatable implements VoyagerStackItem {
   /// converts the state to a list that can be used by e.g. [Navigator]
   @override
   List<Page<dynamic>> asPages(VoyagerRouter router,
-      {List<Object>? scopes, required VoyagerPageBuilder defaultPageBuilder}) {
+      {List<Object>? scopes,
+      VoyagerPageBuilder defaultPageBuilder = PagePlugin.defaultMaterial}) {
     final pages = <Page<dynamic>>[];
     if (_scope != null) {
       scopes = List<Object>.from(scopes ?? <Object>[]);
