@@ -1,3 +1,8 @@
+## 3.0.0-nullsafety.2
+
+- minor API improvements
+- support JSON as a source in code generator
+
 ## 3.0.0-nullsafety.1
 
 ### MAJOR UPDATE (a.k.a. BREAKING CHANGE)

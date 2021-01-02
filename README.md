@@ -283,7 +283,7 @@ Using code generation enables you to use some of the following features:
 
 __Important__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
 
-Voyager supports generating dart code based on the navigation map yaml (json support [coming soon](https://github.com/vishna/voyager-codegen/issues/7)) file. Simply run the following command and wait for the script to set it up for you.
+Voyager supports generating dart code based on the navigation map yaml (or json) file. Simply run the following command and wait for the script to set it up for you.
 
 ```
 flutter packages pub run voyager:codegen --run-once
