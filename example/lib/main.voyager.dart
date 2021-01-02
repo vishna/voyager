@@ -2,26 +2,26 @@
 // ignore_for_file: public_member_api_docs
 part of 'main.dart';
 
-const String pathHome = "/home";
-const String typeHome = "home";
-String pathOther(String title) {
-  return "/other/$title";
-}
-
-const String typeOther = "other";
-const String pathFab = "/fab";
-const String typeFab = "fab";
-const String pathTalks = "/talks";
-const String typeTalks = "talks";
-const String pathTalkItem = "/_object/Talk";
-const String typeTalkItem = "talk_item";
 const String path = "/stay/safe";
 const String type = "";
+const String pathFab = "/fab";
+const String typeFab = "fab";
+const String pathHome = "/home";
+const String typeHome = "home";
 String pathNotFound(String notfound) {
   return "/$notfound";
 }
 
 const String typeNotFound = "not_found";
+String pathOther(String title) {
+  return "/other/$title";
+}
+
+const String typeOther = "other";
+const String pathTalkItem = "/_object/Talk";
+const String typeTalkItem = "talk_item";
+const String pathTalks = "/talks";
+const String typeTalks = "talks";
 
 extension VoyagerData on Voyager {
   String? get title => this["title"];
@@ -38,10 +38,10 @@ abstract class IconPluginStub extends VoyagerObjectPlugin<Icon> {
 }
 
 final generatedVoyagerWidgetMappings = <String, WidgetBuilder>{
-  "PageWidget": (context) => PageWidget(),
   "makeMeFab": makeMeFab,
-  "ListWidget": (context) => ListWidget(),
-  "TalkWidget": (context) => TalkWidget()
+  "PageWidget": (context) => PageWidget(),
+  "TalkWidget": (context) => TalkWidget(),
+  "ListWidget": (context) => ListWidget()
 };
 
 WidgetPluginBuilder generatedVoyagerWidgetPluginBuilder() {
