@@ -9,7 +9,10 @@ import 'package:provider/provider.dart';
 class Voyager {
   /// default constructor
   Voyager(
-      {required this.path, this.parent, required Map<String, dynamic> config})
+      {required this.path,
+      required this.pathParams,
+      this.parent,
+      required Map<String, dynamic> config})
       : _config = Map<String, dynamic>.from(config);
 
   /// special node, type
@@ -24,6 +27,11 @@ class Voyager {
 
   /// path of this voyager
   final String path;
+
+  /// params of the path
+  final Map<String, dynamic> pathParams;
+
+  /// lockdown flag
   bool _locked = false;
 
   /// merges other [Voyager] instance into this one

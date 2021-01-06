@@ -293,7 +293,10 @@ void main() {
   });
 
   test("mock object plugin", () {
-    final voyager = Voyager(config: <String, dynamic>{}, path: "/mock/path");
+    final voyager = Voyager(
+        config: <String, dynamic>{},
+        path: "/mock/path",
+        pathParams: <String, dynamic>{});
     final mockPlugin = _MockPlugin();
     final mockContext =
         VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
@@ -313,7 +316,10 @@ void main() {
     final pagePlugin =
         PagePluginBuilder().addBuilder(pagePluginBuilder).build();
 
-    final output = Voyager(config: <String, dynamic>{}, path: "/mock/path");
+    final output = Voyager(
+        config: <String, dynamic>{},
+        path: "/mock/path",
+        pathParams: <String, dynamic>{});
     final context =
         VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
     const config = "foo";
@@ -329,7 +335,10 @@ void main() {
     final pagePlugin =
         PagePluginBuilder().addBuilder(pagePluginBuilder).build();
 
-    final output = Voyager(config: <String, dynamic>{}, path: "/mock/path");
+    final output = Voyager(
+        config: <String, dynamic>{},
+        path: "/mock/path",
+        pathParams: <String, dynamic>{});
     final context =
         VoyagerContext(path: "/mock/path", params: {}, router: VoyagerRouter());
     const config = "foo2";

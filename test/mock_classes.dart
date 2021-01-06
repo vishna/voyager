@@ -123,8 +123,12 @@ class MockHomeWidgetArgument3 extends StatelessWidget {
 }
 
 class CustomVoyager extends Voyager {
-  CustomVoyager(String path, Voyager? parent)
-      : super(path: path, parent: parent, config: <String, dynamic>{});
+  CustomVoyager(String path, Map<String, dynamic> pathParams, Voyager? parent)
+      : super(
+            path: path,
+            pathParams: pathParams,
+            parent: parent,
+            config: <String, dynamic>{});
 
   set widget(WidgetBuilder builder) {
     this[WidgetPlugin.KEY] = builder;
