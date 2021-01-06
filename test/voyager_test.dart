@@ -93,8 +93,8 @@ void main() {
     final otherClosure = (BuildContext buildContext) => MockOtherWidget();
     // ignore: omit_local_variable_types
     final ProgrammaticVoyagerFactory<CustomVoyager> customVoyagerFactory =
-        (abstractContext, context) => CustomVoyager(
-            abstractContext.url(), abstractContext.getExtras().parent);
+        (abstractContext, context) => CustomVoyager(abstractContext.url(),
+            abstractContext.getParams(), abstractContext.getExtras().parent);
 
     final router = VoyagerRouter();
     router.registerConfig<CustomVoyager>('/home', (context, voyager) {
@@ -172,12 +172,14 @@ void main() {
   test("merging one voyager into another", () {
     final one = Voyager(
       config: <String, dynamic>{},
+      pathParams: <String, dynamic>{"foo": "foo"},
       path: "/path",
     );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     final two = Voyager(
       config: <String, dynamic>{},
+      pathParams: <String, dynamic>{"foo": "bar"},
       path: "/path",
     );
     two["mission"] = "Mission 2";
@@ -188,17 +190,21 @@ void main() {
     expect(two["mission"], "Mission 1");
     expect(two["brief"], "A short brief from 1");
     expect(two["team"], ["Jon", "Jessie"]);
+    expect(one.pathParams["foo"], "foo");
+    expect(two.pathParams["foo"], "bar");
   });
 
   test("merging one voyager into another with a lock", () {
     final one = Voyager(
       config: <String, dynamic>{},
+      pathParams: <String, dynamic>{"foo": "bar"},
       path: "/path",
     );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
     final two = Voyager(
       config: <String, dynamic>{},
+      pathParams: <String, dynamic>{"foo": "bar"},
       path: "/path",
     );
     two["mission"] = "Mission 2";
@@ -216,6 +222,7 @@ void main() {
     final one = Voyager(
       config: <String, dynamic>{},
       path: "/path",
+      pathParams: <String, dynamic>{"foo": "bar"},
     );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -239,6 +246,7 @@ void main() {
     final one = Voyager(
       config: <String, dynamic>{},
       path: "/path",
+      pathParams: <String, dynamic>{"foo": "bar"},
     );
     one["mission"] = "Mission 1";
     one["brief"] = "A short brief from 1";
@@ -256,6 +264,7 @@ void main() {
     final one = Voyager(
       config: <String, dynamic>{},
       path: "/path",
+      pathParams: <String, dynamic>{"foo": "bar"},
     );
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
@@ -277,6 +286,7 @@ void main() {
     final one = Voyager(
       config: <String, dynamic>{},
       path: "/path",
+      pathParams: <String, dynamic>{"foo": "bar"},
     );
     var _onDisposeCalled = false;
     one["mission"] = "Mission 1";
@@ -438,6 +448,7 @@ final VoyagerFactory _defaultProgrammaticFactory = (abstractContext, context) =>
     Voyager(
         path: abstractContext.url(),
         parent: abstractContext.getExtras().parent,
+        pathParams: abstractContext.getParams(),
         config: <String, dynamic>{});
 
 class _MockApp extends StatefulWidget {
@@ -481,4 +492,5 @@ Voyager _mockFactory(
     Voyager(
         path: abstractContext.url(),
         parent: abstractContext.getExtras().parent,
+        pathParams: abstractContext.getParams(),
         config: config);

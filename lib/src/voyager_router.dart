@@ -318,6 +318,7 @@ Voyager _defaultFactory(
         AbstractRouteContext abstractContext, Map<String, dynamic> config) =>
     Voyager(
         path: abstractContext.url(),
+        pathParams: abstractContext.getParams(),
         parent: abstractContext.getExtras().parent,
         config: config);
 
@@ -332,5 +333,6 @@ typedef ProgrammaticVoyagerFactory<T extends Voyager> = T Function(
 final ProgrammaticVoyagerFactory _defaultProgrammaticFactory =
     (abstractContext, context) => Voyager(
         path: abstractContext.url(),
+        pathParams: abstractContext.getParams(),
         parent: abstractContext.getExtras().parent,
         config: <String, dynamic>{});

@@ -44,7 +44,8 @@ abstract class AbstractRouter<O, P> {
       }
     }
 
-    final routeContext = AbstractRouteContext<P>(openParams, extras, path);
+    final routeContext =
+        AbstractRouteContext<P>(Map.unmodifiable(openParams), extras, path);
 
     return outputBuilder.outputFor(routeContext);
   }
