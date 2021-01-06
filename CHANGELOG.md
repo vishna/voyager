@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.3
+
+- add `Voyager.pathParams`
+
 ## 3.0.0-nullsafety.2
 
 - minor API improvements
