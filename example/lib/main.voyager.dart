@@ -2,24 +2,24 @@
 // ignore_for_file: public_member_api_docs
 part of 'main.dart';
 
-const String path = "/stay/safe";
-const String type = "";
+const String pathObjectTalk = "/_object/Talk";
+const String typeObjectTalk = "_object_Talk";
 const String pathFab = "/fab";
 const String typeFab = "fab";
 const String pathHome = "/home";
 const String typeHome = "home";
-String pathNotFound(String notfound) {
+String pathNotfound(String notfound) {
   return "/$notfound";
 }
 
-const String typeNotFound = "not_found";
-String pathOther(String title) {
+const String typeNotfound = "notfound";
+String pathOtherTitle(String title) {
   return "/other/$title";
 }
 
-const String typeOther = "other";
-const String pathTalkItem = "/_object/Talk";
-const String typeTalkItem = "talk_item";
+const String typeOtherTitle = "other_title";
+const String pathStaySafe = "/stay/safe";
+const String typeStaySafe = "stay_safe";
 const String pathTalks = "/talks";
 const String typeTalks = "talks";
 
@@ -38,9 +38,9 @@ abstract class IconPluginStub extends VoyagerObjectPlugin<Icon> {
 }
 
 final generatedVoyagerWidgetMappings = <String, WidgetBuilder>{
+  "TalkWidget": (context) => TalkWidget(),
   "makeMeFab": makeMeFab,
   "PageWidget": (context) => PageWidget(),
-  "TalkWidget": (context) => TalkWidget(),
   "ListWidget": (context) => ListWidget()
 };
 

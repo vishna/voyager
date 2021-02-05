@@ -11,7 +11,6 @@ String requirements() {
   return '''
 ---
 '/home' :
-  type: 'home'
   widget: PageWidget
   title: "This is Home"
   body: "Hello World"
@@ -20,17 +19,14 @@ String requirements() {
     - target: /talks
       icon: e896
 '/other/:title' :
-  type: 'other'
   widget: PageWidget
   body: "Welcome to the other side"
   title: "This is %{title}"
 '/fab' :
-  type: fab
   widget: makeMeFab
   target: /other/thing
   icon: e88f # check icons.dart for reference
 '/talks' :
-  type: 'talks'
   widget: ListWidget
   page: slideFromTop
   title: "Voyager Talks"
@@ -48,12 +44,10 @@ String requirements() {
       event: Droidcon
       date: November 25-26, 2019
 '/_object/Talk':
-  type: talk_item
   widget: "TalkWidget"
 '/stay/safe':
   redirect: '/home'
 '/:notfound:':
-  type: not_found
   title: "Not Found"
   widget: "PageWidget"
   body: "Path /%{notfound} not found. Sorry!"
@@ -241,7 +235,7 @@ class ListWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final talk = talks[index];
             return VoyagerWidget(
-              path: pathTalkItem,
+              path: pathObjectTalk,
               argument: VoyagerArgument(talk),
             );
           },
@@ -274,7 +268,7 @@ class TalkWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Talk talk = context.voyagerArgument!.value;
+    final Talk talk = context.voyagerArgument!;
     return Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Column(

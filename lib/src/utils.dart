@@ -146,4 +146,15 @@ class VoyagerUtils {
     }
     return false;
   }
+
+  /// "typifies" a path to a snake case variable
+  /// should be aligned with this implementation:
+  /// https://github.com/vishna/voyager-codegen/blob/master/voyager-codegen/src/main/kotlin/dev/vishna/voyager/codegen/X.kt#L56
+  static String typify(String input) {
+    return input
+        .split("/")
+        .map((it) => it.replaceAll(":", ""))
+        .where((it) => !VoyagerUtils.isNullOrBlank(it))
+        .join("_");
+  }
 }
