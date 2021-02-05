@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.4 (UNRELEASED)
+
+- `type` parameter is optional in the navigation map
+
 ## 3.0.0-nullsafety.3
 
 - add `Voyager.pathParams`

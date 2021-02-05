@@ -15,7 +15,7 @@ Voyager is a Widget router for Flutter with a dynamic navigation map and [Provid
     - path subsections (`/user/:id`)
     - parameters interpolation in subsections (`Selected %{id}`)
     - serializable (can be delivered using e.g. Firebase remote config)
-    - [code generator](https://github.com/vishna/voyager-codegen) for paths & plugins
+    - fast [code generator](https://github.com/vishna/voyager-codegen) for paths & plugins
     - schema validation (draft v7)
 - Highly customizable plugin architecture.
 - `VoyagerWidget` to embed your `path` mapping in any place
@@ -64,11 +64,9 @@ In an example below there are two paths defined - `/home` and `/other/:title`. T
 ```yaml
 ---
 '/home' :
-  type: 'home'
   widget: HomeWidget
   title: "This is Home"
 '/other/:thing' :
-  type: 'other'
   widget: OtherWidget
   title: "This is %{thing}"
 ```
@@ -93,8 +91,6 @@ final plugins = [
   TitlePlugin() /// custom plugin
 ];
 ```
-
-We omit `type` which is a field used for annotation purposes (code generation).
 
 ### Instantiate Router
 
@@ -213,7 +209,6 @@ Allows registering aliases for already defined paths:
 ```yaml
 ---
 '/home' :
-  type: 'home'
   widget: HomeWidget
   title: "This is Home"
 '/start' :
@@ -281,7 +276,7 @@ Using code generation enables you to use some of the following features:
     - skip manual mapping, simply add `generatedVoyagerPathPlugin()` to list of plugins
 - [Schema validation](#schema-validation) & strong typed Voyager fields
 
-__Important__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`
+__Important__: Code generation relies heavily on the `type` value. It should be unique per path definition, also the values `should_be_snake_case`. Since 3.0 `type` is automatically generated based on the path - it still can be overridden manually.
 
 Voyager supports generating dart code based on the navigation map yaml (or json) file. Simply run the following command and wait for the script to set it up for you.
 

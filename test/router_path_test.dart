@@ -35,4 +35,21 @@ title: Home Title
     expect(routerPath.config["widget"], "HomeWidget");
     expect(routerPath.config["title"], "Home Title");
   });
+
+  test("load router path from normal yaml map (no types)", () async {
+    const configYaml = """
+---
+widget: HomeWidget
+title: Home Title
+""";
+
+    final YamlMap configMap = loadYaml(configYaml);
+
+    final routerPath = VoyagerPath.fromYaml(path: "/home", config: configMap);
+
+    expect(routerPath.path, "/home");
+    expect(routerPath.config["type"], "home");
+    expect(routerPath.config["widget"], "HomeWidget");
+    expect(routerPath.config["title"], "Home Title");
+  });
 }

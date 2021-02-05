@@ -26,6 +26,22 @@ void main() {
     expect(homeVoyager.type, "home");
   });
 
+  test('loadRouter from a yaml defined in a string (no types)', () async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlString(navigation_yml_no_types);
+    final plugins = [WidgetPlugin(widgetMappings)];
+
+    final router = await loadRouter(paths, plugins);
+
+    final homeVoyager = router.find("/home")!;
+
+    expect(homeVoyager[WidgetPlugin.KEY], widgetMappings["HomeWidget"]);
+    expect(homeVoyager.type, "home");
+  });
+
   test('loadRouter from a yaml defined in a string + mock factory', () async {
     final widgetMappings = {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),

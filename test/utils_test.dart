@@ -96,6 +96,14 @@ void main() {
     expect(VoyagerUtils.cleanUrl(""), "");
     expect(VoyagerUtils.cleanUrl("//"), "");
   });
+
+  /// based off: https://github.com/vishna/voyager-codegen/blob/master/voyager-codegen/src/test/kotlin/dev/vishna/voyager/codegen/XTest.kt#L10
+  test('VoyagerUtils.typify()', () {
+    expect(VoyagerUtils.typify("/home"), "home");
+    expect(VoyagerUtils.typify("/other/:title"), "other_title");
+    expect(
+        VoyagerUtils.typify("/keywords/:await/:async"), "keywords_await_async");
+  });
 }
 
 /// whoops https://github.com/dart-lang/sdk/issues/32559
