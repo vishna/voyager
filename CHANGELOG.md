@@ -1,4 +1,4 @@
-## 3.0.0-nullsafety.4 (UNRELEASED)
+## 3.0.0-nullsafety.4
 
 - `type` parameter is optional in the navigation map
 - add `debugFillProperties` to `VoyagerWidget` and `VoyagerStackApp`
