@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
@@ -48,6 +49,12 @@ class VoyagerStackApp extends StatefulWidget {
 
   @override
   _VoyagerStackAppState createState() => _VoyagerStackAppState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<VoyagerStack>('stack', stack));
+  }
 }
 
 class _VoyagerStackAppState extends State<VoyagerStackApp> {

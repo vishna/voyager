@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -548,6 +549,30 @@ void main() {
 
     expect(find.text("Home Page"), findsOneWidget);
     expect(wasCalled, true);
+  });
+
+  testWidgets("VoyagerStackApp - debugFillProperties", (tester) async {
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) => MockHomeWidget(),
+      "OtherWidget": (BuildContext context) => MockOtherWidget(),
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    final widget = VoyagerStackApp(
+        onBackPressed: () {},
+        router: router,
+        stack: const VoyagerStack([VoyagerPage("/home")]),
+        createApp: (context, parser, delegate) => MaterialApp.router(
+            routeInformationParser: parser, routerDelegate: delegate));
+    await tester.pumpWidget(widget);
+    final properties = DiagnosticPropertiesBuilder();
+    widget.debugFillProperties(properties);
+
+    expect(find.text("Home Page"), findsOneWidget);
+    expect(properties.properties.last,
+        isInstanceOf<DiagnosticsProperty<VoyagerStack>>());
   });
 }
 

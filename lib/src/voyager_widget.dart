@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
@@ -30,6 +31,14 @@ class VoyagerWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() =>
       _VoyagerWidgetState(keepAlive: keepAlive);
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<String>('path', path));
+    properties.add(DiagnosticsProperty<VoyagerArgument>('argument', argument));
+    properties.add(DiagnosticsProperty<bool>('keepAlive', keepAlive));
+  }
 }
 
 class _VoyagerWidgetState extends State<VoyagerWidget>
