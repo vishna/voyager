@@ -1,4 +1,5 @@
 import 'package:example/slide_from_top_page.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voyager/voyager.dart';
@@ -249,7 +250,7 @@ class ListWidget extends StatelessWidget {
 }
 
 /// object representing conference
-class Talk {
+class Talk extends Equatable {
   /// default constructor
   const Talk(this.city, this.event, this.date);
 
@@ -261,6 +262,12 @@ class Talk {
 
   /// date when the talk took place
   final String date;
+
+  @override
+  bool? get stringify => true;
+
+  @override
+  List<Object?> get props => [city, event, date];
 }
 
 /// talk widget
