@@ -3,6 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// allows wrapping widget around navigator returned by [VoyagerDelegate]
+typedef VoyagerDelegateNavigatorWrapper = Widget Function(
+    BuildContext context, Navigator navigator, VoyagerDelegate delegate);
+
 /// Voyager delegate for the Navigator 2.0 [Router]
 class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<VoyagerStackItem> {
@@ -13,9 +17,11 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
       this.onNewPage,
       this.onInitialPage,
       VoyagerPageBuilder defaultPageBuilder = PagePlugin.defaultMaterial,
+      VoyagerDelegateNavigatorWrapper? navigatorWrapper,
       GlobalKey<NavigatorState>? navigatorKey})
       : navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>(),
         _defaultPageBuilder = defaultPageBuilder,
+        _navigatorWrapper = navigatorWrapper,
         _stack = initialStack ?? const VoyagerStack([]);
 
   /// global navigator key used by this delegate
@@ -35,6 +41,18 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
   /// Kind of WORKAROUND for initialPath
   /// https://github.com/flutter/flutter/issues/71106
   void Function(VoyagerStackItem page)? onInitialPage;
+
+  /// wrap custom widget around delegate's default [Navigator]
+  VoyagerDelegateNavigatorWrapper? _navigatorWrapper;
+
+  /// set navigator wrapper
+  set navigatorWrapper(VoyagerDelegateNavigatorWrapper? value) {
+    if (value == _navigatorWrapper) {
+      return;
+    }
+    _navigatorWrapper = value;
+    notifyListeners();
+  }
 
   TransitionDelegate _transitionDelegate =
       const DefaultTransitionDelegate<dynamic>();
@@ -79,7 +97,8 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
+    final wrapper = _navigatorWrapper;
+    final navigator = Navigator(
       key: navigatorKey,
       transitionDelegate: _transitionDelegate,
       pages: _stack.asPages(_voyagerRouter,
@@ -99,6 +118,12 @@ class VoyagerDelegate extends RouterDelegate<VoyagerStackItem>
         return true;
       },
     );
+
+    if (wrapper == null) {
+      return navigator;
+    } else {
+      return wrapper(context, navigator, this);
+    }
   }
 
   @override

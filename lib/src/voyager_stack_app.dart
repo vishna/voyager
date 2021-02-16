@@ -17,6 +17,7 @@ class VoyagerStackApp extends StatefulWidget {
     this.onInitialPage,
     this.defaultPageBuilder = PagePlugin.defaultMaterial,
     this.transitionDelegate = const DefaultTransitionDelegate<dynamic>(),
+    this.navigatorWrapper,
   }) : super(key: key);
 
   /// router instance
@@ -39,6 +40,9 @@ class VoyagerStackApp extends StatefulWidget {
 
   /// transition delegate
   final TransitionDelegate transitionDelegate;
+
+  /// navigator wrapper
+  final VoyagerDelegateNavigatorWrapper? navigatorWrapper;
 
   /// pass [parser] and [delegate] to [MaterialApp.router] or [CupertinoApp.router]
   final Widget Function(
@@ -70,6 +74,7 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
       onNewPage: widget.onNewPage,
       defaultPageBuilder: widget.defaultPageBuilder,
       onInitialPage: widget.onInitialPage,
+      navigatorWrapper: widget.navigatorWrapper,
     );
     delegate.stack = widget.stack;
     delegate.transitionDelegate = widget.transitionDelegate;
@@ -98,6 +103,9 @@ class _VoyagerStackAppState extends State<VoyagerStackApp> {
     }
     if (oldWidget.transitionDelegate != widget.transitionDelegate) {
       delegate.transitionDelegate = widget.transitionDelegate;
+    }
+    if (oldWidget.navigatorWrapper != widget.navigatorWrapper) {
+      delegate.navigatorWrapper = widget.navigatorWrapper;
     }
     super.didUpdateWidget(oldWidget);
   }

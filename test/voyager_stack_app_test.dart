@@ -551,6 +551,69 @@ void main() {
     expect(wasCalled, true);
   });
 
+  testWidgets("VoyagerStackApp - change navigation wrapper", (tester) async {
+    var wasCalled = false;
+    final widgetMappings = {
+      "HomeWidget": (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Home Title"),
+          ),
+          body: const Center(
+            child: Text("Home Page"),
+          ),
+          floatingActionButton: mockFab(context),
+        );
+      },
+      "OtherWidget": (BuildContext context) {
+        final String title = context.voyager["title"];
+
+        return Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+            ),
+            body: const Center(
+              child: Text("Other Page"),
+            ));
+      },
+    };
+    final paths = loadPathsFromYamlSync(navigation_yml);
+    final plugins = [WidgetPlugin(widgetMappings)];
+    final router = VoyagerRouter.from(paths, plugins);
+
+    await tester.pumpWidget(_FakeApp(
+        router: router,
+        stack: const VoyagerStack(
+            [VoyagerPage("/home"), VoyagerPage("/other/thing")])));
+
+    expect(find.text("Other Page"), findsOneWidget);
+    expect(wasCalled, false);
+
+    final state = tester.state<_FakeAppState>(find.byType(_FakeApp));
+
+    state.setState(() {
+      state.navigatorWrapper = (context, navigator, delegate) {
+        wasCalled = true;
+        return navigator;
+      };
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text("Other Page"), findsOneWidget);
+    expect(wasCalled, true);
+
+    // unsetting navigator wrapper thus unsetting wasCalled value
+    wasCalled = false;
+    state.setState(() {
+      state.navigatorWrapper = null;
+      state.stack = const VoyagerStack([VoyagerPage("/home")]);
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text("Home Page"), findsOneWidget);
+    expect(wasCalled, false);
+  });
+
   testWidgets("VoyagerStackApp - debugFillProperties", (tester) async {
     final widgetMappings = {
       "HomeWidget": (BuildContext context) => MockHomeWidget(),
@@ -590,6 +653,7 @@ class _FakeAppState extends State<_FakeApp> {
   VoyagerStack? stack;
   VoyagerPageBuilder? defaultPageBuilder;
   TransitionDelegate<dynamic>? transitionDelegate;
+  VoyagerDelegateNavigatorWrapper? navigatorWrapper;
 
   @override
   Widget build(BuildContext context) {
@@ -602,6 +666,7 @@ class _FakeAppState extends State<_FakeApp> {
         defaultPageBuilder: defaultPageBuilder ?? PagePlugin.defaultMaterial,
         transitionDelegate:
             transitionDelegate ?? const DefaultTransitionDelegate<dynamic>(),
+        navigatorWrapper: navigatorWrapper,
         createApp: (context, parser, delegate) {
           if (delegate.defaultPageBuilder == PagePlugin.defaultCupertino) {
             return CupertinoApp.router(
