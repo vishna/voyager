@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.5
+
+- add `navigatorWrapper` API
+
 ## 3.0.0-nullsafety.4
 
 - `type` parameter is optional in the navigation map
