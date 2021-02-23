@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.6
+
+- fix missing `required` keyword when generating paths with multiple params
+
 ## 3.0.0-nullsafety.5
 
 - add `navigatorWrapper` API
