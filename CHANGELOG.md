@@ -1,3 +1,7 @@
+## 3.0.0
+
+- promote nullsafety to stable release
+
 ## 3.0.0-nullsafety.6
 
 - fix missing `required` keyword when generating paths with multiple params
